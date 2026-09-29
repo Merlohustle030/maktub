@@ -112,7 +112,8 @@ class CityWorld extends World {
     this.camMode = 'follow';
     this.follow = { dist: 4.5, height: 1.5, minPitch: 0.05, maxPitch: 0.72, yaw: -Math.PI / 2, pitch: 0.24, fov: 42 };
     this.bounds = { x0: -32.4, x1: 30.8, z0: -34.6, z1: 33.4 };
-    this.camBox = [-38, -40, 36, 46];
+    this.camBox = [-42, -35.3, 31.5, 46];
+    this.camBlockers = [[-28.7, 0, 6.3, -26.1, 2.8, 9.7], [22.3, 0, -6.9, 24.5, 1.7, -1.5]];   // Kiosk, Wagen
     this.spawn = { x: -27, z: 26, yaw: Math.PI / 2 };
     this.surface = 'cobble'; this.speed = 1.45;
     this.lampK = -1; this.glowMats = []; this.pl = [];

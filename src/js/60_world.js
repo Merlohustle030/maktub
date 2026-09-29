@@ -64,6 +64,20 @@ class World {
   onLeave() {}
 }
 
+// Segment p0→p1 gegen eine Box [x0,y0,z0,x1,y1,z1] (Slab-Methode): erster Eintritt t ∈ [0,1] oder null
+function segBox(p0, p1, b) {
+  let t0 = 0, t1 = 1;
+  const d = [p1.x - p0.x, p1.y - p0.y, p1.z - p0.z], o = [p0.x, p0.y, p0.z];
+  for (let i = 0; i < 3; i++) {
+    const lo = b[i], hi = b[i + 3];
+    if (Math.abs(d[i]) < 1e-6) { if (o[i] < lo || o[i] > hi) return null; continue; }
+    let a = (lo - o[i]) / d[i], c = (hi - o[i]) / d[i];
+    if (a > c) { const t = a; a = c; c = t; }
+    t0 = Math.max(t0, a); t1 = Math.min(t1, c);
+    if (t0 > t1) return null;
+  }
+  return t0;
+}
 // ---------- Kamera ----------
 const _cv = new THREE.Vector3(), _cv2 = new THREE.Vector3();
 const Cam = {
@@ -145,6 +159,7 @@ const Cam = {
         const cp = Math.cos(this.pitch), d = F.dist;
         this._tp.set(tgt.x + Math.sin(this.yaw) * cp * d, tgt.y + Math.sin(this.pitch) * d, tgt.z + Math.cos(this.yaw) * cp * d);
         if (W.camBox) { const cb = W.camBox; this._tp.x = clamp(this._tp.x, cb[0], cb[2]); this._tp.z = clamp(this._tp.z, cb[1], cb[3]); }
+        if (W.camBlockers) for (const b of W.camBlockers) { const t = segBox(tgt, this._tp, b); if (t !== null) this._tp.lerpVectors(tgt, this._tp, Math.max(0.12, t - 0.05)); }   // Kamera schiebt sich vor massive Objekte
         const k = 6;
         this.pos.x = damp(this.pos.x, this._tp.x, k, dt); this.pos.y = damp(this.pos.y, this._tp.y, k, dt); this.pos.z = damp(this.pos.z, this._tp.z, k, dt);
         this.look.x = damp(this.look.x, tgt.x, 9, dt); this.look.y = damp(this.look.y, tgt.y - 0.08, 9, dt); this.look.z = damp(this.look.z, tgt.z, 9, dt);

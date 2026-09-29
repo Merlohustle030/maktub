@@ -66,6 +66,7 @@ class LobbyWorld extends World {
     this.follow = { dist: 3.9, height: 1.5, minPitch: 0.06, maxPitch: 0.62, yaw: 0, pitch: 0.2, fov: 44 };
     this.bounds = { x0: -10.3, x1: 10.3, z0: -8.5, z1: 8.4 };
     this.camBox = [-10.9, -8.9, 10.9, 8.9];
+    this.camBlockers = [[8.3, 0, -6.3, 9.9, 3, -0.5], [-3, 0, -9.2, 3, 3.1, -5.5]];   // Rezeption, Freitreppe
     this.spawn = { x: 0, z: 7.4, yaw: Math.PI };
     this.surface = 'marble'; this.speed = 1.0;
     this.glowMats = []; this.pl = [];
