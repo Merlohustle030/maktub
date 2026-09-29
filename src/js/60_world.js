@@ -27,8 +27,12 @@ class World {
     obj.traverse((m) => {
       if (!m.isMesh) return;
       if (Array.isArray(m.material)) return;
-      m.material = m.material.clone(); m.material.userData.mask = { value: 0 };
-      if (m.material.emissive) mats.push(m.material);
+      const src = m.material, c = src.clone();
+      c.userData = { mask: { value: 0 } };                                   // clone() verliert die Shader-Patches → neu anhängen
+      c.customProgramCacheKey = src.customProgramCacheKey;
+      c.onBeforeCompile = (sh) => patchShader(sh, { mask: c.userData.mask });
+      m.material = c;
+      if (c.emissive) mats.push(c);
     });
     const it = { obj, mats, gain: o.gain != null ? o.gain : 1, when: o.when || null };
     this.important.push(it); return it;
@@ -140,6 +144,7 @@ const Cam = {
         const tgt = _cv.set(pp.x, pp.y + F.height, pp.z);
         const cp = Math.cos(this.pitch), d = F.dist;
         this._tp.set(tgt.x + Math.sin(this.yaw) * cp * d, tgt.y + Math.sin(this.pitch) * d, tgt.z + Math.cos(this.yaw) * cp * d);
+        if (W.camBox) { const cb = W.camBox; this._tp.x = clamp(this._tp.x, cb[0], cb[2]); this._tp.z = clamp(this._tp.z, cb[1], cb[3]); }
         const k = 6;
         this.pos.x = damp(this.pos.x, this._tp.x, k, dt); this.pos.y = damp(this.pos.y, this._tp.y, k, dt); this.pos.z = damp(this.pos.z, this._tp.z, k, dt);
         this.look.x = damp(this.look.x, tgt.x, 9, dt); this.look.y = damp(this.look.y, tgt.y - 0.08, 9, dt); this.look.z = damp(this.look.z, tgt.z, 9, dt);
@@ -252,7 +257,7 @@ const Focus = {
     G.focusTarget = want ? 1 : 0;
     G.focus = damp(G.focus, G.focusTarget, want ? 6.5 : 4, dt);
     if (G.focus < 0.004) G.focus = 0;
-    G.timeScale = lerp(1, 0.55, sstep(0, 1, G.focus));
+    G.timeScale = lerp(1, 0.55, sstep(0, 1, G.focus)) * G.slow;
     FX.focus = sstep(0, 1, G.focus);
     if (want !== this.prev) {
       this.prev = want;

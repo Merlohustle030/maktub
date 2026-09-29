@@ -198,7 +198,7 @@ const G = {
   settings: { musicVol: 0.8, sfxVol: 0.9, quality: 'auto', grain: true, subSize: 1 },
   debug: /[?&](dev|test)\b/.test(location.search),
   test: /[?&]test\b/.test(location.search),
-  skipping: false,
+  skipping: false, slow: 1,
 };
 const sleep = (sec) => G.sched.wait(sec);
 const until = (fn, timeout) => G.sched.until(fn, timeout);

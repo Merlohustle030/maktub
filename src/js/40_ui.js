@@ -439,6 +439,7 @@ const UI = {
   <div id="choices"></div>
   <div id="silence"><div class="lbl">Schweigen …</div><div class="bar"><i></i></div></div>
   <div id="skip"><svg viewBox="0 0 26 26"><circle class="bg" cx="13" cy="13" r="11"/><circle class="fg" cx="13" cy="13" r="11"/></svg><span>Leertaste halten zum Überspringen</span></div>
+  <div id="tell"><i></i><span></span></div>
   <div id="toast"></div>
   <div id="phone"></div>
   <div id="notecard"></div>

@@ -6,7 +6,7 @@ const updaters = [];
 function scene_update(dt) { for (const u of updaters) u(dt); }
 
 function tick(rawDt) {
-  const dt = Math.min(0.05, rawDt);
+  const dt = Math.min(0.05, rawDt); G.dt = dt;
   G.rt += dt; G.frame++;
   if (Input.pressed('pause')) {
     if (Panels.cur) { Panels.closeAll(); Snd.uiBack(); }
@@ -27,6 +27,7 @@ function tick(rawDt) {
   Cam.apply(GFX.camera, dt);
   if (G.world) Atmo.update(GFX.camera, Player.ch ? Player.ch.root.position : null);
   UI.syncBar();
+  Tell.update(GFX.camera);
   if (G.debug) devHud(dt);
   Input.endFrame();
 }
@@ -75,6 +76,7 @@ async function onStart() {
 }
 
 async function boot() {
+  window.addEventListener('unhandledrejection', (e) => { if (e.reason === ABORT) e.preventDefault(); });   // abgebrochene Skripte (Kapitelwechsel) sind kein Fehler
   Object.assign(G.settings, Store.get('settings', {}));
   UI.build(); Input.init();
   if (!GFX.init($('#gl'))) {

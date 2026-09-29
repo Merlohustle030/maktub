@@ -115,11 +115,11 @@ function mkLamp(warm = true) {
   return { body: mb, glow: gl };
 }
 function mkBench() { const mb = new MB(66); mb.box(1.7, 0.06, 0.5, 0, 0.45, 0, 0x6a4a30); mb.box(1.7, 0.5, 0.06, 0, 0.55, -0.22, 0x6a4a30, { rx: -0.15 }); mb.box(0.08, 0.45, 0.46, -0.75, 0, 0, 0x222226); mb.box(0.08, 0.45, 0.46, 0.75, 0, 0, 0x222226); return mb; }
-function mkCafeSet(seed, parasol = 0xefe2c4) {
+function mkCafeSet(seed, parasol = 0xefe2c4, angles = [0.4, 2.4, 4.4]) {
   const mb = new MB(seed);
   mb.cyl(0.42, 0.42, 0.04, 10, 0, 0.74, 0, 0x8a6a48); mb.cyl(0.04, 0.05, 0.74, 6, 0, 0, 0, 0x222226); mb.cyl(0.24, 0.24, 0.03, 8, 0, 0, 0, 0x222226);
-  for (const a of [0.4, 2.4, 4.4]) { const x = Math.sin(a) * 0.72, z = Math.cos(a) * 0.72; mb.box(0.4, 0.04, 0.4, x, 0.45, z, 0x7a5a38, { ry: a }); mb.box(0.4, 0.42, 0.04, x + Math.sin(a) * 0.2, 0.47, z + Math.cos(a) * 0.2, 0x7a5a38, { ry: a }); for (const [dx, dz] of [[-0.16, -0.16], [0.16, -0.16], [-0.16, 0.16], [0.16, 0.16]]) mb.box(0.03, 0.45, 0.03, x + dx, 0, z + dz, 0x222226); }
-  mb.cyl(0.03, 0.03, 2.4, 5, 0, 0.75, 0, 0x555559); mb.cone(1.4, 0.5, 10, 0, 2.7, 0, parasol);
+  for (const a of angles) { const x = Math.sin(a) * 0.72, z = Math.cos(a) * 0.72; mb.box(0.4, 0.04, 0.4, x, 0.45, z, 0x7a5a38, { ry: a }); mb.box(0.4, 0.42, 0.04, x + Math.sin(a) * 0.2, 0.47, z + Math.cos(a) * 0.2, 0x7a5a38, { ry: a }); for (const [dx, dz] of [[-0.16, -0.16], [0.16, -0.16], [-0.16, 0.16], [0.16, 0.16]]) mb.box(0.03, 0.45, 0.03, x + dx, 0, z + dz, 0x222226); }
+  if (parasol != null) { mb.cyl(0.03, 0.03, 2.4, 5, 0, 0.75, 0, 0x555559); mb.cone(1.4, 0.5, 10, 0, 2.7, 0, parasol); }
   mb.cyl(0.05, 0.05, 0.14, 6, 0.1, 0.78, 0.05, 0xdcd8cc); // Tasse
   return mb;
 }
@@ -189,7 +189,7 @@ class Crowd {
     }
     this._m = new THREE.Matrix4(); this._q = new THREE.Quaternion(); this._e = new THREE.Euler(); this._p = new THREE.Vector3(); this._s = new THREE.Vector3(1, 1, 1);
   }
-  update(dt) {
+  update(dt, pp) {
     this.mat.userData.uT.value = G.t;
     for (const p of this.people) {
       const path = p.path, a = path.a, b = path.b, len = Math.hypot(b[0] - a[0], b[1] - a[1]);
@@ -197,8 +197,10 @@ class Crowd {
       const dx = (b[0] - a[0]) / len, dz = (b[1] - a[1]) / len;
       const x = lerp(a[0], b[0], p.t) - dz * p.off, z = lerp(a[1], b[1], p.t) + dx * p.off;
       const yaw = Math.atan2(dx * p.dir, dz * p.dir);
+      let px = x, pz = z;
+      if (pp) { const ex = x - pp.x, ez = z - pp.z, ed = Math.hypot(ex, ez); if (ed < 1.05 && ed > 1e-4) { px = pp.x + (ex / ed) * 1.05; pz = pp.z + (ez / ed) * 1.05; } }   // weicht dem Spieler aus
       this._e.set(0, p.sp > 0 ? yaw : p.off * 2, 0); this._q.setFromEuler(this._e);
-      this._m.compose(this._p.set(x, p.y, z), this._q, this._s); p.im.setMatrixAt(p.i, this._m);
+      this._m.compose(this._p.set(px, p.y, pz), this._q, this._s); p.im.setMatrixAt(p.i, this._m);
     }
     for (const m of this.meshes) m.instanceMatrix.needsUpdate = true;
   }
@@ -212,10 +214,8 @@ class Pigeons {
     bmb.sph(0.12, 0, 0.16, 0, 0x7a7a86, { d: 1, sx: 0.8, sy: 0.75, sz: 1.3 }); bmb.sph(0.065, 0, 0.27, 0.13, 0x5a5a6a, { d: 1 }); bmb.box(0.02, 0.02, 0.05, 0, 0.265, 0.2, 0xd8b060); bmb.box(0.05, 0.03, 0.15, 0, 0.14, -0.2, 0x60606c);
     bmb.box(0.015, 0.09, 0.015, 0.03, 0, 0.02, 0xc08080); bmb.box(0.015, 0.09, 0.015, -0.03, 0, 0.02, 0xc08080);
     const wmb = new MB(6); wmb.tri([0, 0, 0], [0.25, 0.02, -0.06], [0.2, 0, 0.12], 0x8a8a96);
-    const bm = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
     this.body = new THREE.InstancedMesh(bmb.build(), Mat.lit({ side: THREE.DoubleSide }), n); this.wL = new THREE.InstancedMesh(wmb.build(), Mat.lit({ side: THREE.DoubleSide }), n); this.wR = new THREE.InstancedMesh(wmb.build(), Mat.lit({ side: THREE.DoubleSide }), n);
     for (const m of [this.body, this.wL, this.wR]) { m.frustumCulled = false; m.castShadow = true; this.group.add(m); }
-    bm.dispose();
     this.b = [];
     for (let i = 0; i < n; i++) this.b.push({ x: area[0] + this.rng.next() * (area[2] - area[0]), z: area[1] + this.rng.next() * (area[3] - area[1]), y: 0, yaw: this.rng.range(0, 6.28), st: 'peck', t: this.rng.range(0, 3), vx: 0, vz: 0, vy: 0, fl: 0, ph: this.rng.range(0, 6) });
     this._m = new THREE.Matrix4(); this._q = new THREE.Quaternion(); this._e = new THREE.Euler(); this._p = new THREE.Vector3(); this._s = new THREE.Vector3(1, 1, 1);

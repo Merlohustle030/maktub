@@ -91,6 +91,7 @@ input[type=range]::-moz-range-thumb { width: 11px; height: 11px; border: 0; bord
 #subs { position: absolute; left: 0; right: 0; bottom: calc(var(--bar) + 6.2vh); text-align: center; padding: 0 7vw; }
 #hud::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 34vh; background: linear-gradient(to top, rgba(0, 0, 0, .46), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity .8s; pointer-events: none; }
 #hud.subs-on::before { opacity: 1; }
+#hud.deal-on::before { height: 52vh; background: linear-gradient(to top, rgba(0, 0, 0, .78), rgba(0, 0, 0, .5) 45%, rgba(0, 0, 0, 0)); }
 .sub { display: inline-block; max-width: min(920px, 86vw); font-family: var(--serif); font-size: calc(clamp(23px, 2.5vw, 37px) * var(--sub-scale)); line-height: 1.3; font-weight: 400; color: var(--cream); text-shadow: 0 2px 16px rgba(0, 0, 0, .9), 0 0 3px rgba(0, 0, 0, .95); opacity: 0; transform: translateY(7px); transition: opacity .5s ease, transform .7s ease; }
 .sub.on { opacity: 1; transform: none; }
 .sub.inner { font-style: italic; }
@@ -110,7 +111,7 @@ input[type=range]::-moz-range-thumb { width: 11px; height: 11px; border: 0; bord
 #prompt { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 13px; opacity: 0; transition: opacity .25s; white-space: nowrap; font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--cream); text-shadow: 0 1px 12px rgba(0, 0, 0, .95); will-change: transform; }
 #prompt.on { opacity: 1; }
 #prompt .key { width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 50%; display: grid; place-items: center; font-family: var(--sans); font-style: normal; font-size: 12px; color: var(--gold); background: rgba(0, 0, 0, .4); box-shadow: 0 0 20px rgba(217, 172, 79, .2); }
-#hint { position: absolute; left: 4vw; bottom: calc(var(--bar) + 3vh); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--cream-dim); opacity: 0; transition: opacity 1.4s; text-shadow: 0 1px 8px #000; line-height: 2; }
+#hint { position: absolute; left: 4vw; top: calc(var(--bar) + 4.5vh); max-width: 60vw; font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--cream-dim); opacity: 0; transition: opacity 1.4s; text-shadow: 0 1px 8px #000; line-height: 2; }
 #hint.on { opacity: .85; } #hint b { color: var(--gold); font-weight: 500; }
 #skip { position: absolute; right: 4vw; bottom: calc(var(--bar) + 3vh); display: flex; align-items: center; gap: 12px; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase; color: var(--cream-dim); opacity: 0; transition: opacity .5s; text-shadow: 0 1px 8px #000; }
 #skip.on { opacity: .9; } #skip svg { width: 26px; height: 26px; transform: rotate(-90deg); }
@@ -127,7 +128,7 @@ input[type=range]::-moz-range-thumb { width: 11px; height: 11px; border: 0; bord
 .choice.unlocked { color: var(--gold); text-decoration: none; font-style: italic; filter: none; text-shadow: 0 0 26px rgba(217, 172, 79, .55), 0 2px 14px #000; animation: chIn 1.4s ease forwards; }
 @keyframes flick { 0%, 100% { opacity: .85; } 47% { opacity: .55; } 50% { opacity: .95; } 53% { opacity: .6; } }
 @keyframes shake { 0%, 100% { transform: none; } 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
-#silence { position: absolute; left: 50%; bottom: calc(var(--bar) + 12vh); transform: translateX(-50%); width: min(340px, 70vw); text-align: center; opacity: 0; transition: opacity .4s; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--cream-dim); }
+#silence { position: absolute; left: 50%; top: calc(var(--bar) + 11vh); transform: translateX(-50%); width: min(340px, 70vw); text-align: center; opacity: 0; transition: opacity .4s; font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--cream-dim); }
 #silence.on { opacity: 1; } #silence .bar { height: 1px; background: rgba(239, 230, 210, .22); margin-top: 12px; position: relative; overflow: hidden; } #silence .bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--gold); box-shadow: 0 0 12px var(--gold); }
 #flash { position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(255, 226, 160, .0), rgba(255, 226, 160, 0)); opacity: 0; }
 #overlay-text { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
@@ -245,6 +246,25 @@ input[type=range]::-moz-range-thumb { width: 11px; height: 11px; border: 0; bord
   .nb { grid-template-columns: 1fr; height: 90vh; } .pg.r { display: none; }
   .chap { grid-template-columns: 54px 1fr; }
 }
+
+/* ---------- Deals: Optionen, Fokus-Lesen ---------- */
+.choice.dopt { display: flex; align-items: baseline; gap: 16px; text-align: left; padding: 7px 14px 9px; width: min(820px, 92vw); }
+.choice.dopt .k { margin-right: 0; flex: none; width: 14px; }
+.choice.dopt .tag { flex: none; width: 118px; font-family: var(--sans); font-size: 10.5px; letter-spacing: .34em; text-transform: uppercase; color: var(--gold); opacity: .9; }
+.choice.dopt .ln { font-size: calc(clamp(19px, 1.9vw, 27px) * var(--sub-scale)); line-height: 1.22; }
+.choice.dopt.hold .ln { font-style: italic; color: var(--cream-dim); } .choice.dopt.hold .ln small { font-family: var(--sans); font-style: normal; font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-soft); margin-left: 10px; }
+.choice.dopt.sel .ln { color: #fff3d6; } .choice.dopt.held .ln { color: var(--gold); text-shadow: 0 0 22px rgba(217, 172, 79, .5), 0 2px 14px #000; }
+#tell { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 12px; opacity: 0; transition: opacity .5s ease; max-width: 340px; will-change: transform; z-index: 12; }
+#tell.on { opacity: 1; }
+#tell i { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 5px rgba(217, 172, 79, .18), 0 0 24px rgba(217, 172, 79, .8); animation: tellPulse 1.6s ease-in-out infinite; }
+#tell span { font-family: var(--serif); font-style: italic; font-size: clamp(17px, 1.6vw, 23px); line-height: 1.2; color: #ffe9b8; text-shadow: 0 0 18px rgba(0, 0, 0, .95), 0 2px 8px rgba(0, 0, 0, .95); }
+@keyframes tellPulse { 0%, 100% { transform: scale(.8); opacity: .75; } 50% { transform: scale(1.15); opacity: 1; } }
+
+/* ---------- Montage: große Zahlen auf dem Schlag ---------- */
+.mnum { position: absolute; font-family: var(--serif); font-weight: 300; font-size: clamp(54px, 8.5vw, 140px); letter-spacing: .04em; color: #ffe2a0; text-shadow: 0 0 60px rgba(217, 172, 79, .6), 0 4px 30px rgba(0, 0, 0, .6); opacity: 0; transform: scale(1.07); transition: opacity .08s linear, transform .9s cubic-bezier(.2, .7, .1, 1); font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
+.mnum.on { opacity: 1; transform: none; }
+.mnum small { display: block; font-family: var(--sans); font-size: .11em; letter-spacing: .5em; text-transform: uppercase; color: var(--cream-dim); margin-top: .7em; }
+
 @media (prefers-reduced-motion: reduce) { .sub, .choice, #titlecard * { transition-duration: .01s !important; } }
 
 </style>
@@ -457,7 +477,7 @@ const G = {
   settings: { musicVol: 0.8, sfxVol: 0.9, quality: 'auto', grain: true, subSize: 1 },
   debug: /[?&](dev|test)\b/.test(location.search),
   test: /[?&]test\b/.test(location.search),
-  skipping: false,
+  skipping: false, slow: 1,
 };
 const sleep = (sec) => G.sched.wait(sec);
 const until = (fn, timeout) => G.sched.until(fn, timeout);
@@ -3113,6 +3133,7 @@ const UI = {
   <div id="choices"></div>
   <div id="silence"><div class="lbl">Schweigen …</div><div class="bar"><i></i></div></div>
   <div id="skip"><svg viewBox="0 0 26 26"><circle class="bg" cx="13" cy="13" r="11"/><circle class="fg" cx="13" cy="13" r="11"/></svg><span>Leertaste halten zum Überspringen</span></div>
+  <div id="tell"><i></i><span></span></div>
   <div id="toast"></div>
   <div id="phone"></div>
   <div id="notecard"></div>
@@ -3336,6 +3357,7 @@ class Character {
     if (this.eyes) {
       const bl = this.blink > 0 ? 1 - Math.abs(this.blink * 2 - 1) : 0;
       for (const e of this.eyes) { e.scale.y = e.userData.sy * (1 - bl * 0.92); e.position.x = e.userData.x + this.gaze.x * 0.014; e.position.y = e.userData.y + this.gaze.y * 0.01; }
+      if (this.whites) for (const w of this.whites) w.scale.y = w.userData.sy * (1 - bl * 0.92);
     }
     if (this.onUpdate) this.onUpdate(dt);
   }
@@ -3443,11 +3465,13 @@ function humanoid(name, o) {
     mb.box(0.05 * S, 0.011 * S, 0.012 * S, hr * 0.38, cy + hr * 0.36, hr * 0.94, bc, { rz: o.brow != null ? o.brow : 0.18 }); mb.box(0.05 * S, 0.011 * S, 0.012 * S, -hr * 0.38, cy + hr * 0.36, hr * 0.94, bc, { rz: -(o.brow != null ? o.brow : 0.18) });
     ch.addMesh('head', mb, mat);
     // Augen: eigene Meshes, damit sie blinzeln / schauen können
-    const emat = new THREE.MeshBasicMaterial({ color: tcol(0x0a0806), fog: false });
-    ch.eyes = [];
+    const emat = new THREE.MeshBasicMaterial({ color: tcol(0x0a0806), fog: false }), wmat = new THREE.MeshBasicMaterial({ color: tcol(0xb9b0a0), fog: false });
+    ch.eyes = []; ch.whites = [];
     for (const sx of [1, -1]) {
-      const e = new THREE.Mesh(GEO.box, emat); e.scale.set(0.024 * S, 0.02 * S, 0.012 * S);
-      e.position.set(sx * hr * 0.36, cy + hr * 0.16, hr * 0.93); e.userData = { x: e.position.x, y: e.position.y, sy: e.scale.y };
+      const w = new THREE.Mesh(GEO.box, wmat); w.scale.set(0.027 * S, 0.016 * S, 0.01 * S); w.position.set(sx * hr * 0.36, cy + hr * 0.16, hr * 0.925); w.userData = { sy: w.scale.y };
+      headJ.add(w); ch.whites.push(w);
+      const e = new THREE.Mesh(GEO.box, emat); e.scale.set(0.017 * S, 0.017 * S, 0.008 * S);
+      e.position.set(sx * hr * 0.36, cy + hr * 0.16, hr * 0.935 + 0.006 * S); e.userData = { x: e.position.x, y: e.position.y, sy: e.scale.y };
       headJ.add(e); ch.eyes.push(e);
     }
     ch.headTop = cy + hr; }
@@ -3635,8 +3659,12 @@ class World {
     obj.traverse((m) => {
       if (!m.isMesh) return;
       if (Array.isArray(m.material)) return;
-      m.material = m.material.clone(); m.material.userData.mask = { value: 0 };
-      if (m.material.emissive) mats.push(m.material);
+      const src = m.material, c = src.clone();
+      c.userData = { mask: { value: 0 } };                                   // clone() verliert die Shader-Patches → neu anhängen
+      c.customProgramCacheKey = src.customProgramCacheKey;
+      c.onBeforeCompile = (sh) => patchShader(sh, { mask: c.userData.mask });
+      m.material = c;
+      if (c.emissive) mats.push(c);
     });
     const it = { obj, mats, gain: o.gain != null ? o.gain : 1, when: o.when || null };
     this.important.push(it); return it;
@@ -3748,6 +3776,7 @@ const Cam = {
         const tgt = _cv.set(pp.x, pp.y + F.height, pp.z);
         const cp = Math.cos(this.pitch), d = F.dist;
         this._tp.set(tgt.x + Math.sin(this.yaw) * cp * d, tgt.y + Math.sin(this.pitch) * d, tgt.z + Math.cos(this.yaw) * cp * d);
+        if (W.camBox) { const cb = W.camBox; this._tp.x = clamp(this._tp.x, cb[0], cb[2]); this._tp.z = clamp(this._tp.z, cb[1], cb[3]); }
         const k = 6;
         this.pos.x = damp(this.pos.x, this._tp.x, k, dt); this.pos.y = damp(this.pos.y, this._tp.y, k, dt); this.pos.z = damp(this.pos.z, this._tp.z, k, dt);
         this.look.x = damp(this.look.x, tgt.x, 9, dt); this.look.y = damp(this.look.y, tgt.y - 0.08, 9, dt); this.look.z = damp(this.look.z, tgt.z, 9, dt);
@@ -3860,7 +3889,7 @@ const Focus = {
     G.focusTarget = want ? 1 : 0;
     G.focus = damp(G.focus, G.focusTarget, want ? 6.5 : 4, dt);
     if (G.focus < 0.004) G.focus = 0;
-    G.timeScale = lerp(1, 0.55, sstep(0, 1, G.focus));
+    G.timeScale = lerp(1, 0.55, sstep(0, 1, G.focus)) * G.slow;
     FX.focus = sstep(0, 1, G.focus);
     if (want !== this.prev) {
       this.prev = want;
@@ -4978,11 +5007,11 @@ function mkLamp(warm = true) {
   return { body: mb, glow: gl };
 }
 function mkBench() { const mb = new MB(66); mb.box(1.7, 0.06, 0.5, 0, 0.45, 0, 0x6a4a30); mb.box(1.7, 0.5, 0.06, 0, 0.55, -0.22, 0x6a4a30, { rx: -0.15 }); mb.box(0.08, 0.45, 0.46, -0.75, 0, 0, 0x222226); mb.box(0.08, 0.45, 0.46, 0.75, 0, 0, 0x222226); return mb; }
-function mkCafeSet(seed, parasol = 0xefe2c4) {
+function mkCafeSet(seed, parasol = 0xefe2c4, angles = [0.4, 2.4, 4.4]) {
   const mb = new MB(seed);
   mb.cyl(0.42, 0.42, 0.04, 10, 0, 0.74, 0, 0x8a6a48); mb.cyl(0.04, 0.05, 0.74, 6, 0, 0, 0, 0x222226); mb.cyl(0.24, 0.24, 0.03, 8, 0, 0, 0, 0x222226);
-  for (const a of [0.4, 2.4, 4.4]) { const x = Math.sin(a) * 0.72, z = Math.cos(a) * 0.72; mb.box(0.4, 0.04, 0.4, x, 0.45, z, 0x7a5a38, { ry: a }); mb.box(0.4, 0.42, 0.04, x + Math.sin(a) * 0.2, 0.47, z + Math.cos(a) * 0.2, 0x7a5a38, { ry: a }); for (const [dx, dz] of [[-0.16, -0.16], [0.16, -0.16], [-0.16, 0.16], [0.16, 0.16]]) mb.box(0.03, 0.45, 0.03, x + dx, 0, z + dz, 0x222226); }
-  mb.cyl(0.03, 0.03, 2.4, 5, 0, 0.75, 0, 0x555559); mb.cone(1.4, 0.5, 10, 0, 2.7, 0, parasol);
+  for (const a of angles) { const x = Math.sin(a) * 0.72, z = Math.cos(a) * 0.72; mb.box(0.4, 0.04, 0.4, x, 0.45, z, 0x7a5a38, { ry: a }); mb.box(0.4, 0.42, 0.04, x + Math.sin(a) * 0.2, 0.47, z + Math.cos(a) * 0.2, 0x7a5a38, { ry: a }); for (const [dx, dz] of [[-0.16, -0.16], [0.16, -0.16], [-0.16, 0.16], [0.16, 0.16]]) mb.box(0.03, 0.45, 0.03, x + dx, 0, z + dz, 0x222226); }
+  if (parasol != null) { mb.cyl(0.03, 0.03, 2.4, 5, 0, 0.75, 0, 0x555559); mb.cone(1.4, 0.5, 10, 0, 2.7, 0, parasol); }
   mb.cyl(0.05, 0.05, 0.14, 6, 0.1, 0.78, 0.05, 0xdcd8cc); // Tasse
   return mb;
 }
@@ -5052,7 +5081,7 @@ class Crowd {
     }
     this._m = new THREE.Matrix4(); this._q = new THREE.Quaternion(); this._e = new THREE.Euler(); this._p = new THREE.Vector3(); this._s = new THREE.Vector3(1, 1, 1);
   }
-  update(dt) {
+  update(dt, pp) {
     this.mat.userData.uT.value = G.t;
     for (const p of this.people) {
       const path = p.path, a = path.a, b = path.b, len = Math.hypot(b[0] - a[0], b[1] - a[1]);
@@ -5060,8 +5089,10 @@ class Crowd {
       const dx = (b[0] - a[0]) / len, dz = (b[1] - a[1]) / len;
       const x = lerp(a[0], b[0], p.t) - dz * p.off, z = lerp(a[1], b[1], p.t) + dx * p.off;
       const yaw = Math.atan2(dx * p.dir, dz * p.dir);
+      let px = x, pz = z;
+      if (pp) { const ex = x - pp.x, ez = z - pp.z, ed = Math.hypot(ex, ez); if (ed < 1.05 && ed > 1e-4) { px = pp.x + (ex / ed) * 1.05; pz = pp.z + (ez / ed) * 1.05; } }   // weicht dem Spieler aus
       this._e.set(0, p.sp > 0 ? yaw : p.off * 2, 0); this._q.setFromEuler(this._e);
-      this._m.compose(this._p.set(x, p.y, z), this._q, this._s); p.im.setMatrixAt(p.i, this._m);
+      this._m.compose(this._p.set(px, p.y, pz), this._q, this._s); p.im.setMatrixAt(p.i, this._m);
     }
     for (const m of this.meshes) m.instanceMatrix.needsUpdate = true;
   }
@@ -5075,10 +5106,8 @@ class Pigeons {
     bmb.sph(0.12, 0, 0.16, 0, 0x7a7a86, { d: 1, sx: 0.8, sy: 0.75, sz: 1.3 }); bmb.sph(0.065, 0, 0.27, 0.13, 0x5a5a6a, { d: 1 }); bmb.box(0.02, 0.02, 0.05, 0, 0.265, 0.2, 0xd8b060); bmb.box(0.05, 0.03, 0.15, 0, 0.14, -0.2, 0x60606c);
     bmb.box(0.015, 0.09, 0.015, 0.03, 0, 0.02, 0xc08080); bmb.box(0.015, 0.09, 0.015, -0.03, 0, 0.02, 0xc08080);
     const wmb = new MB(6); wmb.tri([0, 0, 0], [0.25, 0.02, -0.06], [0.2, 0, 0.12], 0x8a8a96);
-    const bm = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
     this.body = new THREE.InstancedMesh(bmb.build(), Mat.lit({ side: THREE.DoubleSide }), n); this.wL = new THREE.InstancedMesh(wmb.build(), Mat.lit({ side: THREE.DoubleSide }), n); this.wR = new THREE.InstancedMesh(wmb.build(), Mat.lit({ side: THREE.DoubleSide }), n);
     for (const m of [this.body, this.wL, this.wR]) { m.frustumCulled = false; m.castShadow = true; this.group.add(m); }
-    bm.dispose();
     this.b = [];
     for (let i = 0; i < n; i++) this.b.push({ x: area[0] + this.rng.next() * (area[2] - area[0]), z: area[1] + this.rng.next() * (area[3] - area[1]), y: 0, yaw: this.rng.range(0, 6.28), st: 'peck', t: this.rng.range(0, 3), vx: 0, vz: 0, vy: 0, fl: 0, ph: this.rng.range(0, 6) });
     this._m = new THREE.Matrix4(); this._q = new THREE.Quaternion(); this._e = new THREE.Euler(); this._p = new THREE.Vector3(); this._s = new THREE.Vector3(1, 1, 1);
@@ -5109,6 +5138,588 @@ class Pigeons {
     for (const m of [this.body, this.wL, this.wR]) m.instanceMatrix.needsUpdate = true;
   }
 }
+
+
+/* ==== 74_city.js ==== */
+// =====================================================================
+// Kapitel I – die Innenstadt: ein Platz am Fluss. Café Aurora im Norden, Hotel Belvedere im Osten,
+// im Westen Brücke, Wasser und die tiefe Sonne. Norden = −Z, Osten = +X.
+// Platz: x ∈ [−34, 34], z ∈ [−36, 36]. Die Straßenbahn fährt auf x = 16 von Nord nach Süd.
+// =====================================================================
+const CITY_GOLD = {
+  skyTop: lin(0x5878b8), skyHorizon: lin(0xffc078), skyBottom: lin(0x8a6a58),
+  sunDir: [-0.86, 0.19, 0.48], sunCol: lin(0xffb264, 2.0), sunDisc: 1, sunGlow: 1.2, stars: 0, cloud: 0.75, cloudLit: lin(0xffae70, 1.6), cloudDark: lin(0x7a6488),
+  hemiSky: lin(0x9db4dc, 0.9), hemiGround: lin(0xa07c5c), hemiInt: 0.9,
+  keyCol: lin(0xffb466), keyInt: 3.2, fillCol: lin(0xffd0a0), fillInt: 0.32, fillDir: [0.6, 0.3, -0.7],
+  fogCol: lin(0xf0b488, 0.9), fogDen: 0.0055, fogHK: 0.05, fogBase: -1, fogMax: 0.93, fogSun: lin(0xffa050, 0.8),
+  rimDir: [-0.86, 0.22, 0.48], rimCol: lin(0xffb466, 1.5),
+  exposure: 0.92, contrast: 1.08, sat: 1.0, lift: [0.012, 0.006, 0.0], gain: [1.03, 1.0, 0.95], shadowTint: [0.02, 0.0, 0.03], highTint: [0.03, 0.012, -0.01],
+  bloom: 0.32, bloomTint: [1, 0.9, 0.78], vig: 0.32, grain: 0.06, ca: 0.0018, dof: 0, dofFocus: 6, dofRange: 4, rays: 0.5, flare: 1.0,
+};
+const CITY_LATE = Object.assign({}, CITY_GOLD, {
+  skyTop: lin(0x34448a), skyHorizon: lin(0xff8a5c), skyBottom: lin(0x4a3a48),
+  sunDir: [-0.88, 0.08, 0.47], sunCol: lin(0xff7a44, 2.2), cloudLit: lin(0xff7a5a, 1.7), cloudDark: lin(0x5a4a7a),
+  hemiSky: lin(0x8a90d0, 0.8), hemiGround: lin(0x80584a), hemiInt: 0.78, keyCol: lin(0xff8a4c), keyInt: 2.7, fillCol: lin(0xa0a0e8), fillInt: 0.45,
+  fogCol: lin(0xe08a70, 0.85), fogSun: lin(0xff7a40, 0.8), rimDir: [-0.88, 0.1, 0.47], rimCol: lin(0xff8a50, 1.6),
+  exposure: 0.95, sat: 1.04, bloom: 0.4, highTint: [0.03, 0.006, 0.01], stars: 0.05,
+});
+const CITY_DUSK = Object.assign({}, CITY_GOLD, {
+  skyTop: lin(0x121a3e), skyHorizon: lin(0x8a4a6c), skyBottom: lin(0x0c0e18),
+  sunDir: [-0.88, -0.03, 0.47], sunCol: lin(0xff5a3a, 1.4), sunDisc: 0, sunGlow: 0.8, stars: 0.35, cloud: 0.5, cloudLit: lin(0xb0508a, 1.0), cloudDark: lin(0x2a2450),
+  hemiSky: lin(0x6a78c4, 0.9), hemiGround: lin(0x3a2c48), hemiInt: 0.95, keyCol: lin(0xff7a5a), keyInt: 0.0, fillCol: lin(0x7c94e4), fillInt: 1.15, fillDir: [-0.3, 0.6, 0.6],
+  fogCol: lin(0x3a3060, 0.8), fogDen: 0.006, fogSun: lin(0xff5a4a, 0.4), rimDir: [-0.88, 0.1, 0.47], rimCol: lin(0x8aa0ff, 0.9),
+  exposure: 1.32, contrast: 1.1, sat: 1.0, shadowTint: [0.0, 0.01, 0.04], highTint: [0.02, 0.0, 0.03], bloom: 0.62, vig: 0.4, rays: 0.0, flare: 0.3,
+});
+
+// ---------- Fluss: Himmelsspiegelung + Sonnenglitzern (kein Licht, nur Farbe) ----------
+const WATER_VS = 'varying vec3 vW; void main(){ vec4 wp = modelMatrix * vec4(position, 1.0); vW = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }';
+const WATER_FS = `
+varying vec3 vW;
+uniform float uTime; uniform vec3 uSunDir; uniform vec3 uSunCol; uniform vec3 uSkyH; uniform vec3 uSkyT; uniform vec3 uDeep; uniform vec3 uFogCol; uniform float uFogDen;
+float h21(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f); return mix(mix(h21(i), h21(i+vec2(1,0)), f.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), f.x), f.y); }
+float wave(vec2 p){ float t = uTime; return vn(p*0.22 + vec2(t*0.07, t*0.04))*0.55 + vn(p*0.7 + vec2(-t*0.15, t*0.10))*0.3 + vn(p*2.1 + vec2(t*0.28, -t*0.2))*0.15; }
+void main(){
+  vec3 V = normalize(cameraPosition - vW);
+  vec2 p = vW.xz; float e = 0.1;
+  float h0 = wave(p), hx = wave(p + vec2(e, 0.0)), hz = wave(p + vec2(0.0, e));
+  vec3 N = normalize(vec3((h0 - hx) * 2.4, 1.0, (h0 - hz) * 2.4));
+  vec3 R = reflect(-V, N);
+  float fres = 0.03 + 0.97 * pow(1.0 - max(dot(N, V), 0.0), 5.0);
+  vec3 sky = mix(uSkyH, uSkyT, pow(clamp(R.y, 0.0, 1.0), 0.5));
+  vec3 col = mix(uDeep, sky, clamp(fres * 0.95 + 0.06, 0.0, 1.0));
+  float sd = max(dot(R, normalize(uSunDir)), 0.0);
+  col += uSunCol * (pow(sd, 700.0) * 26.0 + pow(sd, 60.0) * 0.9 + pow(sd, 9.0) * 0.16);
+  float d = length(cameraPosition - vW);
+  float ff = 1.0 - exp(-pow(d * uFogDen, 2.0));
+  col = mix(col, uFogCol, min(ff, 0.96));
+  gl_FragColor = vec4(col, 0.0);
+}`;
+function makeRiver() {
+  const mat = new THREE.ShaderMaterial({
+    vertexShader: WATER_VS, fragmentShader: WATER_FS, fog: false,
+    uniforms: { uTime: { value: 0 }, uSunDir: { value: new THREE.Vector3(-1, 0.2, 0.5) }, uSunCol: { value: new THREE.Vector3(1, 0.7, 0.4) }, uSkyH: { value: new THREE.Vector3() }, uSkyT: { value: new THREE.Vector3() }, uDeep: { value: new THREE.Vector3(0.02, 0.03, 0.04) }, uFogCol: { value: new THREE.Vector3() }, uFogDen: { value: 0.005 } },
+  });
+  const g = new THREE.PlaneGeometry(1, 1, 1, 1); g.rotateX(-Math.PI / 2);
+  const m = new THREE.Mesh(g, mat);
+  m.userData.update = () => {
+    const c = Atmo.cur, u = mat.uniforms;
+    u.uTime.value = G.t; u.uSunDir.value.set(c.sunDir[0], c.sunDir[1], c.sunDir[2]).normalize(); u.uSunCol.value.set(c.sunCol[0], c.sunCol[1], c.sunCol[2]);
+    u.uSkyH.value.set(c.skyHorizon[0], c.skyHorizon[1], c.skyHorizon[2]); u.uSkyT.value.set(c.skyTop[0], c.skyTop[1], c.skyTop[2]);
+    u.uFogCol.value.set(c.fogCol[0], c.fogCol[1], c.fogCol[2]); u.uFogDen.value = c.fogDen;
+    u.uDeep.value.set(c.skyTop[0] * 0.12, c.skyTop[1] * 0.14, c.skyTop[2] * 0.14);
+  };
+  return m;
+}
+
+// ---------- Ein schwarzer Wagen (Limousine), Front = +Z ----------
+function mkCar(col = 0x0b0b10) {
+  const body = new MB(61), glass = new MB(62), glow = new MB(63), chrome = new MB(64); glow.jit = 0; glass.jit = 0.01; body.jit = 0.012; chrome.jit = 0;
+  body.box(1.94, 0.56, 5.3, 0, 0.36, 0, col, { grad: [0.8, 1.0] });                  // Unterbau
+  body.box(1.86, 0.2, 1.75, 0, 0.9, 1.7, col, { rx: 0.05 });                          // Motorhaube
+  body.box(1.86, 0.22, 1.2, 0, 0.9, -2.0, col, { rx: -0.04 });                        // Kofferraum
+  const P = [[-0.92, 0, -1.55], [0.92, 0, -1.55], [0.92, 0, 1.15], [-0.92, 0, 1.15], [-0.76, 0.58, -1.2], [0.76, 0.58, -1.2], [0.76, 0.58, 0.3], [-0.76, 0.58, 0.3]];
+  body._poly(P, [[0, 1, 2, 3], [4, 7, 6, 5], [0, 4, 5, 1], [3, 2, 6, 7], [0, 3, 7, 4], [1, 5, 6, 2]], [0, 0.92, 0], col, { grad: [0.9, 1.0] });
+  // Scheiben (dunkel, spiegelnd)
+  glass.quad([-0.9, 0.94, 1.16], [0.9, 0.94, 1.16], [0.74, 1.5, 0.315], [-0.74, 1.5, 0.315], 0x10141c);
+  glass.quad([0.9, 0.94, -1.56], [-0.9, 0.94, -1.56], [-0.74, 1.5, -1.21], [0.74, 1.5, -1.21], 0x10141c);
+  for (const s of [1, -1]) glass.quad([s * 0.925, 1.0, -1.35], [s * 0.925, 1.0, 0.95], [s * 0.765, 1.44, 0.22], [s * 0.765, 1.44, -1.12], 0x10141c);
+  // Räder (Drehpunkt = Radmitte)
+  for (const [x, z] of [[0.9, 1.75], [-0.9, 1.75], [0.9, -1.7], [-0.9, -1.7]]) { body.cyl(0.36, 0.36, 0.24, 10, 0, -0.12, 0, 0x141416, { rz: Math.PI / 2, org: [x, 0.36, z] }); chrome.cyl(0.2, 0.2, 0.26, 8, 0, -0.13, 0, 0x9a9aa2, { rz: Math.PI / 2, org: [x + 0.012 * Math.sign(x), 0.36, z] }); }
+  // Grill, Lichter, Zierleisten
+  chrome.box(0.8, 0.34, 0.06, 0, 0.42, 2.66, 0x8a8a92); chrome.box(1.92, 0.03, 5.2, 0, 0.66, 0, 0x8a8a92); chrome.box(0.16, 0.16, 0.04, 0, 0.76, 2.7, 0xd9b56a);
+  for (const s of [1, -1]) { glow.plane(0.36, 0.1, s * 0.7, 0.66, 2.66, [5, 4.6, 3.6]); glow.plane(0.4, 0.09, s * 0.72, 0.78, -2.66, [3.4, 0.2, 0.15], { ry: Math.PI }); }
+  const g = new THREE.Group();
+  g.add(body.mesh(Mat.lit({ spec: 0x8a8a96, shin: 70, side: THREE.DoubleSide }), { cast: true, receive: true }));
+  g.add(glass.mesh(Mat.lit({ spec: 0xffddaa, shin: 90, side: THREE.DoubleSide }), { cast: false, receive: false }));
+  g.add(chrome.mesh(Mat.lit({ spec: 0xffffff, shin: 60 }), { cast: false, receive: false }));
+  g.add(glow.mesh(Mat.glow(), { cast: false, receive: false }));
+  return g;
+}
+
+// ---------- Uhr-Säule ----------
+function mkClockPost(h, m) {
+  const g = new THREE.Group();
+  const mb = new MB(71); mb.cyl(0.13, 0.19, 0.4, 8, 0, 0, 0, 0x22262a); mb.cyl(0.07, 0.09, 3.5, 8, 0, 0.4, 0, 0x2a3034); mb.cyl(0.42, 0.42, 0.22, 10, 0, 3.7, 0, 0x22262a); mb.cone(0.32, 0.5, 10, 0, 4.72, 0, 0x22262a);
+  g.add(mb.mesh(Mat.lit({ spec: 0x555555, shin: 30 })));
+  const mat = Mat.tex(texClock(h, m), { emissive: 0x000000, spec: 0x222222, shin: 20 });
+  const disc = new THREE.CircleGeometry(0.47, 24);
+  for (const s of [1, -1]) { const p = new THREE.Mesh(disc, mat); p.position.set(0, 4.17, s * 0.125); p.rotation.y = s > 0 ? 0 : Math.PI; g.add(p); }
+  const ring = new MB(72); ring.cyl(0.5, 0.5, 0.24, 12, 0, -0.12, 0, 0x2a3034, { rx: Math.PI / 2, org: [0, 4.17, 0] }); g.add(ring.mesh(Mat.lit({ spec: 0x555555, shin: 30 })));
+  return g;
+}
+
+class CityWorld extends World {
+  constructor(o) {
+    super('city', o);
+    this.camMode = 'follow';
+    this.follow = { dist: 4.5, height: 1.5, minPitch: 0.05, maxPitch: 0.72, yaw: -Math.PI / 2, pitch: 0.24, fov: 42 };
+    this.bounds = { x0: -32.4, x1: 30.8, z0: -34.6, z1: 33.4 };
+    this.camBox = [-38, -40, 36, 46];
+    this.spawn = { x: -27, z: 26, yaw: Math.PI / 2 };
+    this.surface = 'cobble'; this.speed = 1.05;
+    this.lampK = -1; this.glowMats = []; this.pl = [];
+    this.tramState = 'wait'; this.tramT = 6; this.tramZ = -150; this.tramBell = false;
+    this.clockH = 17; this.clockM = 24;
+  }
+  async build(o = {}) {
+    const sc = this.scene;
+    Atmo.attach(sc, { shadows: true, sky: true, shadowR: 24, sunDist: 80 });
+    Atmo.set(o.atmo || CITY_GOLD);
+    Atmo.sun.shadow.bias = -0.0005; Atmo.sun.shadow.normalBias = 0.05;
+    Atmo.focusPoint.set(-10, 0, 0);
+    const matLit = Mat.lit({ spec: 0x2a2620, shin: 8 });
+    const matGlass = Mat.lit({ spec: 0xffddaa, shin: 70 });
+    const matGlow = Mat.glow(); this.glowMats.push(matGlow);
+    const B = new MB(11), GL = new MB(12), LG = new MB(13), FO = new MB(14), ST = new MB(15); LG.jit = 0; ST.jit = 0;
+    B.ao(1.2, 0.2);
+    const place = (b, x, z, ry) => { B.merge(b.body, x, 0, z, ry); GL.merge(b.glass, x, 0, z, ry); LG.merge(b.glow, x, 0, z, ry); };
+
+    // ---------- Boden ----------
+    const cob = texCobble(); cob.repeat.set(24, 25);
+    const plaza = new THREE.Mesh(GEO.plane, Mat.tex(cob, { spec: 0x1a1410, shin: 6 }));
+    plaza.rotation.x = -Math.PI / 2; plaza.scale.set(68, 72, 1); plaza.position.set(0, 0, 0); plaza.receiveShadow = true; this.add(plaza);
+    const far = new MB(3); far.jit = 0.02;
+    far.floor(484, 900, 208, -0.05, 0, 0x4c463f, { nx: 4, nz: 6 });                                   // Land östlich des Kais
+    far.floor(300, 900, -365, -0.05, 0, 0x3d4536, { nx: 2, nz: 6 });                                  // Gegenufer
+    far.floor(8, 460, 16, 0.02, 0, 0x36363b, { nz: 8 });                                               // Straßenbahntrasse
+    far.box(0.3, 0.14, 460, 12.15, 0, 0, 0x8a8478); far.box(0.3, 0.14, 460, 19.85, 0, 0, 0x8a8478);   // Bordsteine
+    far.box(0.07, 0.05, 460, 15.3, 0.02, 0, 0x6a6a72); far.box(0.07, 0.05, 460, 16.7, 0.02, 0, 0x6a6a72);   // Schienen
+    // Südrand: niedrige Hecke mit Lücke für die Bahn
+    for (const [a, b] of [[-33.5, 10.5], [21.5, 33]]) far.box(b - a, 0.9, 0.9, (a + b) / 2, 0, 34.6, 0x3f5a2e);
+    this.add(far.mesh(Mat.lit({ spec: 0x555555, shin: 30 }), { cast: false, receive: true }));
+
+    // ---------- Fluss, Kaimauer, Brücke ----------
+    const river = makeRiver(); river.position.set(-124.8, -3.3, 0); river.scale.set(180.5, 1, 700); this.add(river); this.river = river;
+    const wall = new MB(5);
+    wall.box(1.0, 3.4, 460, -34.5, -3.4, 0, 0x6a6258, { grad: [0.6, 1] });                                                                    // Kaimauer
+    wall.box(0.5, 1.05, 69.4, -34.2, 0, -12.3, 0x9a9080); wall.box(0.5, 1.05, 200, -34.2, 0, 132, 0x9a9080); wall.box(0.5, 1.05, 200, -34.2, 0, -147, 0x9a9080);   // Brüstung mit Lücke für die Brücke
+    for (let z = -46; z <= 21; z += 4.2) wall.box(0.42, 1.3, 0.42, -34.2, 0, z, 0xa09686);                                                      // Pfosten
+    for (let z = 34; z <= 60; z += 4.2) wall.box(0.42, 1.3, 0.42, -34.2, 0, z, 0xa09686);
+    // Brücke: Fahrbahn, Brüstung, Pfeiler (z ∈ [22.3, 31.7])
+    const BZ = 27, BL = 181;
+    wall.box(BL, 0.9, 9.4, -34 - BL / 2, -0.9, BZ, 0x8c8272, { grad: [0.7, 1] });
+    wall.box(BL, 0.02, 8.6, -34 - BL / 2, 0.0, BZ, 0x3a3a3e);
+    for (const s of [-1, 1]) wall.box(BL, 0.95, 0.42, -34 - BL / 2, 0.0, BZ + s * 4.5, 0x9a9080);
+    for (let i = 0; i < 13; i++) { const x = -34 - 8 - i * 13.6; wall.box(2.4, 3.6, 8.6, x, -4.4, BZ, 0x7a7264); }
+    for (let i = 0; i < 13; i++) { const x = -34 - 4 - i * 13.6; mkLampInto(B, LG, x, BZ - 4.3, -Math.PI / 2, 0.6); mkLampInto(B, LG, x - 6.8, BZ + 4.3, Math.PI / 2, 0.6); }
+    this.add(wall.mesh(Mat.lit({ spec: 0x1a1a1a, shin: 10 }), { cast: true, receive: true }));
+    // Gegenufer: graue Plattenbauten im Dunst (Mirzas Seite der Stadt), Bäume
+    const opp = new MB(8); opp.jit = 0.02; const oppW = new MB(9); oppW.jit = 0; const oppG = new MB(10);
+    const oppR = new RNG(42);
+    for (let i = 0; i < 6; i++) {
+      const bx = -236 - oppR.range(0, 22), bz = -66 + i * 26 + oppR.range(-4, 4), w = oppR.range(10, 14), d = oppR.range(34, 50), h = oppR.range(28, 42), c = oppR.pick([0x8a8a8c, 0x7e8088, 0x9a968e, 0x84888e]);
+      opp.box(w, h, d, bx, -3, bz, c, { grad: [0.6, 1] });
+      const fl = Math.floor(h / 3), cols = Math.floor(d / 3.2);
+      for (let f = 0; f < fl; f++) for (let k = 0; k < cols; k++) { const lit = oppR.chance(0.22); (lit ? oppG : oppW).plane(1.3, 1.5, bx + w / 2 + 0.05, 0.2 + f * 3, bz - d / 2 + 1.6 + k * 3.2, lit ? [1.9, 1.1, 0.4] : mixHex(c, 0x101418, 0.7), { ry: Math.PI / 2 }); }
+    }
+    this.add(opp.mesh(Mat.lit({}), { cast: false, receive: false })); this.add(oppW.mesh(Mat.lit({}), { cast: false, receive: false })); this.add(oppG.mesh(matGlow, { cast: false, receive: false }));
+    // Ferne Skylines (die Sonne bleibt frei: Lücke bei a = −2,08)
+    const skyW = buildSkyline({ rMin: 260, rMax: 380, count: 44, angA: -2.95, angB: -0.95, hMin: 6, hMax: 36, litP: 0.35, seed: 21, y0: -14, modernP: 0.3, gapA: -2.08, gapW: 0.3, gapH: 3 });
+    const skyN = buildSkyline({ rMin: 130, rMax: 280, count: 40, angA: -0.95, angB: 1.3, hMin: 14, hMax: 52, litP: 0.32, seed: 23, y0: -2, modernP: 0.35, gapA: 0.13, gapW: 0.07, gapH: 3 });
+    const skyE = buildSkyline({ rMin: 90, rMax: 260, count: 26, angA: 1.3, angB: 2.3, hMin: 10, hMax: 42, litP: 0.3, seed: 25, y0: -2, modernP: 0.3 });
+    const skyS = buildSkyline({ rMin: 140, rMax: 300, count: 30, angA: 2.3, angB: 3.9, hMin: 6, hMax: 26, litP: 0.3, seed: 27, y0: -2, modernP: 0.2 });
+    [skyW, skyN, skyE, skyS].forEach((s) => { this.add(s.body); this.add(s.win); const gm = s.glow; gm.material = matGlow; this.add(gm); });
+
+    // ---------- Häuser: Nordreihe (Front nach +Z) ----------
+    const N = [
+      { x: -29.5, w: 11, h: 17, col: 0xd9c4a0, roof: 'gable', seed: 1, balc: true },
+      { x: -18.5, w: 12, h: 13.5, col: 0xe2b880, roof: 'mansard', seed: 2, shop: true, awning: [0xb5372f, 0xefe2c4], litP: 0.3 },
+      { x: -6.5, w: 12, h: 19, col: 0xc9a58a, roof: 'mansard', seed: 3, balc: true },
+      { x: 4.6, w: 11, h: 16.5, col: 0xd8c09a, roof: 'gable', seed: 4, shutters: 0x4a5a48 },
+      { x: 27, w: 11, h: 18, col: 0xd4b596, roof: 'mansard', seed: 5, balc: true },
+      { x: 38, w: 11, h: 16, col: 0xc8a888, roof: 'gable', seed: 6 },
+    ];
+    for (const n of N) place(mkBuilding({ w: n.w, d: 14, h: n.h, col: n.col, roof: n.roof, seed: n.seed, balc: n.balc, shop: n.shop, awning: n.awning, shutters: n.shutters, litP: n.litP != null ? n.litP : 0.25 }), n.x, -43, 0);
+    // Westecke (Nord) und Ostseite: Häuser vor der Straße nach Norden
+    place(mkBuilding({ w: 12, d: 14, h: 15, col: 0xc8ae8e, roof: 'gable', seed: 7, balc: true }), -47, -43, 0);
+    for (let i = 0; i < 4; i++) {                                                                                                   // die Straße nach Norden: Häuserfluchten
+      const z = -60 - i * 20, cw = [0xd0b894, 0xc8a888, 0xd8c4a0, 0xc09a80];
+      place(mkBuilding({ w: 20, d: 14, h: 15 + ((i * 5) % 9), col: cw[i], roof: i % 2 ? 'gable' : 'mansard', seed: 40 + i, balc: true }), 3.5, z, Math.PI / 2);
+      place(mkBuilding({ w: 20, d: 14, h: 16 + ((i * 7) % 8), col: cw[(i + 2) % 4], roof: i % 2 ? 'mansard' : 'gable', seed: 50 + i, balc: true }), 28.5, z, -Math.PI / 2);
+    }
+    // ---------- Hotel Belvedere (Front nach −X bei x = 32) ----------
+    const hotel = mkBuilding({ w: 36, d: 18, h: 26, floors: 7, col: 0xe8d6b0, roof: 'mansard', seed: 31, shop: true, balc: true, litP: 0.42, roofCol: 0x4a5a54 });
+    place(hotel, 41, 4, -Math.PI / 2);
+    place(mkBuilding({ w: 14, d: 16, h: 17, col: 0xd6bd98, roof: 'gable', seed: 32, balc: true }), 41, -24, -Math.PI / 2);
+    place(mkBuilding({ w: 14, d: 16, h: 18, col: 0xd0b894, roof: 'mansard', seed: 33, balc: true }), 41, 31, -Math.PI / 2);
+    // Eingang: Freitreppe, Säulen, Vordach, Schild, Fahnen
+    const E = new MB(17); E.jit = 0.02;
+    for (let i = 0; i < 4; i++) { E.box(3.4, (4 - i) * 0.14, 8.4, 31.8 - i * 0.55, 0, 4, 0xd8ccb4, { grad: [0.85, 1] }); E.box(3.0, 0.02, 2.6, 31.8 - i * 0.55, (4 - i) * 0.14, 4, 0x9a2a2e); }   // 4 Stufen mit rotem Läufer
+    E.box(4.4, 0.34, 8.6, 29.6, 3.5, 4, 0x2a2a30); E.box(4.5, 0.08, 8.7, 29.6, 3.84, 4, 0xd9b56a); E.box(0.3, 0.3, 8.7, 27.5, 3.5, 4, 0xd9b56a);   // Vordach
+    for (const z of [0.2, 3.0, 5.0, 7.8]) { E.box(0.7, 0.2, 0.7, 27.9, 0, z, 0xcfc3aa); E.cyl(0.24, 0.26, 3.1, 10, 27.9, 0.2, z, 0xe6dcc6, { grad: [0.85, 1] }); E.box(0.6, 0.2, 0.6, 27.9, 3.3, z, 0xcfc3aa); this.ring(27.9, z, 0.3); }
+    E.box(0.4, 3.1, 3.0, 31.8, 0.56, 4, 0x1e1c18);                                                                                      // Türnische
+    for (const z of [-4.4, 12.4]) E.cyl(0.05, 0.06, 7.4, 6, 27.6, 0, z, 0x8a8a92);
+    for (const z of [-4.4, 12.4]) E.box(0.05, 0.9, 1.5, 27.6, 6.2, z + 0.75, z > 8 ? 0xd9b56a : 0x8a2a30);
+    for (const z of [-1.4, 9.6]) { E.box(1.0, 0.9, 1.0, 26.2, 0, z, 0x8a8478); E.sph(0.7, 26.2, 1.5, z, 0x3f6a34, { d: 1 }); this.ring(26.2, z, 0.6); }        // Kübelpflanzen
+    this.add(E.mesh(Mat.lit({ spec: 0x666666, shin: 26 }), { cast: true, receive: true }));
+    const signTex = texSign('BELVEDERE', { bg: '#1c1a14', fg: '#e6c266', size: 82 });
+    const sign = new THREE.Mesh(GEO.plane, Mat.tex(signTex, { emissive: 0x000000 })); sign.scale.set(5.8, 1.45, 1); sign.position.set(31.62, 4.95, 4); sign.rotation.y = -Math.PI / 2; this.add(sign); this.hotelSign = sign;
+    // Drehtür
+    const dg = new THREE.Group(); dg.position.set(31.3, 0.56, 4);
+    const dm = new MB(18); dm.cyl(1.35, 1.35, 0.12, 14, 0, 2.6, 0, 0x2a2a30); dm.cyl(1.35, 1.35, 0.1, 14, 0, 0, 0, 0x2a2a30); for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + 0.6; dm.box(0.07, 2.6, 0.07, Math.sin(a) * 1.3, 0, Math.cos(a) * 1.3, 0xc9a24a); }
+    dg.add(dm.mesh(Mat.lit({ spec: 0xffddaa, shin: 50 })));
+    const wings = new THREE.Group(); const wm = new MB(19); wm.plane(1.25, 2.5, 0.62, 1.3, 0, 0xcfe0e6, { ry: Math.PI / 2 }); wm.plane(1.25, 2.5, -0.62, 1.3, 0, 0xcfe0e6, { ry: Math.PI / 2 }); wm.plane(1.25, 2.5, 0, 1.3, 0.62, 0xcfe0e6); wm.plane(1.25, 2.5, 0, 1.3, -0.62, 0xcfe0e6);
+    wings.add(wm.mesh(Mat.lit({ transparent: true, opacity: 0.22, side: THREE.DoubleSide, spec: 0xffffff, shin: 80 }), { cast: false, receive: false }));
+    const hub = new MB(20); hub.cyl(0.05, 0.05, 2.6, 6, 0, 0, 0, 0xc9a24a); wings.add(hub.mesh(Mat.lit({ spec: 0xffddaa, shin: 50 }))); dg.add(wings); this.add(dg); this.doorWings = wings; this.doorSpin = 0.35;
+    // Warmes Licht im Foyer (Leuchtfläche hinter dem Glas)
+    LG.plane(2.6, 2.6, 31.7, 1.9, 4, [2.4, 1.6, 0.7], { ry: -Math.PI / 2 });
+    // Der Wagen wartet
+    this.car = mkCar(); this.car.position.set(23.4, 0, -4.2); this.car.rotation.y = 0.0; this.add(this.car);
+    this.ring(23.4, -4.2 - 1.9, 1.3); this.ring(23.4, -4.2, 1.3); this.ring(23.4, -4.2 + 1.9, 1.3);
+
+    // ---------- Café Aurora: Terrasse ----------
+    const T = new MB(41), TG = new MB(42); TG.jit = 0;
+    const tables = [[-23.6, -33, 0xefe2c4, [0, Math.PI], 0], [-23, -27, 0xc9704a, null, 0.9], [-19, -33.2, 0xefe2c4, null, 2.1], [-14.6, -31, 0xc9704a, null, 3.3], [-14.4, -26, 0xefe2c4, [0, Math.PI], 0]];
+    tables.forEach(([x, z, par, ang, ry], i) => { T.merge(mkCafeSet(50 + i, par, ang || [0.4, 2.4, 4.4]), x, 0, z, ry); this.ring(x, z, 0.5); });
+    this.ring(-19, -28, 0.5);
+    // Zaun + Pflanzkübel um die Terrasse (Öffnung Richtung Süden bei x −20,5 … −17,5)
+    const fence = (x0, z0, x1, z1) => { const l = Math.hypot(x1 - x0, z1 - z0), n = Math.max(1, Math.round(l / 1.6)); for (let i = 0; i <= n; i++) { const t = i / n, x = lerp(x0, x1, t), z = lerp(z0, z1, t); T.box(0.07, 0.95, 0.07, x, 0, z, 0x3a2e24); } const a = Math.atan2(x1 - x0, z1 - z0); T.box(0.05, 0.05, l, (x0 + x1) / 2, 0.9, (z0 + z1) / 2, 0x4a3a2c, { ry: a }); T.box(0.04, 0.04, l, (x0 + x1) / 2, 0.55, (z0 + z1) / 2, 0x4a3a2c, { ry: a }); };
+    fence(-25.6, -35.4, -25.6, -22.6); fence(-25.6, -22.6, -20.6, -22.6); fence(-17.4, -22.6, -11.6, -22.6); fence(-11.6, -22.6, -11.6, -35.4);
+    this.collide(-25.7, -35.6, -25.5, -22.5); this.collide(-25.7, -22.7, -20.6, -22.5); this.collide(-17.4, -22.7, -11.5, -22.5); this.collide(-11.7, -35.6, -11.5, -22.5);
+    for (const [x, z] of [[-25.6, -22.6], [-20.6, -22.6], [-17.4, -22.6], [-11.6, -22.6], [-25.6, -29], [-11.6, -29]]) { T.box(0.5, 0.42, 0.5, x, 0, z, 0x8a5a3a); T.sph(0.36, x, 0.72, z, 0x4f7a3a, { d: 1 }); for (let k = 0; k < 4; k++) T.sph(0.09, x + Math.sin(k * 1.7) * 0.2, 0.9 + (k % 2) * 0.08, z + Math.cos(k * 1.7) * 0.2, k % 2 ? 0xe8809a : 0xd23a3a, { d: 0 }); }
+    // Lichterketten über der Terrasse
+    const string = (a, b, n, sag) => { for (let i = 0; i <= n; i++) { const t = i / n, x = lerp(a[0], b[0], t), z = lerp(a[2], b[2], t), y = lerp(a[1], b[1], t) - Math.sin(t * Math.PI) * sag; LG.sph(0.075, x, y, z, [4.6, 3.1, 1.3], { d: 0 }); if (i < n) { const t2 = (i + 1) / n, x2 = lerp(a[0], b[0], t2), z2 = lerp(a[2], b[2], t2), y2 = lerp(a[1], b[1], t2) - Math.sin(t2 * Math.PI) * sag; ST.box(0.02, 0.02, Math.hypot(x2 - x, z2 - z, y2 - y), (x + x2) / 2, Math.min(y, y2), (z + z2) / 2, 0x111111, { ry: Math.atan2(x2 - x, z2 - z) }); } } };
+    for (const z of [-24.5, -29.5, -34.5]) { T.cyl(0.05, 0.05, 3.8, 5, -25.6, 0, z, 0x2a2a30); T.cyl(0.05, 0.05, 3.8, 5, -11.6, 0, z, 0x2a2a30); string([-25.6, 3.7, z], [-11.6, 3.7, z], 14, 0.7); }
+    this.add(T.mesh(Mat.lit({ spec: 0x2a2a2a, shin: 12 }), { cast: true, receive: true }));
+    // Schild + Deal-Tisch als eigene Objekte (leuchten im Fokus golden)
+    const cs = new THREE.Mesh(GEO.plane, Mat.tex(texSign('CAFÉ AURORA', { bg: '#241813', fg: '#e8c98a', size: 66 }), { emissive: 0x000000 })); cs.scale.set(4.6, 1.15, 1); cs.position.set(-18.5, 4.35, -35.88); this.add(cs); this.cafeSign = cs;
+    const cm = new MB(80); cm.jit = 0; cm.box(0.33, 0.006, 0.24, 0, 0, 0, 0xf2eee2); for (let i = 0; i < 5; i++) cm.box(0.24, 0.002, 0.008, -0.02, 0.006, -0.08 + i * 0.038, 0x4a4a4a);
+    this.contract = cm.mesh(Mat.lit({}), { cast: false, receive: false }); this.contract.position.set(-19.02, 0.766, -28.0); this.contract.rotation.y = 0.12; this.contract.visible = false; this.add(this.contract);
+    const fm = new MB(81); fm.box(0.34, 0.022, 0.26, 0, 0, 0, 0x3a2418); fm.box(0.3, 0.004, 0.22, 0, 0.022, 0, 0x4a2e1e);
+    this.folder = fm.mesh(Mat.lit({ spec: 0x442a1a, shin: 20 }), { cast: true, receive: false }); this.folder.position.set(-19.16, 0.766, -27.62); this.folder.rotation.y = -0.2; this.add(this.folder);
+    const dt = mkCafeSet(60, null, [0, Math.PI]); this.dealTable = dt.mesh(Mat.lit({ spec: 0x2a2a2a, shin: 12 }), { cast: true, receive: true }); this.dealTable.position.set(-19, 0, -28); this.add(this.dealTable);
+
+    // ---------- Platz: Brunnen, Kiosk, Uhr, Bänke, Laternen, Bäume ----------
+    const F = new MB(43); F.jit = 0.02;
+    F.cyl(3.0, 3.1, 0.62, 16, 0, 0, 0, 0xb8ad98, { grad: [0.85, 1] }); F.cyl(2.7, 2.7, 0.08, 16, 0, 0.6, 0, 0x8a8272);
+    F.cyl(0.35, 0.5, 0.9, 8, 0, 0.5, 0, 0xc4baa4); F.cyl(1.2, 0.55, 0.32, 12, 0, 1.3, 0, 0xc4baa4); F.cyl(0.18, 0.28, 0.9, 8, 0, 1.6, 0, 0xc4baa4); F.cyl(0.62, 0.22, 0.2, 10, 0, 2.4, 0, 0xc4baa4); F.sph(0.16, 0, 2.7, 0, 0xd0c6b0, { d: 1 });
+    const fg = new THREE.Group(); fg.position.set(-4, 0, -6); fg.add(F.mesh(Mat.lit({ spec: 0x777777, shin: 30 })));
+    const waterM = new THREE.Mesh(new THREE.CircleGeometry(2.72, 20), keepMask(new THREE.MeshBasicMaterial({ color: tcol(0x5f8fa0, 0.7), transparent: true, opacity: 0.85, fog: true }), false)); waterM.rotation.x = -Math.PI / 2; waterM.position.y = 0.56; fg.add(waterM);
+    this.fountain = { g: fg, water: waterM };
+    // Tropfen
+    const dropG = new THREE.IcosahedronGeometry(0.035, 0), dropM = Mat.glow({ vertexColors: false, color: 0xffffff }); dropM.color.setRGB(1.5, 1.7, 2.0);
+    this.drops = new THREE.InstancedMesh(dropG, dropM, 70); this.drops.frustumCulled = false; fg.add(this.drops);
+    this.dropS = Array.from({ length: 70 }, (_, i) => ({ t: (i / 70) * 2.4, a: (i * 2.399) % TAU, v: 1.6 + (i % 5) * 0.16, h: 2.75, r: 0.25 + (i % 7) * 0.05 }));
+    this.add(fg); this.ring(-4, -6, 3.15);
+    // Kiosk
+    const K = new MB(44); K.jit = 0.02; K.box(3.0, 2.5, 2.2, 0, 0, 0, 0x3f5a52, { grad: [0.85, 1] }); K.box(3.3, 0.16, 2.6, 0, 2.5, 0, 0x2a3a34); K.box(2.4, 1.3, 0.1, 0, 0.9, 1.12, 0x1a1a1a);
+    for (let i = 0; i < 6; i++) K.box(0.5, 0.05, 1.0, -1.25 + i * 0.5, 2.25, 1.6, i % 2 ? 0xefe2c4 : 0xb5372f, { rx: 0.4 });
+    for (let i = 0; i < 5; i++) K.box(0.36, 0.5, 0.04, -1.0 + i * 0.5, 0.95, 1.16, [0xd0c8b4, 0xb8a888, 0xc8b898, 0xa8a090, 0xd8d0c0][i]);
+    const kg = new THREE.Group(); kg.position.set(-27.4, 0, 8); kg.rotation.y = Math.PI / 2; kg.add(K.mesh(Mat.lit({ spec: 0x333333, shin: 14 }))); this.add(kg); this.collide(-28.7, 6.3, -26.1, 9.7);
+    // Uhr
+    this.clock = mkClockPost(this.clockH, this.clockM); this.clock.position.set(-9.4, 0, -22); this.add(this.clock); this.ring(-9.4, -22, 0.3);
+    // Bänke Richtung Fluss + am Brunnen
+    const BE = new MB(45);
+    for (const [x, z, ry] of [[-30.4, -12, -Math.PI / 2], [-30.4, 0, -Math.PI / 2], [-30.4, 12, -Math.PI / 2], [-30.4, 22, -Math.PI / 2], [-8.4, -6, -Math.PI / 2], [0.4, -6, Math.PI / 2], [-4, -10.4, Math.PI], [-4, -1.6, 0]]) { BE.merge(mkBench(), x, 0, z, ry); this.collide(x - 0.4, z - 0.9, x + 0.4, z + 0.9); }
+    this.add(BE.mesh(Mat.lit({ spec: 0x333333, shin: 10 })));
+    this.benches = [[-30.4, 0], [-30.4, 12], [-30.4, 22]];
+    // Laternen (Arm zeigt zum Platz)
+    const lamps = [[-33, -30, 0], [-33, -16, 0], [-33, -2, 0], [-33, 12, 0], [-33, 26, 0], [-12, -34, -Math.PI / 2], [4, -34, -Math.PI / 2], [-12, 32, Math.PI / 2], [4, 32, Math.PI / 2], [24, -30, Math.PI], [24, -14, Math.PI], [24, 20, Math.PI], [24, 30, Math.PI], [-9, 4, 0]];
+    for (const [x, z, ry] of lamps) { const l = mkLamp(true); B.merge(l.body, x, 0, z, ry); LG.merge(l.glow, x, 0, z, ry); this.ring(x, z, 0.22); }
+    // Bäume: Uferpromenade, Südkante, Hotelvorplatz
+    const trees = [];
+    for (let z = -28; z <= 24; z += 8) trees.push([-31.2, z + ((z * 7) % 3) * 0.3]);
+    for (const x of [-26, -14, -2, 8, 24, 30]) trees.push([x, 32.6]);
+    for (const z of [-18, -8, 8, 16, 26]) trees.push([21.4, z]);
+    trees.push([-14.5, 12], [6, -20], [-12, 22], [10, 8]);
+    trees.forEach(([x, z], i) => { FO.merge(mkTree(70 + i, 0.74 + (i % 4) * 0.06), x, 0, z, i * 1.3); this.ring(x, z, 0.32); });
+    this.add(FO.mesh(Mat.lit({ spec: 0x111111, shin: 4 }), { cast: true, receive: true }));
+
+    // ---------- Gebäudemeshes ----------
+    this.add(B.mesh(matLit, { cast: true, receive: true })); this.add(GL.mesh(matGlass, { cast: false, receive: false })); this.add(LG.mesh(matGlow, { cast: false, receive: false })); this.add(ST.mesh(Mat.lit({ spec: 0x000000 }), { cast: false, receive: false }));
+
+    // ---------- Straßenbahn ----------
+    this.tram = makeTram(); this.tram.position.set(16, 0.05, -150); this.tram.visible = false; this.add(this.tram);
+    this.tramCol = { x0: 14.7, x1: 17.3, z0: 1e4, z1: 1e4 }; this.colliders.push(this.tramCol);
+
+    // ---------- Menschen ----------
+    this.crowd = new Crowd(46, [
+      { a: [-30, 21], b: [12, 22] }, { a: [-30, 6], b: [11, 10] }, { a: [-30, -12], b: [11, -14] }, { a: [-14, 33], b: [-8, -16] }, { a: [-24, 30], b: [-30, -8] },
+      { a: [22.6, 30], b: [27, -22] }, { a: [22, 14], b: [28, 6.8] }, { a: [-8, -20], b: [10, -20] }, { a: [-140, 27], b: [-38, 27] }, { a: [-120, 25.4], b: [-40, 28.6] },
+    ], { seed: 8, standP: 0.12 });
+    this.add(this.crowd.group);
+    this.pigeons = new Pigeons(11, [-14, 6, 2, 22], { seed: 12 }); this.add(this.pigeons.group);
+    this.birds = new Birds(12, { center: [-60, 34, 30], spread: [50, 8, 40], seed: 5 }); this.add(this.birds.group);
+    // Nebenfiguren: Gäste, Kellner, Portier
+    const seat = (ch, x, z, yaw, pose = 'sitChair') => { ch.place(x, 0, z, yaw); ch.setPose(pose); ch.snapPose(); this.addChar(ch); return ch; };
+    this.brandt = seat(makeNPC('Brandt', { top: 0x55586a, bottom: 0x3a3a40, under: 0xe8e2d2, shoe: 0x1c1512, hair: 0xb9b5ad, hairStyle: 'grey', skin: SKIN.pale, torso: 'suit', torsoW: 1.1, headR: 0.125, tie: 0x6a2a30, s: 1.02, brow: 0.05 }), -19, -28.72, 0);
+    this.guests = [
+      seat(makeNPC('Gast A', { top: 0x8a4a4a, bottom: 0x2a2a30, hair: 0x2a1c14, hairStyle: 'bob', skin: SKIN.olive, torso: 'cardigan', s: 0.94 }), -23.6, -33 - 0.72, 0),
+      seat(makeNPC('Gast B', { top: 0x5a6a7a, bottom: 0x3a3a44, hair: 0x3a2a1c, hairStyle: 'short', skin: SKIN.tan, torso: 'sweater' }), -23.6, -33 + 0.72, Math.PI),
+      seat(makeNPC('Gast C', { top: 0xd8c8a8, bottom: 0x4a3a30, hair: 0xc8c4bc, hairStyle: 'grey', skin: SKIN.pale, torso: 'cardigan', s: 0.95 }), -14.4, -26 + 0.72, Math.PI),
+    ];
+    this.waiter = makeNPC('Kellner', { top: 0xf2ecdc, bottom: 0x1a1a1e, under: 0xf2ecdc, hair: 0x1a1512, hairStyle: 'quiff', skin: SKIN.olive, torso: 'blazer', tie: 0x1a1a1e }); this.waiter.place(-15.4, 0, -33.6, Math.PI); this.waiter.setPose('stand'); this.addChar(this.waiter);
+    this.doorman = makeNPC('Portier', { top: 0x5a1c22, bottom: 0x2a1a1c, under: 0xe8e2d2, shoe: 0x0c0a0a, hair: 0x2a2320, hairStyle: 'short', skin: SKIN.dark, torso: 'suit', tie: 0xd9b56a, s: 1.04 }); this.doorman.place(29.0, 0, 1.6, -Math.PI / 2); this.doorman.setPose('stand'); this.addChar(this.doorman);
+    this.waiterT = 4;
+
+    // ---------- Lichter ----------
+    const pl1 = new THREE.PointLight(0xffb060, 0, 20, 1.5); pl1.position.set(-18.5, 3.2, -28); this.add(pl1); pl1.userData.base = 2.4; this.pl.push(pl1);
+    const pl2 = new THREE.PointLight(0xffb868, 0, 22, 1.5); pl2.position.set(28.5, 3.0, 4); this.add(pl2); pl2.userData.base = 2.6; this.pl.push(pl2);
+    // ---------- Fokus: Wichtiges leuchtet golden ----------
+    this.markImportant(this.dealTable, { gain: 1.0, when: () => G.state.flags.dealCafe === 'open' });
+    this.markImportant(this.cafeSign, { gain: 0.9, when: () => G.state.flags.dealCafe === 'open' });
+    this.markImportant(this.hotelSign, { gain: 0.9, when: () => G.state.flags.dealHotel === 'open' });
+    this.markImportant(this.car, { gain: 0.9, when: () => !!G.state.flags.carSeen || G.state.flags.dealHotel === 'open' });
+    this.markImportant(this.clock, { gain: 0.8, when: () => G.state.flags.dealCafe === 'open' });
+
+    // ---------- Interaktionen ----------
+    const I = (spec) => this.interact(spec);
+    I({ at: [-19, -25.6], r: 1.9, label: 'Setzen', name: 'Herr Brandt', pos: [-19, 1.5, -27.2], when: () => G.state.flags.dealCafe === 'open', run: () => Story.cityBrandt() });
+    I({ at: [26.4, 4], r: 2.3, label: 'Eintreten', name: 'Hotel Belvedere', pos: [31.4, 1.6, 4], when: () => G.state.flags.dealHotel === 'open', run: () => Story.cityHotelDoor() });
+    I({ at: [-9.4, -20.4], r: 1.8, label: 'Ansehen', name: 'Uhr', pos: [-9.4, 4.0, -22], run: () => Story.cityClock() });
+    I({ at: [-24.6, 8], r: 1.9, label: 'Ansehen', name: 'Zeitungen', pos: [-26.3, 1.4, 8], run: () => Story.cityNews() });
+    I({ at: [-4, -2.7], r: 2.0, label: 'Ansehen', name: 'Brunnen', pos: [-4, 1.0, -3], run: () => Story.cityFountain() });
+    I({ at: [22.4, -7.6], r: 2.2, label: 'Ansehen', name: 'Der Wagen', pos: [23.4, 1.2, -4.2], run: () => Story.cityCar() });
+    I({ at: [-29.4, 12], r: 1.5, label: 'Setzen', name: 'Bank am Fluss', pos: [-30.4, 0.9, 12], run: () => Story.cityBench() });
+    I({ at: [-29.6, 26.4], r: 2.4, label: 'Ansehen', name: 'Die Brücke', pos: [-36, 1.4, 27], run: () => Story.cityBridge() });
+
+    this.onUpdate((dt) => this.tick(dt));
+  }
+  tick(dt) {
+    const pp = Player.ch.root.position, c = Atmo.cur;
+    this.river.userData.update();
+    // Straßenlaternen, Fenster & Lichterketten gehen an, wenn die Sonne sinkt
+    const k = lerp(1, 0.14, clamp(c.keyInt / 3.0));
+    if (Math.abs(k - this.lampK) > 0.002) { this.lampK = k; for (const m of this.glowMats) m.color.setRGB(k, k, k); }
+    for (const p of this.pl) p.intensity = p.userData.base * clamp((k - 0.18) / 0.8);
+    // Brunnen
+    this.fountain.water.material.color.setRGB(c.skyHorizon[0] * 0.35 + 0.02, c.skyHorizon[1] * 0.35 + 0.05, c.skyHorizon[2] * 0.35 + 0.08);
+    const m4 = _m4b, q = _q, e = _eu; e.set(0, 0, 0); q.setFromEuler(e);
+    for (let i = 0; i < this.dropS.length; i++) {
+      const d = this.dropS[i]; d.t += dt; const life = 2.2, t = d.t % life, u = t / life;
+      const rr = d.r + u * d.v * 0.9, y = 2.7 + t * 2.2 - 3.3 * t * t;
+      m4.compose(_pv.set(Math.cos(d.a) * rr, Math.max(0.6, y), Math.sin(d.a) * rr), q, _sv.set(1, 1, 1)); this.drops.setMatrixAt(i, m4);
+    }
+    this.drops.instanceMatrix.needsUpdate = true;
+    // Drehtür + Kellner
+    this.doorWings.rotation.y += dt * this.doorSpin;
+    this.waiterT -= dt;
+    if (this.waiterT <= 0 && !this.waiter.moveT) { this.waiterT = 5 + Math.random() * 4; const spots = [[-23.5, -24.2], [-18.5, -24.2], [-13.6, -24.2], [-16, -35.0]]; const s = spots[Math.floor(Math.random() * spots.length)]; this.waiter.walkTo(s[0], s[1], { speed: 0.9 }).catch(() => {}); }
+    // Straßenbahn
+    if (this.tramState === 'wait') { this.tramT -= dt; if (this.tramT <= 0) { this.tramState = 'run'; this.tramZ = -150; this.tram.visible = true; this.tramBell = false; } }
+    else {
+      this.tramZ += 9 * dt; this.tram.position.z = this.tramZ;
+      this.tramCol.z0 = this.tramZ - 19.4; this.tramCol.z1 = this.tramZ + 6.6;
+      if (!this.tramBell && this.tramZ > -62) { this.tramBell = true; const pan = clamp((16 - Cam.pos.x) / 24, -0.9, 0.9); Snd.tramBell({ pan: -pan }); Snd.tram(15, -pan, -pan, { gain: 0.9 }); }
+      if (this.tramZ - 19.4 > 150) { this.tramState = 'wait'; this.tramT = 20 + Math.random() * 14; this.tram.visible = false; this.tramCol.z0 = this.tramCol.z1 = 1e4; }
+    }
+    this.crowd.update(dt, pp); this.pigeons.update(dt, pp); this.birds.update(dt);
+    // Musik reagiert aufs Gehen: ruhig im Stehen, Rhythmus im Schritt
+    if (this.adaptive) {
+      const mv = Player.speed > 0.5 && G.mode === 'play';
+      this._mv = clamp((this._mv || 0) + (mv ? dt : -dt), -3, 3);
+      const want = this._mv > 1.2 ? 'walk' : this._mv < -1.6 ? 'calm' : this._want;
+      if (want && want !== this._want) { this._want = want; Mus.mood(want, want === 'walk' ? 3 : 4); }
+    }
+  }
+  setClockFace(h, m) {
+    this.clockH = h; this.clockM = m;
+    const tex = texClock(h, m); let old = null;
+    this.clock.traverse((o) => { if (o.isMesh && o.material.map) { old = o.material.map; o.material.map = tex; } });
+    if (old) old.dispose();
+    G.state.clock = `${h}:${String(m).padStart(2, '0')}`;
+  }
+  onEnter() { Snd.ambSet('city', 0.42, 4); Snd.ambSet('crowd', 0.3, 4); Snd.ambSet('birds', 0.28, 4); Snd.ambSet('wind', 0.12, 4); }
+  onLeave() { for (const n of ['city', 'crowd', 'birds', 'wind']) Snd.ambSet(n, 0, 2); }
+}
+WORLDS.city = CityWorld;
+
+// Laterne direkt in Builder schreiben (Brücke)
+function mkLampInto(B, LG, x, z, ry, s = 1) { const l = mkLamp(true); B.merge(l.body, x, 0, z, ry, s); LG.merge(l.glow, x, 0, z, ry, s); }
+
+
+/* ==== 75_lobby.js ==== */
+// =====================================================================
+// Hotel Belvedere – die Lobby. Marmor, Kronleuchter, hohe Fenster nach Westen: die tiefe Sonne wirft
+// Fenstergitter auf den Boden. Eingang (Drehtür) im Süden (+Z), Freitreppe im Norden, Lounge am Fenster.
+// x ∈ [−11, 11], z ∈ [−9.2, 9.2], Höhe 7,5
+// =====================================================================
+const LOBBY_ATMO = {
+  skyTop: lin(0x4a5fa8), skyHorizon: lin(0xffb070), skyBottom: lin(0x6a5048),
+  sunDir: [-0.95, 0.27, 0.16], sunCol: lin(0xffa858, 2.2), sunDisc: 1, sunGlow: 1.3, stars: 0, cloud: 0.5, cloudLit: lin(0xffa070, 1.4), cloudDark: lin(0x6a5a80),
+  hemiSky: lin(0xd8c8a8, 1.0), hemiGround: lin(0x8a6a48), hemiInt: 0.44,
+  keyCol: lin(0xffb060), keyInt: 3.3, fillCol: lin(0xffd8b0), fillInt: 0.3, fillDir: [0.7, 0.4, -0.3],
+  fogCol: lin(0xf0b080, 0.6), fogDen: 0.004, fogHK: 0.05, fogBase: -1, fogMax: 0.6, fogSun: lin(0xff9850, 0.5),
+  rimDir: [-0.95, 0.3, 0.16], rimCol: lin(0xffb060, 1.5),
+  exposure: 0.84, contrast: 1.1, sat: 1.04, lift: [0.012, 0.006, 0.0], gain: [1.03, 1.0, 0.96], shadowTint: [0.02, 0.0, 0.02], highTint: [0.03, 0.012, -0.01],
+  bloom: 0.42, bloomTint: [1, 0.9, 0.78], vig: 0.36, grain: 0.06, ca: 0.0018, dof: 0, dofFocus: 5, dofRange: 3, rays: 0.6, flare: 1.2,
+};
+
+function mkArmchair(col, seed) {
+  const mb = new MB(seed); mb.jit = 0.02;
+  mb.box(0.72, 0.16, 0.7, 0, 0.3, 0, col, { grad: [0.85, 1] }); mb.box(0.72, 0.5, 0.14, 0, 0.44, -0.33, col, { rx: -0.1 });
+  mb.box(0.14, 0.26, 0.62, -0.36, 0.3, 0.02, col); mb.box(0.14, 0.26, 0.62, 0.36, 0.3, 0.02, col);
+  for (const [x, z] of [[-0.3, -0.28], [0.3, -0.28], [-0.3, 0.28], [0.3, 0.28]]) mb.box(0.05, 0.3, 0.05, x, 0, z, 0x3a2a1a);
+  mb.box(0.6, 0.06, 0.55, 0, 0.46, 0.04, mixHex(col, 0xffffff, 0.08));
+  return mb;
+}
+function mkSofa(col, seed) {
+  const mb = new MB(seed); mb.jit = 0.02;
+  mb.box(2.0, 0.18, 0.86, 0, 0.28, 0, col); mb.box(2.0, 0.56, 0.16, 0, 0.42, -0.4, col, { rx: -0.08 });
+  mb.box(0.16, 0.3, 0.8, -0.92, 0.28, 0, col); mb.box(0.16, 0.3, 0.8, 0.92, 0.28, 0, col);
+  for (const x of [-0.9, 0.9]) for (const z of [-0.36, 0.36]) mb.box(0.05, 0.28, 0.05, x, 0, z, 0x3a2a1a);
+  for (const x of [-0.45, 0.45]) mb.box(0.8, 0.08, 0.7, x, 0.46, 0.04, mixHex(col, 0xffffff, 0.06));
+  return mb;
+}
+function mkPalm(seed) {
+  const mb = new MB(seed); mb.jit = 0.04; const r = new RNG(seed);
+  mb.cyl(0.36, 0.3, 0.5, 10, 0, 0, 0, 0x8a5a3a); mb.cyl(0.4, 0.4, 0.06, 10, 0, 0.5, 0, 0x6a4a30); mb.cyl(0.06, 0.09, 1.5, 6, 0, 0.5, 0, 0x6a5238);
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * TAU + r.range(-0.15, 0.15), t1 = 0.55 + r.range(-0.15, 0.25), t2 = -0.5 - r.range(0, 0.3), L1 = 0.8, L2 = 0.75, c = i % 2 ? 0x3f6a34 : 0x4a7a3a;
+    const dx = Math.sin(a), dz = Math.cos(a), x1 = dx * L1 * Math.cos(t1), y1 = 2.0 + L1 * Math.sin(t1), z1 = dz * L1 * Math.cos(t1);
+    mb.box(0.3, 0.03, L1, dx * L1 * 0.5 * Math.cos(t1), 2.0 + L1 * 0.5 * Math.sin(t1), dz * L1 * 0.5 * Math.cos(t1), c, { rx: -t1, ry: a });
+    mb.box(0.26, 0.03, L2, x1 + dx * L2 * 0.5 * Math.cos(t2), y1 + L2 * 0.5 * Math.sin(t2), z1 + dz * L2 * 0.5 * Math.cos(t2), c, { rx: -t2, ry: a });
+  }
+  return mb;
+}
+// Kronleuchter: Ring aus Kerzenlichtern + Kristalle. Gibt {body, glow} zurück
+function mkChandelier(r, seed) {
+  const body = new MB(seed), glow = new MB(seed + 1); glow.jit = 0; body.jit = 0.01;
+  body.cyl(0.02, 0.02, 1.6, 4, 0, 0, 0, 0xc9a24a); body.cyl(0.14, 0.1, 0.36, 8, 0, -0.35, 0, 0xc9a24a);
+  for (let ring = 0; ring < 2; ring++) {
+    const rr = r * (ring ? 0.55 : 1), y = -0.7 - ring * 0.32, n = ring ? 8 : 12;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * TAU, x = Math.sin(a) * rr, z = Math.cos(a) * rr, x2 = Math.sin(a + TAU / n) * rr, z2 = Math.cos(a + TAU / n) * rr;
+      body.box(0.035, 0.035, Math.hypot(x2 - x, z2 - z) * 1.02, (x + x2) / 2, y, (z + z2) / 2, 0xc9a24a, { ry: Math.atan2(x2 - x, z2 - z) });
+      body.cyl(0.03, 0.03, 0.16, 5, x, y + 0.02, z, 0xf2ead6); glow.sph(0.06, x, y + 0.24, z, [4.4, 3.2, 1.6], { d: 1 });
+      glow.sph(0.035, x * 0.94, y - 0.2, z * 0.94, [2.4, 2.2, 2.0], { d: 0 }); glow.sph(0.03, x * 0.7, y - 0.34, z * 0.7, [2.0, 1.9, 1.8], { d: 0 });
+    }
+    if (ring === 0) for (let i = 0; i < 6; i++) { const a = (i / 6) * TAU; body.cyl(0.012, 0.012, 0.8, 3, Math.sin(a) * rr * 0.5, y - 0.8 + 0.4, Math.cos(a) * rr * 0.5, 0xc9a24a, { rz: Math.sin(a) * 0.5, rx: Math.cos(a) * 0.5 }); }
+  }
+  glow.sph(0.11, 0, -1.55, 0, [2.6, 2.4, 2.1], { d: 1 });
+  return { body, glow };
+}
+
+class LobbyWorld extends World {
+  constructor(o) {
+    super('lobby', o);
+    this.camMode = 'follow';
+    this.follow = { dist: 3.9, height: 1.5, minPitch: 0.06, maxPitch: 0.62, yaw: 0, pitch: 0.2, fov: 44 };
+    this.bounds = { x0: -10.3, x1: 10.3, z0: -8.5, z1: 8.4 };
+    this.camBox = [-10.9, -8.9, 10.9, 8.9];
+    this.spawn = { x: 0, z: 7.4, yaw: Math.PI };
+    this.surface = 'marble'; this.speed = 1.0;
+    this.glowMats = []; this.pl = [];
+  }
+  async build() {
+    const sc = this.scene;
+    Atmo.attach(sc, { shadows: true, sky: true, shadowR: 14, sunDist: 32 });
+    Atmo.set(LOBBY_ATMO);
+    Atmo.sun.shadow.bias = -0.0004; Atmo.sun.shadow.normalBias = 0.03;
+    Atmo.focusPoint.set(0, 0, 0);
+    const matGlow = Mat.glow();
+    const R = new MB(101), FL = new MB(102), GL = new MB(103), TR = new MB(104); GL.jit = 0; TR.jit = 0.01; R.ao(1.4, 0.16); FL.jit = 0.03;
+    const cream = 0xdcc8a2, warm = 0xc4a97c, gold = 0xc9a24a, wood = 0x5a3a24;
+    // Boden: Marmorschach + Medaillon
+    FL.floor(22.8, 18.6, 0, 0, 0, 0xe4d8c4, { nx: 15, nz: 12, checker: 0x5a4c42 });
+    FL.cyl(3.3, 3.3, 0.02, 28, 0, 0, 0, gold); FL.cyl(3.1, 3.1, 0.03, 28, 0, 0, 0, 0x2a2622); FL.cyl(2.5, 2.5, 0.04, 28, 0, 0, 0, 0xeadfc8); FL.cyl(0.9, 0.9, 0.05, 20, 0, 0, 0, gold);
+    for (let i = 0; i < 8; i++) FL.box(0.06, 0.045, 2.2, Math.sin(i * Math.PI / 4) * 1.7, 0, Math.cos(i * Math.PI / 4) * 1.7, gold, { ry: i * Math.PI / 4 });
+    // Teppichläufer zur Treppe
+    FL.box(2.6, 0.03, 9.4, 0, 0, -2.6, 0x7a2a2e, { grad: [0.9, 1] }); FL.box(2.9, 0.025, 9.6, 0, 0, -2.6, gold);
+    // Wände
+    const H = 7.5;
+    R.box(22.8, H, 0.4, 0, 0, -9.4, cream, { grad: [0.86, 1.04] });                                                                  // Nord
+    R.box(9.6, H, 0.4, -6.6, 0, 9.4, cream, { grad: [0.86, 1.04] }); R.box(9.6, H, 0.4, 6.6, 0, 9.4, cream, { grad: [0.86, 1.04] }); R.box(3.6, H - 3.4, 0.4, 0, 3.4, 9.4, cream);   // Süd mit Türöffnung
+    R.box(0.4, H, 18.8, 11.2, 0, 0, cream, { grad: [0.86, 1.04] });                                                                  // Ost
+    const wz = [-6.6, -2.2, 2.2, 6.6], ww = 2.5;                                                                                       // West mit vier hohen Fenstern
+    let zPrev = -9.4;
+    for (const c of wz) { R.box(0.4, H, (c - ww / 2) - zPrev, -11.2, 0, (zPrev + c - ww / 2) / 2, cream, { grad: [0.86, 1.04] }); zPrev = c + ww / 2; R.box(0.4, 0.6, ww, -11.2, 0, c, warm); R.box(0.4, H - 5.6, ww, -11.2, 5.6, c, cream); }
+    R.box(0.4, H, 9.4 - zPrev, -11.2, 0, (zPrev + 9.4) / 2, cream);
+    // Fenstersprossen (werfen das Schattengitter)
+    for (const c of wz) { for (const dz of [-ww / 2 + 0.03, ww / 2 - 0.03, 0]) R.box(0.1, 5.0, 0.07, -11.15, 0.6, c + dz, gold); R.box(0.1, 0.07, ww, -11.15, 3.6, c, gold); R.box(0.1, 0.07, ww, -11.15, 5.53, c, gold); R.box(0.1, 0.07, ww, -11.15, 2.0, c, gold); }
+    // Sockel, Pilaster, Gesims
+    R.box(0.16, 1.1, 18.6, 10.95, 0, 0, wood, { grad: [0.8, 1] }); R.box(22.6, 1.1, 0.16, 0, 0, -9.15, wood); R.box(0.2, 0.16, 18.8, 10.95, 1.1, 0, gold);
+    R.box(23.4, 0.5, 0.5, 0, H - 0.4, -9.0, warm); R.box(0.5, 0.5, 19.2, 10.8, H - 0.4, 0, warm); R.box(0.5, 0.5, 19.2, -10.8, H - 0.4, 0, warm); R.box(23.4, 0.5, 0.5, 0, H - 0.4, 9.0, warm);
+    for (const x of [-9, -6, -3, 3, 6, 9]) { R.box(0.7, 6.1, 0.22, x, 1.1, -9.1, warm); R.box(0.8, 0.24, 0.3, x, 6.6, -9.1, gold); }
+    // Decke mit Kassetten
+    R.box(22.8, 0.3, 18.8, 0, H, 0, 0xf0e6d0);
+    for (let x = -8; x <= 8; x += 4) R.box(0.5, 0.36, 18.6, x, H - 0.36, 0, warm);
+    for (let z = -6; z <= 6; z += 4) R.box(22.6, 0.3, 0.5, 0, H - 0.3, z, warm);
+    // Säulen
+    for (const x of [-5, 5]) for (const z of [-6, -2, 2, 6]) { R.cyl(0.55, 0.6, 0.35, 12, x, 0, z, gold); R.cyl(0.36, 0.4, H - 0.9, 12, x, 0.35, z, 0xf0e6d2, { grad: [0.86, 1.02] }); R.cyl(0.6, 0.5, 0.4, 12, x, H - 0.55, z, gold); this.ring(x, z, 0.55); }
+    // Freitreppe (Nord)
+    for (let i = 0; i < 10; i++) { R.box(5.4, 0.3 * (i + 1), 0.4, 0, 0, -5.6 - i * 0.36, 0xeee4d2, { grad: [0.9, 1] }); R.box(5.5, 0.03, 0.06, 0, 0.3 * (i + 1), -5.4 - i * 0.36, gold); }
+    R.box(6.2, 3.0, 0.6, 0, 0, -9.0, 0xe4d8be);
+    for (const sx of [-1, 1]) { for (let i = 0; i <= 10; i++) R.box(0.05, 1.0, 0.05, sx * 2.9, 0.3 * i + 0.02, -5.5 - i * 0.36, 0x22222a); R.box(0.1, 0.06, 3.9, sx * 2.9, 1.2, -7.4, 0x4a3020, { rx: Math.atan2(3.0, 3.6) * 0 }); R.box(0.36, 0.5, 0.36, sx * 2.9, 0, -5.4, gold); this.collide(sx * 2.9 - 0.3, -5.8, sx * 2.9 + 0.3, -5.0); }
+    this.collide(-3.0, -9.0, 3.0, -5.5);
+    // Großes Gemälde / Spiegel über der Treppe
+    R.box(3.4, 2.4, 0.08, 0, 4.0, -9.12, gold); GL.plane(3.1, 2.1, 0, 5.2, -9.05, [0.22, 0.16, 0.1]);
+    GL.plane(3.1, 0.9, 0, 4.6, -9.04, [0.42, 0.28, 0.14]); GL.plane(3.1, 0.9, 0, 5.5, -9.04, [0.16, 0.2, 0.3]);
+    // Rezeption (Ost)
+    R.box(1.5, 1.15, 5.6, 9.1, 0, -3.4, wood, { grad: [0.8, 1] }); R.box(1.7, 0.09, 5.8, 9.1, 1.15, -3.4, 0xefe6d4); R.box(1.72, 0.05, 5.82, 9.1, 1.1, -3.4, gold); this.collide(8.3, -6.3, 9.9, -0.5);
+    for (let i = 0; i < 6; i++) for (let j = 0; j < 4; j++) R.box(0.12, 0.3, 0.32, 10.85, 1.4 + j * 0.5, -5.6 + i * 0.44, j % 2 ? gold : 0x3a2a1a);   // Schlüsselbrett
+    GL.plane(0.5, 0.5, 10.98, 4.4, -3.4, [1.0, 0.85, 0.55], { ry: -Math.PI / 2 });
+    // Aufzug
+    for (const z of [3.4, 5.6]) { R.box(0.12, 2.9, 1.7, 10.9, 0, z, gold); R.box(0.14, 2.6, 0.06, 10.88, 0.1, z, 0x2a2622); GL.plane(0.4, 0.15, 10.8, 3.2, z, [3.0, 1.6, 0.4], { ry: -Math.PI / 2 }); }
+    // Lounge am Fenster: Tisch + Sessel (Winter westlich, Mirza östlich)
+    R.cyl(0.46, 0.46, 0.05, 12, -8.3, 0.66, -0.5, 0xefe6d4); R.cyl(0.04, 0.06, 0.66, 6, -8.3, 0, -0.5, gold); R.cyl(0.24, 0.26, 0.03, 8, -8.3, 0, -0.5, gold); this.ring(-8.3, -0.5, 0.5);
+    TR.merge(mkArmchair(0x2f5a54, 111), -9.5, 0, -0.5, Math.PI / 2); TR.merge(mkArmchair(0x2f5a54, 112), -7.15, 0, -0.5, -Math.PI / 2);
+    R.cyl(0.05, 0.05, 0.02, 6, -8.4, 0.71, -0.62, 0xefe6d4); R.cyl(0.03, 0.03, 0.09, 6, -8.4, 0.71, -0.62, 0xdcd8cc); R.cyl(0.03, 0.03, 0.09, 6, -8.22, 0.71, -0.36, 0xdcd8cc);   // Gläser
+    // zweite Sitzgruppe (Ost) mit Gästen
+    TR.merge(mkSofa(0x8a5a3a, 113), 7.2, 0, 4.4, Math.PI); TR.merge(mkSofa(0x8a5a3a, 114), 7.2, 0, 7.4, 0); R.box(1.2, 0.05, 0.7, 7.2, 0.4, 5.9, 0xefe6d4); R.cyl(0.04, 0.04, 0.4, 5, 7.2, 0, 5.9, gold); this.collide(6.1, 3.7, 8.3, 8.1);
+    TR.merge(mkSofa(0x3a4a5a, 115), -6.6, 0, 6.8, 0); this.collide(-7.6, 6.2, -5.6, 7.4);
+    // Zentraltisch mit riesigem Blumenstrauß
+    R.cyl(0.9, 0.9, 0.06, 16, 0, 0.9, 0, 0xefe6d4); R.cyl(0.14, 0.4, 0.9, 8, 0, 0, 0, gold); R.cyl(0.5, 0.5, 0.05, 10, 0, 0, 0, gold); this.ring(0, 0, 0.9);
+    R.lathe([[0.0, 0], [0.16, 0.02], [0.24, 0.24], [0.2, 0.42], [0.26, 0.5]], 10, 0, 0.96, 0, 0xd8d0c0, { jit: 0.01 });
+    R.sph(0.46, 0, 1.55, 0, 0x3f6a34, { d: 1, sy: 0.6 });
+    const fr = new RNG(9); for (let i = 0; i < 26; i++) { const a = fr.range(0, TAU), el = fr.range(0.25, 1.35), rr = 0.46 * Math.cos(el) + 0.04, y = 1.55 + 0.46 * 0.62 * Math.sin(el); R.sph(fr.range(0.07, 0.11), Math.sin(a) * rr, y, Math.cos(a) * rr, fr.pick([0xf4ede0, 0xe8809a, 0xf4ede0, 0xd9b45a, 0xb84a5a]), { d: 1 }); }
+    // Palmen
+    for (const [x, z] of [[-10.0, 8.0], [10.0, 8.0], [-10.0, -8.0], [10.0, -8.4], [-2.6, -5.0], [2.6, -5.0]]) { TR.merge(mkPalm(120 + Math.round(x * 3 + z)), x, 0, z, x * 1.7); this.ring(x, z, 0.4); }
+    // Wandleuchten
+    for (const z of [-6.5, -2.0, 2.0, 6.5]) { R.box(0.12, 0.34, 0.2, 10.9, 2.4, z, gold); GL.sph(0.12, 10.72, 2.7, z, [3.6, 2.4, 1.1], { d: 1 }); }
+    for (const x of [-7.5, -4.5, 4.5, 7.5]) { R.box(0.2, 0.34, 0.12, x, 2.4, -9.05, gold); GL.sph(0.12, x, 2.7, -8.9, [3.6, 2.4, 1.1], { d: 1 }); }
+    // Drehtür-Wand: Tageslicht draußen als Leuchtfläche
+    GL.plane(3.3, 3.3, 0, 1.75, 10.0, [2.2, 1.7, 1.1]); R.box(0.3, 3.4, 0.5, -1.9, 0, 9.4, gold); R.box(0.3, 3.4, 0.5, 1.9, 0, 9.4, gold); R.box(4.1, 0.3, 0.5, 0, 3.3, 9.4, gold);
+    // Kronleuchter
+    const ch1 = mkChandelier(1.5, 130), ch2 = mkChandelier(0.9, 140), ch3 = mkChandelier(0.9, 150);
+    R.merge(ch1.body, 0, 6.6, 0, 0); GL.merge(ch1.glow, 0, 6.6, 0, 0); R.merge(ch2.body, 0, 6.5, -5.5, 0); GL.merge(ch2.glow, 0, 6.5, -5.5, 0); R.merge(ch3.body, 0, 6.5, 5.5, 0); GL.merge(ch3.glow, 0, 6.5, 5.5, 0);
+    this.add(R.mesh(Mat.lit({ spec: 0x554433, shin: 22 }), { cast: true, receive: true }));
+    this.add(FL.mesh(Mat.lit({ spec: 0x4a4a4a, shin: 70 }), { cast: false, receive: true }));
+    this.add(TR.mesh(Mat.lit({ spec: 0x2a2a2a, shin: 12 }), { cast: true, receive: true }));
+    this.add(GL.mesh(matGlow, { cast: false, receive: false })); this.glowMats.push(matGlow);
+    // Draußen: die Straße im Gegenlicht (Silhouetten) – nur durch die Fenster sichtbar
+    const sk = buildSkyline({ rMin: 60, rMax: 160, count: 34, angA: -2.4, angB: -1.1, hMin: 8, hMax: 30, litP: 0.3, seed: 61, y0: -6, modernP: 0.2, gapA: -1.74, gapW: 0.3, gapH: 2 });
+    this.add(sk.body); this.add(sk.win); sk.glow.material = matGlow; this.add(sk.glow);
+    const wall = new MB(6); wall.box(30, 8, 6, -40, -3, 0, 0x50504c); this.add(wall.mesh(Mat.lit({}), { cast: false, receive: false }));
+    // Drehtür
+    const dg = new THREE.Group(); dg.position.set(0, 0, 9.0);
+    const dm = new MB(18); dm.cyl(1.3, 1.3, 0.12, 14, 0, 3.15, 0, 0x2a2a30); dm.cyl(1.3, 1.3, 0.05, 14, 0, 0, 0, 0x2a2a30);
+    dg.add(dm.mesh(Mat.lit({ spec: 0xffddaa, shin: 50 })));
+    const wings = new THREE.Group(); const wm = new MB(19); for (const [x, z, r] of [[0.6, 0, Math.PI / 2], [-0.6, 0, Math.PI / 2], [0, 0.6, 0], [0, -0.6, 0]]) wm.plane(1.2, 3.0, x, 1.55, z, 0xcfe0e6, { ry: r });
+    wings.add(wm.mesh(Mat.lit({ transparent: true, opacity: 0.2, side: THREE.DoubleSide, spec: 0xffffff, shin: 80 }), { cast: false, receive: false }));
+    const hub = new MB(20); hub.cyl(0.05, 0.05, 3.1, 6, 0, 0, 0, gold); wings.add(hub.mesh(Mat.lit({ spec: 0xffddaa, shin: 50 }))); dg.add(wings); this.add(dg); this.doorWings = wings; this.doorSpin = 0.25;
+    // Staub im Licht
+    this.dust = makeDust([-3, 3, 0], [16, 6, 17], 150, [1.8, 1.15, 0.55], 0.55, 5); this.add(this.dust);
+    // Lichter: Kronleuchter, Tischlampe, Rezeption
+    const p1 = new THREE.PointLight(0xffc27a, 1.4, 16, 1.6); p1.position.set(0, 5.4, 0); this.add(p1); p1.userData.base = 1.4; this.pl.push(p1);
+    const p2 = new THREE.PointLight(0xffb060, 0.9, 9, 1.8); p2.position.set(-8.3, 1.4, -0.5); this.add(p2); p2.userData.base = 0.9; this.pl.push(p2);
+    const p3 = new THREE.PointLight(0xffc880, 1.0, 12, 1.6); p3.position.set(8.4, 3.2, -3.4); this.add(p3); p3.userData.base = 1.0; this.pl.push(p3);
+    // Menschen
+    const seat = (ch, x, z, yaw, pose = 'sitChair') => { ch.place(x, 0, z, yaw); ch.setPose(pose); ch.snapPose(); this.addChar(ch); return ch; };
+    this.winter = seat(makeNPC('Winter', { top: 0x1f4a46, bottom: 0x1f4a46, under: 0xf0e8d8, shoe: 0x0c0c0c, hair: 0x140f0e, hairStyle: 'bob', skin: SKIN.pale, torso: 'blazer', s: 0.98, headR: 0.112, torsoW: 0.94, brow: 0.12 }), -9.5, -0.5, Math.PI / 2);
+    this.concierge = seat(makeNPC('Concierge', { top: 0x2a2a30, bottom: 0x2a2a30, under: 0xefe8d8, shoe: 0x0c0c0c, hair: 0x1a1512, hairStyle: 'short', skin: SKIN.olive, torso: 'suit', tie: gold }), 10.0, -3.4, -Math.PI / 2, 'stand');
+    this.guestA = seat(makeNPC('Gast', { top: 0xd8c8a8, bottom: 0x4a3a30, hair: 0xc8c4bc, hairStyle: 'grey', skin: SKIN.pale, torso: 'cardigan', s: 0.95 }), 7.2 + 0.5, 4.4 + 0.15, 0);
+    this.guestB = seat(makeNPC('Gast', { top: 0x3a3a48, bottom: 0x2a2a30, hair: 0x2a1c14, hairStyle: 'long', skin: SKIN.tan, torso: 'blazer', s: 0.92 }), 7.2 - 0.4, 7.4 - 0.1, Math.PI);
+    this.porter = makeNPC('Page', { top: 0x5a1c22, bottom: 0x2a1a1c, under: 0xe8e2d2, shoe: 0x0c0a0a, hair: 0x1a1512, hairStyle: 'short', skin: SKIN.dark, torso: 'suit', tie: gold }); this.porter.place(4.0, 0, 6.6, Math.PI); this.porter.setPose('stand'); this.addChar(this.porter); this.porterT = 3;
+    // Interaktionen
+    const I = (spec) => this.interact(spec);
+    I({ at: [-6.4, -0.5], r: 1.7, label: 'Setzen', name: 'Frau Winter', pos: [-8.3, 1.5, -0.5], when: () => G.state.flags.dealHotel === 'open', run: () => Story.lobbyWinter() });
+    I({ at: [7.6, -3.4], r: 1.9, label: 'Ansprechen', name: 'Empfang', pos: [9.1, 1.6, -3.4], run: () => Story.lobbyDesk() });
+    I({ at: [0, 1.6], r: 1.9, label: 'Ansehen', name: 'Der Kronleuchter', pos: [0, 2.0, 0], run: () => Story.lobbyChandelier() });
+    I({ at: [0, -4.6], r: 1.8, label: 'Ansehen', name: 'Die Treppe', pos: [0, 1.6, -6.4], run: () => Story.lobbyStairs() });
+    this.onUpdate((dt) => this.tick(dt));
+  }
+  tick(dt) {
+    this.dust.userData.update(dt);
+    this.doorWings.rotation.y += dt * this.doorSpin;
+    this.porterT -= dt;
+    if (this.porterT <= 0 && !this.porter.moveT) { this.porterT = 6 + Math.random() * 4; const s = [[4, 6.6], [-3, 5.6], [3.6, 2.4], [-2, 7.0]][Math.floor(Math.random() * 4)]; this.porter.walkTo(s[0], s[1], { speed: 0.8 }).catch(() => {}); }
+  }
+  onEnter() { Snd.ambSet('crowd', 0.1, 3); Snd.ambSet('room', 0.16, 3); Snd.ambSet('city', 0.06, 3); }
+  onLeave() { for (const n of ['crowd', 'room', 'city']) Snd.ambSet(n, 0, 2); }
+}
+WORLDS.lobby = LobbyWorld;
 
 
 /* ==== 80_story.js ==== */
@@ -5415,6 +6026,880 @@ async function prologRun() {
 Story.def('prolog', prologRun);
 
 
+/* ==== 82_k1_city.js ==== */
+// =====================================================================
+// KAPITEL I – „Innenstadt“ (1/3): Platz, Interaktionen, Herr Brandt im Café Aurora
+// =====================================================================
+Story.clock = (h, m) => {
+  G.state.clock = `${h}:${String(m).padStart(2, '0')}`;
+  if (G.world && G.world.setClockFace) G.world.setClockFace(h, m);
+};
+const _tv = new THREE.Vector3();
+const headAt = (ch, dx = 0.12, dy = 0.28) => () => { ch.j.head.getWorldPosition(_tv); const v = _tv.clone(); v.x += dx; v.y += dy; return v; };
+
+Object.assign(Story, {
+  async cityClock() {
+    const W = G.world, m = W.clockM;
+    await Player.turnTo(-9.4, -22);
+    await Story.inspect({ pos: [-8.2, 1.9, -19.0], look: [-9.4, 3.9, -22], fov: 36 }, async () => {
+      await Sub.inner(`${W.clockH}:${String(m).padStart(2, '0')}.`, { dur: 1.6 });
+      if (m < 38) await Sub.inner(`Noch ${40 - m} Minuten bis zum Café Aurora.`);
+      else await Sub.inner('Zwei Minuten. Jetzt.');
+      await Sub.inner('Pünktlich sein ist das Einzige, was ich mir leisten kann.');
+    });
+  },
+  async cityNews() {
+    await Player.turnTo(-26.3, 8);
+    await Story.inspect({ pos: [-23.2, 1.55, 9.9], look: [-26.3, 1.2, 8.1], fov: 40 }, async () => {
+      await Sub.sys('Mieten steigen zum vierten Mal in Folge');
+      await Sub.inner('Ich muss den Artikel nicht lesen. Ich kenne das Ende.');
+    });
+  },
+  async cityFountain() {
+    await Player.turnTo(-4, -6);
+    await Story.inspect({ pos: [-1.6, 1.35, -0.9], look: [-4, 1.2, -6], fov: 42 }, async () => {
+      await Sub.inner('Jeder wirft etwas hinein und wünscht sich etwas.');
+      await Sub.inner('Ich habe kein Kleingeld für Wünsche.');
+      await Sub.inner('Nur für Pläne.');
+    });
+  },
+  async cityCar() {
+    G.state.flags.carSeen = true;
+    await Player.turnTo(23.4, -4.2);
+    await Story.inspect({ pos: [20.9, 1.15, -10.2], look: [23.4, 0.95, -4.2], fov: 38 }, async () => {
+      await Sub.inner('Ein Maybach. Schwarz. Kein Staubkorn.');
+      await Sub.inner('Nicht wegen des Wagens.');
+      await Sub.inner('Sondern weil keiner fragt, wo einer herkommt, der darin aussteigt.');
+    });
+  },
+  async cityBridge() {
+    await Player.turnTo(-40, 27);
+    await Story.inspect({ pos: [-28.5, 1.5, 22.6], look: [-70, 1.4, 27.6], fov: 34 }, async () => {
+      await Sub.inner('Auf der anderen Seite: Plattenbau, Mama, Linie fünf.');
+      await Sub.inner('Zweiunddreißig Minuten zu Fuß. Und ein ganzes Leben.');
+    });
+  },
+  // Am Fluss sitzen: die stille Stelle des Kapitels
+  async cityBench() {
+    const W = G.world, me = Player.ch, F = G.state.flags;
+    const first = !F.benchDone; F.benchDone = true;
+    await Cine.run(async () => {
+      Cam.set({ pos: [-27.6, 1.5, 15.0], look: [-31, 1.0, 12], fov: 38 });
+      await me.walkTo(-29.9, 12.0, { speed: 1.0, face: -Math.PI / 2 });
+      me.setPose(ME_SIT.idle, 3.5); await tween(me.root.position, { x: -30.28 }, 1.1, 'inOutSine');
+      Cam.set({ pos: [-28.4, 1.32, 12.9], look: [-37.7, 2.7, 16.9], fov: 34, dof: 0.5 });
+      Cam.move({ pos: [-28.9, 1.3, 12.7], look: [-37.7, 2.7, 16.9], fov: 30 }, 22, 'inOutSine');
+      if (Mus.mood) Mus.mood('calm', 3);
+      await sleep(2.6);
+      if (first) {
+        await Sub.inner('Nena hat gesagt, Wasser findet immer einen Weg.');
+        await sleep(1.0);
+        await Sub.inner('Ich glaube, sie meinte etwas anderes.');
+        await sleep(1.4);
+        await Sub.inner('Aber ich nehme den Weg, den ich habe.');
+      } else { await Sub.inner('Noch eine Minute. Nur eine.'); }
+      await sleep(2.6);
+      FX.dof = 0; me.setPose(POSES.mirza, 3.5);
+      await tween(me.root.position, { x: -29.7 }, 0.9, 'inOutSine');
+    }, { stay: false });
+  },
+});
+
+// ---------------------------------------------------------------------
+// Deal 1: Herr Brandt, Café-Terrasse – zehntausend Euro
+// ---------------------------------------------------------------------
+const BRANDT_ROUNDS = [
+  {
+    tell: 'watch', hint: 'Er sieht zum dritten Mal auf die Uhr. Keine Zeit – oder er tut nur so.',
+    say: ['Ich gebe Ihnen zehn Minuten.', 'Um sechs sitze ich schon wieder woanders.'],
+    best: 'push', after: 'idle',
+    opts: [
+      { key: 'push', text: 'Der Käufer wartet nicht auf uns. Heute Abend ist das Angebot vom Tisch.' },
+      { key: 'calm', text: 'Nehmen Sie sich die Zeit, die Sie brauchen. Ich richte mich nach Ihnen.' },
+      { key: 'stand', text: 'Dann sparen wir uns beide die zehn Minuten.' },
+      { key: 'silence' },
+    ],
+    good: ['Heute Abend?', 'Und der Preis?'],
+    bad: { calm: ['Sie sind zu höflich, junger Mann. Höflichkeit hat mir noch nie etwas gekauft.'], stand: ['Setzen Sie sich. So läuft das nicht.'], silence: ['Sie sagen nichts? Meine zehn Minuten laufen.'], default: ['Meine zehn Minuten laufen.'] },
+    inner: { good: 'Er hat aufgehört, auf die Uhr zu sehen.', bad: { calm: 'Falsch. Er will keine Zeit geschenkt. Er will einen Grund.', stand: 'Zu früh gegangen. Er hat es nicht mal versucht.', silence: 'Schweigen ist ein Werkzeug. Nicht jedes Mal das richtige.', default: 'Falsch. Zeit ist sein Druckpunkt.' } },
+    soft: 'Na gut. Weiter.',
+  },
+  {
+    tell: 'arms', hint: 'Verschränkte Arme. Er verteidigt etwas – keinen Preis, einen Namen.',
+    say: ['Die Passage war das Lebenswerk meines Vaters.', 'Und Sie sind – was? Zwanzig?'],
+    best: 'calm', after: 'relax',
+    opts: [
+      { key: 'push', text: 'Zahlen haben kein Alter, Herr Brandt. Meine stimmen.' },
+      { key: 'calm', text: 'Ich will Ihnen nichts wegnehmen. Ich will, dass es in guten Händen bleibt.' },
+      { key: 'stand', text: 'Verstanden. Dann habe ich Ihre Zeit verschwendet.' },
+      { key: 'silence' },
+    ],
+    good: ['In guten Händen …', 'Mein Vater hat auf diesem Platz Zeitungen verkauft, bevor er die Passage kaufen konnte.'],
+    bad: { push: ['Zahlen. Ihr habt alle nur noch Zahlen.'], stand: ['Ich habe nicht gesagt, dass Sie gehen sollen.'], silence: ['Sagen Sie doch etwas!'], default: ['Sie verstehen das nicht.'] },
+    inner: { good: 'Seine Arme sind unten. Er redet nicht mehr mit dem Käufer. Er redet mit seinem Vater.', bad: { push: 'Falsch. Er verteidigt keinen Preis. Er verteidigt einen Namen.', default: 'Falsch. Er braucht kein Argument. Er braucht Ruhe.' } },
+    soft: 'Reden wir weiter.',
+  },
+  {
+    tell: 'tap', hint: 'Er trommelt mit den Fingern. Er will es – und hat Angst, es zu wollen.',
+    say: ['Und wenn Ihr Käufer in einem Jahr weiterverkauft?', 'Wenn er die Passage abreißt?'],
+    best: 'silence', after: 'relax',
+    opts: [
+      { key: 'push', text: 'Dann hat er ein gutes Geschäft gemacht. Das ist der Sinn davon.' },
+      { key: 'calm', text: 'Ich verstehe Ihre Sorge. Ich würde genauso fragen.' },
+      { key: 'stand', text: 'Wenn Sie mir nicht vertrauen, ist das hier sinnlos.' },
+      { key: 'silence' },
+    ],
+    good: ['… Ach.', 'Mein Vater hat immer gesagt: Wer zu lange rechnet, hat schon verloren.'],
+    bad: { push: ['Genau das befürchte ich.'], calm: ['Verstehen, verstehen. Ich brauche keinen Psychologen. Ich brauche eine Antwort.'], stand: ['Jetzt drohen Sie mir auch noch?'], default: ['Das beantwortet meine Frage nicht.'] },
+    inner: { good: 'Seine Finger stehen still. Er hat sich selbst überzeugt. Ich musste ihm nur nicht im Weg stehen.', bad: { default: 'Falsch. Manchmal ist Schweigen die stärkste Antwort.' } },
+    soft: 'Fahren Sie fort.',
+  },
+];
+
+Story.cityBrandt = async () => {
+  const W = G.world, me = Player.ch, B = W.brandt, F = G.state.flags;
+  F.dealCafe = 'run'; Obj.set(''); Hint.hide(); Prompt.set(null);
+  const D = {
+    name: 'Brandt', partner: B, me, cue: CUES.deal, start: 'silence', mood: ['calm', 'tense', 'push'], tellPos: headAt(B),
+    shots: {
+      wide: { pos: [-16.1, 1.7, -24.6], look: [-19.2, 1.05, -28.1], fov: 40 },
+      them: { pos: [-18.3, 1.36, -25.5], look: [-19.06, 1.27, -28.75], fov: 28 },
+      me: { pos: [-19.95, 1.4, -30.8], look: [-19.0, 1.24, -27.3], fov: 26 },
+      sun: { pos: [-15.1, 1.2, -30.2], look: [-19.6, 1.45, -27.8], fov: 36 },
+      hands: { pos: [-18.15, 1.32, -27.6], look: [-19.0, 0.8, -28.05], fov: 30 },
+    },
+  };
+  Deal.begin(D);
+  let unlock = null;
+  // ---- Ankunft ----
+  await Cine.run(async () => {
+    Cam.set({ pos: [-16.1, 1.7, -24.2], look: [-19.4, 1.1, -27.4], fov: 40 });
+    Cam.move({ pos: [-16.6, 1.6, -25.0], look: [-19.2, 1.1, -28], fov: 36 }, 9);
+    Tells.set(B, 'sip', 6); B.lookAt(null);
+    await me.walkTo(-19, -26.5, { speed: 1.05, face: Math.PI });
+    unlock = Deal.eyeLock(me, B);
+    me.setPose(ME_SIT.idle, 3.5); await tween(me.root.position, { z: -27.28 }, 1.3, 'inOutSine'); Snd.door('creak');
+    Tells.set(B, 'idle', 4);
+    W.folder.visible = true;
+    Cam.set(D.shots.me); Mus.mood('calm', 3);
+    await sleep(0.6);
+    await Sub.say('Brandt', 'Sie sind pünktlich.', { dur: 2.2 });
+    Cam.set(D.shots.them);
+    await Sub.say('Mirza', 'Ich bin lieber zu früh.', { dur: 2.2 });
+    Cam.set(D.shots.me);
+    await Sub.say('Brandt', 'Das ist selten geworden. Kaffee?', { dur: 2.6 });
+    Cam.set(D.shots.them);
+    await Sub.inner('Vier Euro fünfzig für eine Tasse. Ich habe dreiundzwanzig.', { dur: 3.4 });
+    await Sub.say('Mirza', 'Danke. Nein.', { dur: 1.8 });
+    Cam.set(D.shots.sun);
+    await Sub.say('Brandt', 'Also. Ihr Käufer.', { dur: 2 });
+    await Sub.say('Mirza', 'Bereit. Zu Ihrem Preis.', { dur: 2.2 });
+    Cam.set(D.shots.me);
+    await Sub.say('Brandt', 'Zu meinem Preis. Das hören wir alle gern.', { dur: 3 });
+  }, { stay: true, keepBars: true, hint: false });
+  // ---- Die Runden (nicht überspringbar) ----
+  await Cine.run(async () => {
+    for (let i = 0; i < BRANDT_ROUNDS.length; i++) await Deal.round(BRANDT_ROUNDS[i], i);
+  }, { stay: true, keepBars: true, skippable: false, hint: false });
+  F.d1 = Deal.score;
+  // ---- Abschluss ----
+  await Cine.run(async () => {
+    Mus.mood('win', 2.5);
+    Cam.set(D.shots.me);
+    await Sub.say('Brandt', 'Wo muss ich unterschreiben?', { dur: 2.6 });
+    W.contract.visible = true; Snd.page(); me.setPose(ME_SIT.lean, 3); Tells.set(B, 'sign', 4);
+    Cam.set(D.shots.hands); Cam.move({ pos: [-18.45, 1.08, -27.8], look: [-19.0, 0.8, -28.05], fov: 22 }, 4.6, 'inOutSine');
+    Snd.pen(2.8);
+    await sleep(3.2);
+    Tells.set(B, 'relax', 4); me.setPose(ME_SIT.idle, 3); W.folder.visible = false;
+    Cam.set(D.shots.me);
+    await Sub.say('Brandt', 'Eins noch, Junge.', { dur: 2 });
+    await Sub.say('Brandt', 'Warum machen Sie das? Sie sind jung. Sie könnten ein ganz anderes Leben führen.', { dur: 5 });
+    await Choice.unsaid('Weil ich es kann.', ['Weil meine Mutter nachts Büros putzt, damit ich hier sitzen kann.', 'Weil ich seit zwei Tagen nichts Richtiges gegessen habe.']);
+    (G.state.unsaid = G.state.unsaid || []).push('Weil meine Mutter nachts Büros putzt, damit ich hier sitzen kann.', 'Weil ich seit zwei Tagen nichts Richtiges gegessen habe.');
+    Cam.set(D.shots.them);
+    await Sub.say('Mirza', 'Weil ich es kann.', { dur: 2.4 });
+    Cam.set(D.shots.me); Mus.mood('calm', 3);
+    await sleep(1.6);
+    await Sub.say('Brandt', 'Mein Sohn sagt das auch.', { dur: 2.6 });
+    await sleep(0.8);
+    await Sub.say('Brandt', 'Wenn er lügt.', { dur: 2.6 });
+    await sleep(1.2);
+    Cam.set(D.shots.them);
+    await Sub.inner('Er hat es gemerkt. Und nichts gesagt. Das nennt man Anstand.', { dur: 4 });
+    // Handschlag, Profil gegen die Sonne
+    unlock && unlock(); Deal.end();
+    me.setPose(POSES.mirza, 4); B.setPose(POSES.stand, 4);
+    Cam.set({ pos: [-14.6, 1.22, -27.9], look: [-18.4, 1.22, -27.75], fov: 30, dof: 0.5 });
+    await Promise.all([me.walkTo(-18.7, -27.3, { speed: 0.7, face: Math.PI }), B.walkTo(-18.12, -28.2, { speed: 0.7, face: 0 })]);
+    me.setPose(POSES.handshake, 5); B.setPose(POSES.handshake, 5); Snd.step('wood', { vel: 0.3 });
+    await sleep(0.9);
+    await Sub.say('Brandt', 'Machen Sie was daraus.', { dur: 2.8 });
+    await sleep(0.4);
+    await Sub.say('Brandt', 'Frau Winter erwartet Sie um halb sieben. Hotel Belvedere. Ich rufe sie an.', { dur: 5 });
+    me.setPose(POSES.mirza, 4); B.setPose(POSES.stand, 4);
+    B.walkTo(-18.9, -23.4, { speed: 0.9 }).then(() => B.walkTo(-8, -19, { speed: 1.0 })).catch(() => {});
+    await sleep(1.2);
+    Story.clock(18, 14);
+    // ---- Zahltag ----
+    await Deal.payday(10000, { size: 2, strike: 1, mood: 'lift', lines: ['Zehntausend Euro. Für zwanzig Minuten Reden.', 'Mama braucht dafür ein ganzes Jahr Nachtschichten.'] });
+    Goals.set({ ten: 'done', maybach: 'cur' });
+    await Sub.inner('Und das war erst die erste Zahl.', { dur: 3 });
+  }, { stay: false });
+  W.folder.visible = false; W.contract.visible = false;
+  Deal.end();
+  F.dealCafe = 'done';
+};
+
+
+/* ==== 83_deal.js ==== */
+// =====================================================================
+// Deal-System: das Gegenüber lesen (Fokus), Druck / Ruhe / Aufstehen / Schweigen, Ungesagtes, Zahltag-Ritual.
+// Nichts scheitert endgültig – „es steht geschrieben“ –, aber WIE man gewinnt, prägt Mirza.
+// =====================================================================
+const zeroPose = () => { const o = { rootX: 0, rootY: 0, rootZ: 0 }; for (const j of JOINTS) o[j] = [0, 0, 0]; return o; };
+const sitP = (o) => mkPose(Object.assign({ y: -0.52, z: -0.06, legL: { flex: 88, knee: 90, foot: 0, abd: 3 }, legR: { flex: 88, knee: 90, foot: 0, abd: 3 } }, o));
+const SIT = {
+  idle: sitP({ lean: 5, nod: 8, L: { arm: [38, 8, 0], fore: 86 }, R: { arm: [40, 8, 0], fore: 86 } }),
+  watch: sitP({ lean: 3, nod: 6, L: { arm: [42, 4, 0], fore: 104, hand: 6 }, R: { arm: [38, 8, 0], fore: 86 } }),
+  arms: sitP({ lean: -4, nod: 5, L: { arm: [36, 2, 0], fore: 124 }, R: { arm: [36, 2, 0], fore: 124 } }),
+  tap: sitP({ lean: 5, nod: 8, L: { arm: [38, 8, 0], fore: 86 }, R: { arm: [36, 6, 0], fore: 92, hand: 14 } }),
+  lean: sitP({ lean: 16, nod: 4, L: { arm: [48, 8, 0], fore: 72 }, R: { arm: [48, 8, 0], fore: 72 } }),
+  relax: sitP({ lean: -3, nod: 2, L: { arm: [30, 10, 0], fore: 70 }, R: { arm: [30, 10, 0], fore: 70 } }),
+  sip: sitP({ lean: 3, nod: 4, L: { arm: [38, 8, 0], fore: 86 }, R: { arm: [42, 6, 0], fore: 108, hand: -20 } }),
+  hard: sitP({ lean: -6, nod: 2, L: { arm: [38, 2, 0], fore: 128 }, R: { arm: [38, 2, 0], fore: 128 } }),
+  sign: sitP({ lean: 14, nod: 24, L: { arm: [40, 8, 0], fore: 84 }, R: { arm: [46, 6, 0], fore: 78, hand: 12 } }),
+};
+const ME_SIT = { idle: sitP({ lean: 6, nod: 6, L: { arm: [40, 8, 0], fore: 84 }, R: { arm: [40, 8, 0], fore: 84 } }), lean: sitP({ lean: 12, nod: 4, L: { arm: [46, 8, 0], fore: 74 }, R: { arm: [46, 8, 0], fore: 74 } }), sign: sitP({ lean: 14, nod: 22, L: { arm: [40, 8, 0], fore: 84 }, R: { arm: [46, 6, 0], fore: 78, hand: 12 } }) };
+// Beobachtbares Verhalten des Gegenübers (Bewegung obenauf)
+const TELL_ANIM = {
+  watch: (o, t) => { const p = Math.max(0, Math.sin(t * 1.9)); o.head[0] = p * p * 14; o.armL[0] = -p * 6; },
+  arms: (o, t) => { o.spine[0] = -Math.sin(t * 0.8) * 1.2; o.head[2] = Math.sin(t * 0.5) * 2; },
+  tap: (o, t) => { o.handR[0] = Math.sin(t * 15) * 12; o.foreR[0] = -Math.max(0, Math.sin(t * 7.5)) * 5; },
+  lean: (o, t) => { o.spine[0] = Math.sin(t * 1.1) * 1.5; },
+  hard: (o, t) => { o.spine[0] = -Math.sin(t * 0.9) * 1.0; },
+};
+const TELL_JOINT = { watch: ['handL', 0.5, 0.22], arms: ['chest', 1.15, 0.3], tap: ['handR', 0.55, -0.24], lean: ['head', 0.95, 0.35] };
+const Tells = {
+  set(ch, kind, k = 5) {
+    ch.setPose(SIT[kind] || SIT.idle, k); ch._tell = kind; ch.overlay = zeroPose();
+    ch.onUpdate = () => { const ov = ch.overlay, f = TELL_ANIM[ch._tell]; if (!ov) return; if (f) f(ov, G.t); };
+  },
+  clear(ch) { ch._tell = null; ch.overlay = null; ch.onUpdate = null; },
+};
+
+// ---------- Fokus-Lesen: kleines Etikett am Gegenüber ----------
+const Tell = {
+  el: null, pos: null, text: '', on: false, force: false, v: new THREE.Vector3(),
+  set(posFn, text) { this.pos = posFn; this.text = text; },
+  clear() { this.pos = null; this.force = false; if (this.el) { this.el.classList.remove('on'); this.on = false; } },
+  update(camera) {
+    if (!this.el) { this.el = $('#tell'); if (!this.el) return; this.sp = this.el.querySelector('span'); }
+    const want = !!this.pos && (G.focus > 0.55 || this.force) && G.mode !== 'menu';
+    if (!want) { if (this.on) { this.el.classList.remove('on'); this.on = false; } return; }
+    const w = this.pos(); this.v.copy(w).project(camera);
+    if (this.v.z > 1) { this.el.classList.remove('on'); this.on = false; return; }
+    const x = (this.v.x * 0.5 + 0.5) * window.innerWidth, y = (-this.v.y * 0.5 + 0.5) * window.innerHeight;
+    if (this.sp.textContent !== this.text) this.sp.textContent = this.text;
+    this.el.style.transform = `translate(${Math.round(clamp(x + 30, 10, window.innerWidth - 360))}px, ${Math.round(clamp(y - 30, window.innerHeight * 0.12, window.innerHeight * 0.36))}px)`;
+    if (!this.on) { this.el.classList.add('on'); this.on = true; }
+  },
+};
+
+const DEAL_TAG = { push: 'Druck', calm: 'Ruhe', stand: 'Aufstehen', silence: 'Schweigen' };
+const Deal = {
+  score: 0, fails: 0, D: null,
+  // D: { name, partner, me, shots:{them,me,wide}, tellPos(): Vector3, mood: ['calm','tense','push'], cue }
+  begin(D) {
+    this.D = D; this.score = 0; this.fails = 0;
+    Mus.play(D.cue || CUES.deal, { mood: D.start || (D.mood ? D.mood[0] : 'calm'), fadeOut: 2.2, delay: 0.15 });
+  },
+  // Beide schauen sich an (folgt den Köpfen); gibt die Funktion zum Lösen zurück
+  eyeLock(a, b) {
+    const W = G.world, va = new THREE.Vector3(), vb = new THREE.Vector3();
+    const fn = () => { a.j.head.getWorldPosition(va); b.j.head.getWorldPosition(vb); };
+    fn(); W.onUpdate(fn); a.lookAt(vb, 0.9); b.lookAt(va, 0.9);
+    return () => { const i = W.updaters.indexOf(fn); if (i >= 0) W.updaters.splice(i, 1); a.lookAt(null); b.lookAt(null); };
+  },
+  end() { const D = this.D; Tell.clear(); Focus.allowed = false; if (D) { Tells.clear(D.partner); D.partner.lookAt(null); } G.slow = 1; },
+  shot(spec, dur = 0) { if (!spec) return Promise.resolve(); if (dur > 0) return Cam.move(spec, dur, 'inOutSine'); Cam.set(spec); return Promise.resolve(); },
+  // Kurzer Schnitt auf das, was das Gegenüber verrät
+  async insert(kind, dur = 1.5) {
+    const D = this.D, ch = D.partner, spec = TELL_JOINT[kind]; if (!spec || G.skipping) return;
+    const p = new THREE.Vector3(); ch.j[spec[0]].getWorldPosition(p);
+    const fw = new THREE.Vector3(Math.sin(ch.yaw), 0, Math.cos(ch.yaw)), rt = new THREE.Vector3(fw.z, 0, -fw.x);
+    const pos = p.clone().addScaledVector(fw, spec[1]).addScaledVector(rt, spec[2]); pos.y += 0.06;
+    const from = [pos.x + fw.x * 0.14, pos.y, pos.z + fw.z * 0.14];
+    Cam.set({ pos: from, look: [p.x, p.y, p.z], fov: kind === 'arms' ? 34 : 26, dof: 0.9 });
+    Cam.move({ pos: [pos.x, pos.y, pos.z], look: [p.x, p.y, p.z] }, dur, 'inOutSine');
+    if (kind === 'watch') { Snd.countTick(2); setTimeout(() => Snd.countTick(2), 480); setTimeout(() => Snd.countTick(2), 960); }
+    else if (kind === 'tap') for (let i = 0; i < 6; i++) setTimeout(() => Snd.step('wood', { vel: 0.22 }), i * 170);
+    else if (kind === 'arms') Snd.whoosh(0.35, { gain: 0.1, from: 260, to: 160 });
+    else Snd.door('creak');
+    await sleep(dur);
+    FX.dof = 0;
+  },
+  async rewind() {
+    Snd.whoosh(0.95, { gain: 0.5, from: 2600, to: 160 });
+    FX.water = 0.9; FX.ca = 0.012; tween(FX, { water: 0, ca: 0 }, 1.1, 'out'); FX.flash = 0.25; tween(FX, { flash: 0 }, 0.9, 'out');
+    await sleep(0.9);
+  },
+  silenceFx(on) {
+    if (on) { Mus.mood('silence', 1.0); tween(G, { slow: 0.5 }, 0.6, 'out'); Snd.worldFilter(1400, 0.6); Snd.heartStart(56, 0.32); }
+    else { const D = this.D; Mus.mood(D && D.mood ? D.mood[Math.min(D.mood.length - 1, this.step || 0)] : 'calm', 0.9); tween(G, { slow: 1 }, 0.5, 'out'); Snd.worldFilter(20000, 0.6); Snd.heartStop(); }
+  },
+  // Auswahlleiste. Schweigen: Leertaste (oder 4) HALTEN.
+  async pick(R, force) {
+    const box = $('#choices'), sil = $('#silence'), fill = $('i', sil); box.innerHTML = '';
+    const opts = R.opts, n = opts.length;
+    let sel = 0, result = -1, held = 0, mouseHeld = false, fx = false;
+    const items = opts.map((o, i) => {
+      const d = h('div', 'choice dopt' + (o.key === 'silence' ? ' hold' : ''));
+      d.innerHTML = `<span class="k">${i + 1}</span><span class="tag">${DEAL_TAG[o.key]}</span><span class="ln">${o.key === 'silence' ? 'Nichts sagen. <small>Leertaste halten</small>' : o.text}</span>`;
+      d.style.animationDelay = i * 0.14 + 's'; box.appendChild(d);
+      d.addEventListener('mouseenter', () => { sel = i; mark(); Snd.uiHover(); });
+      d.addEventListener('pointerdown', () => { sel = i; mark(); if (o.key === 'silence') mouseHeld = true; else { result = i; Snd.uiClick(); } });
+      return d;
+    });
+    const up = () => { mouseHeld = false; }; window.addEventListener('pointerup', up);
+    const mark = () => items.forEach((d, i) => d.classList.toggle('sel', i === sel));
+    mark();
+    Tell.force = !!force; Cine.skippable = false; Focus.allowed = true; $('#hud').classList.add('subs-on', 'deal-on');
+    const HOLD = 2.4;
+    await sleep(0.55);
+    await until(() => {
+      if (Input.pressed('up') && sel > 0) { sel--; mark(); Snd.uiHover(); }
+      if (Input.pressed('down') && sel < n - 1) { sel++; mark(); Snd.uiHover(); }
+      for (let i = 0; i < 4; i++) if (Input.pressed('n' + (i + 1)) && i < n) { sel = i; mark(); if (opts[i].key !== 'silence') { result = i; Snd.uiClick(); } }
+      if (Input.pressed('confirm') && opts[sel].key !== 'silence') { result = sel; Snd.uiClick(); }
+      const isSil = opts[sel].key === 'silence', down = isSil && (Input.key('confirm') || Input.key('n' + (sel + 1)) || mouseHeld);
+      const dt = G.dt || 0.016;
+      if (down) { held += dt; if (!fx) { fx = true; this.silenceFx(true); } } else if (held > 0) { held = Math.max(0, held - dt * 3); if (held === 0 && fx) { fx = false; this.silenceFx(false); } }
+      sil.classList.toggle('on', held > 0.05); fill.style.width = (Math.min(1, held / HOLD) * 100).toFixed(1) + '%';
+      items.forEach((d, i) => d.classList.toggle('held', down && i === sel));
+      if (held >= HOLD) result = sel;
+      return result >= 0;
+    });
+    window.removeEventListener('pointerup', up);
+    sil.classList.remove('on'); fill.style.width = '0%';
+    Focus.allowed = false; Tell.clear();
+    items.forEach((d, i) => { if (i !== result) d.style.opacity = 0; d.style.transition = 'opacity .5s'; });
+    await sleep(0.4);
+    box.innerHTML = ''; $('#hud').classList.remove('subs-on', 'deal-on');
+    return { key: opts[result].key, opt: opts[result], fx };
+  },
+  // Eine Runde. R: {tell, hint, say:[..], best, opts:[{key,text}], good:[..], bad:{key:[..]|default}, inner:{good, bad:{…}}, soft}
+  async round(R, idx) {
+    const D = this.D, P = D.partner, me = D.me, name = D.name;
+    this.step = idx;
+    let attempt = 0;
+    for (;;) {
+      Tells.set(P, R.tell);
+      Tell.set(() => D.tellPos(), R.hint);
+      Mus.mood(D.mood ? D.mood[Math.min(D.mood.length - 1, idx)] : 'calm', 1.2);
+      await this.shot(D.shots.them);
+      FX.dof = 0.35; Cam.dofAuto = true;
+      if (attempt === 0) { for (const l of R.say) await Sub.say(name, l, { dur: l.length > 46 ? 4.2 : 3 }); } else await Sub.inner('Noch einmal.', { dur: 1.5 });
+      await this.insert(R.tell, 1.5);
+      await this.shot(D.shots.them);
+      if (idx === 0 && attempt === 0 && !D.hinted) { D.hinted = true; Hint.show('<b>Umschalt</b> halten: Gegenüber lesen &nbsp;·&nbsp; <b>1–4</b> oder <b>Pfeile + Leertaste</b>: antworten', 10); }
+      const res = await this.pick(R, attempt > 0 && !G.skipping);
+      Hint.hide();
+      const good = res.key === R.best;
+      // Mirza spricht (oder schweigt)
+      if (res.key === 'stand') { me.setPose(POSES.mirza, 4); Snd.door('creak'); await sleep(0.3); }
+      if (res.key !== 'silence') { await this.shot(D.shots.me); FX.dof = 0.35; await Sub.say('Mirza', res.opt.text, { dur: clamp(1.2 + res.opt.text.length * 0.05, 2.4, 5.6) }); }
+      else { await sleep(0.6); }
+      // Reaktion
+      await this.shot(D.shots.them);
+      if (good) { Tells.set(P, R.after || 'relax', 4); Snd.shimmer(AUD ? AUD.ctx.currentTime + 0.05 : 0, [880, 1320], 0.5); }
+      else { Tells.set(P, R.tell === 'arms' ? 'hard' : R.tell, 6); Snd.deny(); }
+      const lines = good ? R.good : (R.bad[res.key] || R.bad.default);
+      for (const l of lines) await Sub.say(name, l, { dur: l.length > 52 ? 4.4 : 3.1 });
+      if (res.fx) this.silenceFx(false);
+      if (res.key === 'stand') { me.setPose(ME_SIT.idle, 4); Snd.door('creak'); await sleep(0.4); }
+      const inn = good ? R.inner.good : (R.inner.bad[res.key] || R.inner.bad.default);
+      if (inn) await Sub.inner(inn, { dur: clamp(1.4 + inn.length * 0.05, 2.4, 5.4) });
+      if (good) { if (attempt === 0) this.score++; return true; }
+      if (attempt >= 1) { this.fails++; if (R.soft) await Sub.say(name, R.soft, { dur: 2.6 }); return false; }
+      attempt++;
+      await this.rewind();
+    }
+  },
+  // Zahltag: Handy summt, Zeitlupe, das Konto füllt sich – der Klang ist Wucht, kein Kassengeräusch
+  async payday(add, o = {}) {
+    const me = Player.ch, size = o.size || 2, from = G.state.money, to = Math.round((from + add) * 100) / 100;
+    Mus.mood('silence', 0.5);
+    me.hold('phone', true); me.setPose('phone', 3);
+    const p = new THREE.Vector3(); me.j.head.getWorldPosition(p);
+    const fw = new THREE.Vector3(Math.sin(me.yaw), 0, Math.cos(me.yaw)), rt = new THREE.Vector3(fw.z, 0, -fw.x);
+    const cp = p.clone().addScaledVector(fw, 1.9).addScaledVector(rt, 0.55); cp.y = p.y + 0.1;
+    Cam.set({ pos: [cp.x, cp.y, cp.z], look: [p.x, p.y + 0.05, p.z], fov: 30, dof: 0.9 });
+    Cam.move({ pos: [cp.x - fw.x * 0.45, cp.y, cp.z - fw.z * 0.45], look: [p.x, p.y + 0.04, p.z], fov: 26 }, 9, 'inOutSine');
+    Snd.phoneBuzz(undefined, 3);
+    await sleep(0.9);
+    Phone.toast('Überweisung', '+ ' + fmtEuro(add) + ' eingegangen', 6);
+    tween(G, { slow: 0.2 }, 0.5, 'out'); Snd.heartStart(72, 0.7); Snd.worldFilter(700, 0.5);
+    await sleep(1.5);
+    await Bal.show(to, { delta: add, ritual: true, hold: 5 });
+    Snd.impact(size); FX.flash = 0.7; tween(FX, { flash: 0 }, 1.6, 'out'); Cam.punch(1.6); Cam.shake = 0.02; tween(Cam, { shake: 0 }, 1.2, 'out');
+    tween(G, { slow: 1 }, 1.5, 'inOut'); Snd.heartStop(); Snd.worldFilter(20000, 1.5);
+    Mus.mood(o.mood || 'lift', 1.5);
+    await sleep(1.4);
+    if (o.lines) for (const l of o.lines) await Sub.inner(l);
+    if (o.strike != null) {
+      me.hold('phone', false); me.hold('notebook', true); me.setPose('notebook', 4); Snd.page();
+      await sleep(0.7);
+      await NoteCard.show(GOAL_DEFS.map((g) => g.text), { speed: 0.12 });
+      await sleep(0.4); NoteCard.strike(o.strike); Snd.pen(0.9);
+      await sleep(1.8);
+      await NoteCard.hide();
+      me.hold('notebook', false); Snd.page();
+    }
+    me.hold('phone', false); me.setPose('mirza', 4); FX.dof = 0;
+  },
+};
+
+
+/* ==== 84_k1_hotel.js ==== */
+// =====================================================================
+// KAPITEL I – „Innenstadt“ (2/3): Hotel Belvedere, die Lobby, Frau Winter – zwanzigtausend Euro
+// =====================================================================
+Object.assign(Story, {
+  async lobbyDesk() {
+    const W = G.world, F = G.state.flags;
+    await Player.turnTo(9.2, -3.4);
+    await Story.inspect({ pos: [6.4, 1.6, -1.6], look: [9.6, 1.5, -3.4], fov: 36 }, async () => {
+      if (F.dealHotel === 'open') await Sub.say('Empfang', 'Guten Abend. Frau Winter erwartet Sie in der Lounge.', { dur: 3.4 });
+      else await Sub.say('Empfang', 'Guten Abend. Kann ich Ihnen helfen?', { dur: 2.6 });
+      await Sub.inner('Er sieht erst meinen Anzug an. Dann mein Gesicht. Er entscheidet sich für das Gesicht.');
+    });
+  },
+  async lobbyChandelier() {
+    await Player.turnTo(0, 0);
+    await Story.inspect({ pos: [0.6, 1.5, 3.2], look: [0, 5.2, 0], fov: 44 }, async () => {
+      await Sub.inner('Dreihundert Kristalle. Jeder einzelne kostet mehr als meine Monatsmiete.');
+      await Sub.inner('Und alle funkeln, als wäre das nichts.');
+    });
+  },
+  async lobbyStairs() {
+    await Player.turnTo(0, -7);
+    await Story.inspect({ pos: [0.4, 1.5, -1.8], look: [0, 2.2, -8], fov: 42 }, async () => {
+      await Sub.inner('Zehn Stufen bis zur Galerie. Ich zähle sie.');
+      await Sub.inner('Ich zähle alles.');
+    });
+  },
+});
+
+// Wie im Café – aber kälter: Frau Winter sitzt gegen das Licht.
+const WINTER_ROUNDS = [
+  {
+    tell: 'arms', hint: 'Verschränkte Arme, kühler Blick. Eine Mauer – kein Gegner, nur Schutz.',
+    say: ['Ich mache Geschäfte nur mit Menschen, die ich einschätzen kann.', 'Sie kann ich nicht einschätzen.'],
+    best: 'calm', after: 'relax',
+    opts: [
+      { key: 'push', text: 'Ich muss nicht eingeschätzt werden. Meine Zahlen reichen.' },
+      { key: 'calm', text: 'Dann fragen Sie. Ich antworte ehrlich.' },
+      { key: 'stand', text: 'Dann verschwenden wir beide unsere Zeit.' },
+      { key: 'silence' },
+    ],
+    good: ['Ehrlich.', 'Das ist selten in diesem Haus.'],
+    bad: { push: ['Zahlen kann jeder vorlegen.'], stand: ['Setzen Sie sich.'], silence: ['Ich warte.'], default: ['Ich warte.'] },
+    inner: { good: 'Ihre Arme sind unten. Die Mauer hat eine Tür.', bad: { default: 'Falsch. Sie prüft keine Zahlen. Sie prüft mich.' } },
+    soft: 'Fahren Sie fort.',
+  },
+  {
+    tell: 'lean', hint: 'Sie lehnt sich vor. Mehr Interesse, als sie zeigen will.',
+    say: ['Die Parzelle am Wasser … wie viel Fläche genau?', 'Erzählen Sie mir alles.'],
+    best: 'stand', after: 'relax',
+    opts: [
+      { key: 'push', text: 'Sie kennen die Zahlen, Frau Winter. Entscheiden Sie sich.' },
+      { key: 'calm', text: 'Lassen Sie uns die Fläche in Ruhe durchgehen.' },
+      { key: 'stand', text: 'Ich merke, Sie brauchen noch Zeit. Ich komme wieder, wenn Sie entschieden sind.' },
+      { key: 'silence' },
+    ],
+    good: ['Warten Sie.', 'Setzen Sie sich. Ich brauche keine Zeit. Ich brauche Ihren Preis.'],
+    bad: { push: ['Ich lasse mich nicht drängen.'], calm: ['Wir haben Zeit, ich weiß.'], silence: ['Ich warte auf Ihre Antwort.'], default: ['Ich warte auf Ihre Antwort.'] },
+    inner: { good: 'Wer gehen kann, hat gewonnen.', bad: { default: 'Falsch. Sie will es schon. Wer schon will, den muss man nicht schieben – nur gehen lassen.' } },
+    soft: 'Weiter.',
+  },
+  {
+    tell: 'tap', hint: 'Sie trommelt mit den Nägeln aufs Glas. Sie testet, ob ich zucke.',
+    say: ['Ihr Anzug ist gut geschnitten.', 'Er ist nicht Ihrer, oder?'],
+    best: 'silence', after: 'relax',
+    opts: [
+      { key: 'push', text: 'Der Anzug tut nichts zur Sache. Reden wir über Zahlen.' },
+      { key: 'calm', text: 'Nein. Ist er nicht.' },
+      { key: 'stand', text: 'Wenn das hier eine Prüfung ist, bin ich der Falsche.' },
+      { key: 'silence' },
+    ],
+    good: ['Sie zucken nicht einmal.', 'Gut. Anzüge kann man kaufen. Haltung nicht.'],
+    bad: { push: ['Doch. Er tut etwas zur Sache.'], calm: ['Ehrlichkeit ist billig, wenn man nichts zu verlieren hat.'], stand: ['Sie bleiben.'], default: ['Sie bleiben.'] },
+    inner: { good: 'Second-Hand. Aber er sitzt, als wäre er für mich genäht.', bad: { default: 'Falsch. Sie will nicht wissen, was ich trage. Sie will wissen, ob es mich trägt.' } },
+    soft: 'Genug davon.',
+  },
+  {
+    tell: 'watch', hint: 'Sie sieht auf die Uhr. Zeit als Waffe – dann setze ich sie auch ein.',
+    say: ['Meine Zeit ist knapp.', 'Sie haben noch eine Minute.'],
+    best: 'push', after: 'relax',
+    opts: [
+      { key: 'push', text: 'Dann brauche ich nur eine Antwort: Ja oder Nein.' },
+      { key: 'calm', text: 'Ich brauche nur einen Moment Ihrer Aufmerksamkeit.' },
+      { key: 'stand', text: 'Dann komme ich ein anderes Mal wieder.' },
+      { key: 'silence' },
+    ],
+    good: ['Sie haben Mut.', 'Ja.'],
+    bad: { calm: ['Aufmerksamkeit hat einen Preis.'], stand: ['Es gibt kein anderes Mal.'], silence: ['Dreißig Sekunden.'], default: ['Dreißig Sekunden.'] },
+    inner: { good: 'Wer nach dem Ja fragt, bekommt es – oder ein Nein, das ehrlich ist.', bad: { default: 'Falsch. Wer ihr die Zeit lässt, verliert sie.' } },
+    soft: 'Gut. Fassen Sie sich kurz.',
+  },
+];
+
+Story.cityHotelDoor = async () => {
+  const W = G.world, me = Player.ch, F = G.state.flags, dm = W.doorman;
+  F.dealHotel = 'run'; Obj.set(''); Hint.hide(); Prompt.set(null);
+  const dv = new THREE.Vector3();
+  await Cine.run(async () => {
+    Cam.set({ pos: [21.4, 1.5, 9.6], look: [30, 1.7, 3.4], fov: 38 });
+    Cam.move({ pos: [24.4, 1.45, 8.0], look: [30.4, 1.8, 3.9], fov: 32 }, 7, 'inOutSine');
+    if (Mus.mood) Mus.mood('lift', 2);
+    await me.walkTo(28.6, 5.0, { speed: 1.2 });
+    me.head = me.j.head; me.j.head.getWorldPosition(dv); dm.lookAt(dv.clone(), 0.9);
+    await Sub.say('Portier', 'Guten Abend.', { dur: 1.8 });
+    await Sub.inner('Guten Abend. Ich tue so, als käme ich jeden Tag.', { dur: 3.2 });
+    W.doorSpin = 1.3; Snd.door('close');
+    Cam.move({ pos: [26.6, 1.2, 6.2], look: [31.3, 1.4, 4], fov: 36 }, 3.2, 'inOutSine');
+    await me.walkTo(31.3, 4.0, { speed: 1.05 });
+    Game.fade(1, 0.9, [0.1, 0.06, 0.02]);
+    await me.walkTo(32.1, 4.0, { speed: 1.05 });
+    await sleep(0.4);
+  }, { stay: true, keepBars: true, hint: false });
+  dm.lookAt(null); W.doorSpin = 0.35;
+  await Game.loadWorld('lobby');
+  Mus.play(CUES.city, { mood: 'silence', fadeOut: 2, delay: 0.1 });
+  const L = G.world, lm = Player.ch;
+  Story.clock(18, 31);
+  lm.place(0, 0, 8.9, Math.PI); lm.setPose('mirza'); lm.snapPose();
+  await Cine.run(async () => {
+    Cam.set({ pos: [0.9, 1.5, 3.4], look: [0, 1.25, 8.4], fov: 42 });
+    Cam.move({ pos: [0.3, 1.6, 3.0], look: [0, 1.35, 6.8], fov: 44 }, 6, 'inOutSine');
+    Game.fade(0, 1.6);
+    Snd.step('marble', { vel: 0.5 });
+    lm.walkTo(0, 5.6, { speed: 1.1 });
+    await sleep(1.4);
+    Mus.mood('calm', 3);
+    await sleep(2.0);
+    Cam.set({ pos: [2.4, 0.8, 7.6], look: [0, 5.4, 0.2], fov: 56 });
+    Cam.move({ pos: [1.7, 1.0, 6.9], look: [0, 5.6, 0.2], fov: 50 }, 5.5, 'inOutSine');
+    await sleep(0.8);
+    await Sub.inner('Der Boden ist sauberer als meine Küche.', { dur: 3.4 });
+    await Sub.inner('Kein Mensch hier hat je auf einen Kontoauszug gewartet.', { dur: 3.8 });
+    await sleep(0.4);
+    Cam.set({ pos: [0.6, 1.55, 6.8], look: [-8.4, 1.3, -0.5], fov: 40 });
+    Cam.move({ pos: [0.2, 1.55, 6.4], look: [-8.4, 1.3, -0.5], fov: 36 }, 5, 'inOutSine');
+    await sleep(0.6);
+    await Sub.inner('Dort. Am Fenster. Gegen das Licht.', { dur: 3 });
+  }, { stay: false });
+  Obj.set('Frau Winter wartet in der Lounge.');
+  Hint.show('<b>E</b> Ansehen &nbsp;·&nbsp; Gespräch: <b>Setzen</b> bei Frau Winter', 8);
+  F.dealHotel = 'open';
+};
+
+Story.lobbyWinter = async () => {
+  const W = G.world, me = Player.ch, Wn = W.winter, F = G.state.flags;
+  F.dealHotel = 'run'; Obj.set(''); Hint.hide(); Prompt.set(null);
+  const D = {
+    name: 'Winter', partner: Wn, me, cue: CUES.deal, start: 'silence', mood: ['calm', 'tense', 'push', 'push'], tellPos: headAt(Wn, -0.05, 0.3),
+    shots: {
+      wide: { pos: [-5.0, 1.75, 2.6], look: [-9, 1.1, -0.6], fov: 42 },
+      them: { pos: [-5.85, 1.36, 0.3], look: [-9.4, 1.27, -0.52], fov: 28 },
+      me: { pos: [-10.6, 1.4, -1.7], look: [-7.15, 1.27, -0.5], fov: 28 },
+      sun: { pos: [-5.8, 1.3, 0.9], look: [-10.6, 2.2, 0.95], fov: 36 },
+    },
+  };
+  Deal.begin(D);
+  let unlock = null;
+  const tell = F.d1 >= 2 ? ['Brandt hat angerufen. Er sagt, Sie hätten ihn nicht überredet, sondern überzeugt.', 'Er sagt, das sei ein Unterschied.'] : ['Brandt hat angerufen. Er sagt, Sie seien hartnäckig.', 'Er hat es nicht als Kompliment gemeint.'];
+  await Cine.run(async () => {
+    Cam.set({ pos: [-4.4, 1.6, 2.2], look: [-8.4, 1.2, -0.6], fov: 40 });
+    Cam.move({ pos: [-5.2, 1.55, 1.6], look: [-8.6, 1.2, -0.5], fov: 36 }, 8);
+    await me.walkTo(-6.4, -0.5, { speed: 1.05, face: -Math.PI / 2 });
+    unlock = Deal.eyeLock(me, Wn);
+    me.setPose(ME_SIT.idle, 3.5); await tween(me.root.position, { x: -7.15 }, 1.2, 'inOutSine'); Snd.door('creak');
+    Tells.set(Wn, 'idle', 4);
+    Cam.set(D.shots.me); Mus.mood('calm', 3);
+    await sleep(0.8);
+    await Sub.say('Winter', 'Sie sind der junge Mann von Herrn Brandt.', { dur: 3 });
+    Cam.set(D.shots.them);
+    await Sub.say('Winter', tell[0], { dur: 4.4 });
+    await Sub.say('Winter', tell[1], { dur: 3 });
+    Cam.set(D.shots.sun);
+    await Sub.say('Mirza', 'Danke, dass Sie sich Zeit nehmen.', { dur: 2.6 });
+    Cam.set(D.shots.me);
+    await Sub.say('Winter', 'Ich nehme mir keine Zeit. Ich vergebe sie.', { dur: 3.2 });
+    await sleep(0.4);
+  }, { stay: true, keepBars: true, hint: false });
+  await Cine.run(async () => {
+    for (let i = 0; i < WINTER_ROUNDS.length; i++) await Deal.round(WINTER_ROUNDS[i], i);
+  }, { stay: true, keepBars: true, skippable: false, hint: false });
+  F.d2 = Deal.score;
+  await Cine.run(async () => {
+    Mus.mood('win', 2.5);
+    Cam.set(D.shots.me);
+    await Sub.say('Winter', 'Zu Ihrem Preis. Ja.', { dur: 2.6 });
+    await sleep(0.4);
+    Cam.set(D.shots.them);
+    await Sub.say('Winter', 'Eins noch. Was wollen Sie wirklich?', { dur: 3.2 });
+    await Choice.unsaid('Ich will dieses Haus nicht nur betreten. Ich will es besitzen.', ['Dass meine Mutter nie wieder nachts arbeiten muss.', 'Nie wieder Angst vor dem Ersten des Monats haben.']);
+    (G.state.unsaid = G.state.unsaid || []).push('Dass meine Mutter nie wieder nachts arbeiten muss.', 'Nie wieder Angst vor dem Ersten des Monats haben.');
+    Cam.set(D.shots.sun);
+    await Sub.say('Mirza', 'Ich will dieses Haus nicht nur betreten. Ich will es besitzen.', { dur: 4.4 });
+    Cam.set(D.shots.me);
+    await sleep(1.4);
+    Tells.set(Wn, 'relax', 3);
+    await Sub.say('Winter', 'Ehrgeiz.', { dur: 1.8 });
+    await sleep(0.4);
+    await Sub.say('Winter', 'Das ist ehrlicher, als Sie glauben.', { dur: 3 });
+    unlock && unlock(); Deal.end();
+    me.setPose(POSES.mirza, 4); Wn.setPose(POSES.stand, 4);
+    Cam.set({ pos: [-5.6, 1.2, -1.9], look: [-8.4, 1.25, -0.4], fov: 32, dof: 0.4 });
+    await Promise.all([me.walkTo(-7.5, -0.05, { speed: 0.7, face: -Math.PI / 2 }), Wn.walkTo(-8.6, -0.05, { speed: 0.7, face: Math.PI / 2 })]);
+    me.setPose(POSES.handshake, 5); Wn.setPose(POSES.handshake, 5);
+    await sleep(1.0);
+    await Sub.say('Winter', 'Rufen Sie mich an, wenn Sie bereit sind für etwas Größeres.', { dur: 4.4 });
+    me.setPose(POSES.mirza, 4); Wn.setPose(POSES.stand, 4);
+    Wn.walkTo(-6.6, 3.0, { speed: 0.9 }).then(() => Wn.walkTo(2.4, 3.6, { speed: 1.0 })).catch(() => {});
+    await sleep(1.0);
+    Story.clock(19, 4);
+    await Deal.payday(20000, { size: 3, mood: 'triumph', lines: ['Zwanzigtausend.', 'Vor einem Tag konnte ich mir keinen Kaffee leisten.'] });
+    await Sub.inner('Etwas Größeres.', { dur: 2.4 });
+  }, { stay: false });
+  Deal.end();
+  F.dealHotel = 'done';
+};
+
+
+/* ==== 85_k1_finale.js ==== */
+// =====================================================================
+// KAPITEL I – „Innenstadt“ (3/3): Kerim & Mama, die Montage, das Ende – und der Hauptablauf
+// =====================================================================
+const BEAT = 60 / 124;
+const MTG = {
+  num(html, x, y, hold = 0.9) {
+    if (G.skipping) return;
+    const e = h('div', 'mnum', html); e.style.left = x; e.style.top = `calc(var(--bar) + ${y})`; $('#hud').appendChild(e);
+    void e.offsetWidth; e.classList.add('on');
+    setTimeout(() => { e.classList.remove('on'); setTimeout(() => e.remove(), 500); }, hold * 1000);
+  },
+  // n Schläge warten und danach auf das Musikraster einrasten (Schnitt auf den Beat)
+  async beats(n) {
+    await sleep(Math.max(0.05, n * BEAT - 0.07));
+    const w = Mus.nextBeatIn(); if (typeof w === 'number' && w < BEAT) await sleep(w);
+  },
+};
+
+Object.assign(Story, {
+  async kerimText() {
+    for (let i = 0; i < 2 && (Interact.busy || G.mode !== 'play' || Player.locked); i++) await sleep(8);
+    if (Interact.busy || G.mode !== 'play' || Player.locked) return;
+    Phone.toast('Kerim', 'Bruder, wo steckst du? Muss dir was zeigen.', 6);
+    Snd.phoneBuzz(undefined, 2);
+    await sleep(1.2);
+    Hint.show('<b>E</b> — Antworten', 5); Interact.busy = true;
+    const replied = await until(() => Input.pressed('use'), 5.2);
+    Hint.hide();
+    if (replied) { G.state.counters.kerim++; Phone.msgs('Kerim', [{ t: 'Bruder, wo steckst du? Muss dir was zeigen.' }, { t: 'Bin unterwegs. Erzähl ich dir später.', me: 1 }]); await sleep(2.8); Phone.hide(); }
+    Interact.busy = false;
+  },
+  // Mamas Anruf: Der Spieler WILL annehmen – Mirzas Daumen drückt trotzdem weg.
+  async mamaCall() {
+    await until(() => !Interact.busy && G.mode === 'play' && !Player.locked);
+    const me = Player.ch;
+    Player.lock(); me.hold('phone', true); me.setPose('phone', 3.5); Focus.allowed = false;
+    await Phone.incoming({ name: 'Mama ❤️', initial: 'M', status: 'Anruf', decline: 'Nicht jetzt, Mama. Später.', wait: 9 });
+    me.hold('phone', false); me.setPose('mirza', 3.5); Player.unlock(); Focus.allowed = true;
+    G.state.counters.mamaMissed = (G.state.counters.mamaMissed || 0) + 1;
+  },
+});
+
+// ---------- Die Montage: 30.000 in einer Nacht – Schnitt auf den Schlag ----------
+async function k1Montage() {
+  const W = G.world, me = Player.ch, wt = W.waiter;
+  W.waiterT = 999; W.adaptive = false; Player.lock(); Phone.hide();
+  Mus.play(CUES.montage, { mood: 'build', fadeOut: 2, delay: 0.2 });
+  Snd.ambSet('crowd', 0.16, 2);
+  await Cine.run(async () => {
+    Atmo.to(CITY_DUSK, 13, 'inOutSine');
+    const place = (ch, x, z, yaw, pose = 'mirza') => { ch.moveT = null; ch.moveRes = null; ch.moveRej = null; ch.place(x, 0, z, yaw); ch.setPose(pose); ch.snapPose(); };
+    Story.clock(19, 8); Stamp.show('19:08', { x: '6vw', y: '78vh', sec: 2.4 });
+    // A – Schuhe auf Pflaster
+    place(me, -6, 21, Math.PI); me.walkTo(-6, 12.4, { speed: 1.75 });
+    Cam.set({ pos: [-6.25, 0.22, 12.7], look: [-6, 0.5, 16], fov: 52 }); Cam.move({ pos: [-6.25, 0.2, 12.1], look: [-6, 0.6, 15], fov: 48 }, 2, 'inOutSine');
+    await MTG.beats(4);
+    // B – das Handy
+    me.hold('phone', true); place(me, -3, 9, 0, 'phone');
+    Cam.set({ pos: [-3.32, 1.42, 10.0], look: [-3.05, 1.2, 9.1], fov: 30, dof: 0.7 });
+    MTG.num('10.000', '58vw', '46vh', 0.9);
+    Mus.mood('build', 0.5);
+    await MTG.beats(2);
+    // C – der Handschlag gegen die Sonne
+    me.hold('phone', false); FX.dof = 0;
+    place(me, -8.78, -2.61, -2.63, 'handshake'); place(wt, -9.22, -3.39, 0.514, 'handshake');
+    Cam.set({ pos: [-5.5, 1.15, -5.0], look: [-9, 1.3, -3], fov: 34 });
+    MTG.num('20.000', '58vw', '20vh', 0.9);
+    await MTG.beats(2);
+    // D – die Bahn zieht vorbei
+    place(wt, -10, -8, 0, 'stand'); place(me, 10.3, 8.5, Math.PI / 2);
+    W.tramState = 'run'; W.tramZ = -8; W.tram.visible = true; W.tramBell = true;
+    Cam.set({ pos: [8.4, 1.15, 7.2], look: [15.5, 1.4, 9.2], fov: 40 });
+    Story.clock(19, 31); Stamp.show('19:31', { x: '6vw', y: '78vh', sec: 2.4 });
+    await MTG.beats(2);
+    // E – Kran über den Platz, Mirza als Punkt im Strom
+    Mus.mood('peak', 0.4);
+    place(me, -14, 6, Math.PI / 2); me.walkTo(-2, 5.4, { speed: 1.6 });
+    Cam.set({ pos: [-24, 3.2, 19], look: [-13, 1.2, 6], fov: 40 }); Cam.move({ pos: [-24, 12, 23], look: [-6, 0, 3], fov: 46 }, 2, 'inOutSine');
+    await MTG.beats(4);
+    // F – die Drehtür
+    place(me, 26.6, 6.2, -1.9); me.walkTo(31.2, 4.0, { speed: 1.9 });
+    Cam.set({ pos: [23.2, 1.35, 8.6], look: [30.4, 1.7, 4.6], fov: 36 });
+    await MTG.beats(2);
+    // G – Lichterketten am Café
+    Story.clock(19, 47); Stamp.show('19:47', { x: '6vw', y: '78vh', sec: 2.4 });
+    place(me, -25, -21.6, Math.PI / 2); me.walkTo(-11, -21.6, { speed: 1.8 });
+    Cam.set({ pos: [-18.5, 1.15, -19.2], look: [-18.5, 1.6, -22.5], fov: 38, dof: 0.6 });
+    MTG.num('30.000', '10vw', '16vh', 1.1);
+    await MTG.beats(2);
+    // H – das Hotel glüht
+    FX.dof = 0;
+    Cam.set({ pos: [10, 0.9, 13], look: [32, 6.5, 4], fov: 48 });
+    await MTG.beats(2);
+    // Schnellschnitte (ein Schlag)
+    place(me, -20, 14, -Math.PI / 2); me.walkTo(-28, 14, { speed: 1.8 });
+    Cam.set({ pos: [-16, 1.4, 12.4], look: [-24, 1.4, 14], fov: 38 }); await MTG.beats(1);
+    Cam.set({ pos: [-30.5, 0.4, 16.5], look: [-27, 0.5, 14], fov: 50 }); await MTG.beats(1);
+    Cam.set({ pos: [-31, 0.9, 20], look: [-34, 5.6, 14], fov: 60 }); FX.flash = 0.35; tween(FX, { flash: 0 }, 0.4, 'out'); await MTG.beats(1);
+    Cam.set({ pos: [-12, 0.6, 24], look: [-4, 3.6, 30], fov: 55 }); await MTG.beats(1);
+    // Ruhe vor dem Einschlag
+    me.hold('phone', false); place(me, -27.4, 24.2, Math.PI / 2, 'mirza');
+    FX.flash = 0.5; tween(FX, { flash: 0 }, 0.6, 'out');
+  }, { stay: true, keepBars: true, hint: false });
+  Atmo.set(CITY_DUSK);
+}
+
+// ---------- Ende: Sechzigtausend – und Mamas Börek ----------
+async function k1Ending() {
+  const W = G.world, me = Player.ch, F = G.state.flags;
+  await Cine.run(async () => {
+    Story.clock(20, 12);
+    Cam.set({ pos: [-25.2, 1.5, 24.6], look: [-27.4, 1.5, 24.2], fov: 34, dof: 0.3 });
+    await Deal.payday(30000, { size: 3, mood: 'triumph', lines: ['Sechzigtausend. Heute Nacht waren es dreiundzwanzig Euro.'] });
+    Mus.play(CUES.city, { mood: 'calm', fadeOut: 3, delay: 0.5 });
+    Cam.set({ pos: [-23.8, 1.9, 20.6], look: [-27.4, 1.35, 24.4], fov: 32, dof: 0.4 });
+    Cam.move({ pos: [-22.6, 2.2, 21.2], look: [-27.4, 1.35, 24.4], fov: 30 }, 16, 'inOutSine');
+    await sleep(2.2);
+    if (G.state.counters.kerim > 0) { Phone.toast('Kerim', 'Bruder. Alle reden von dir. Ich bin stolz.', 5); await sleep(3.6); }
+    else { Phone.toast('Kerim', 'Bruder, lebst du noch? Melde dich.', 5); await sleep(3.6); }
+    me.hold('phone', true); me.setPose('phone', 3.5);
+    Phone.msgs('Mama ❤️', [{ t: 'Mirza, ich hab Börek gemacht.' }, { t: 'Er steht im Ofen. Komm, wenn du kannst. ❤️' }]);
+    Snd.notify();
+    await sleep(4.2);
+    await Sub.inner('Börek.', { dur: 2 });
+    await sleep(0.6);
+    await Sub.inner('Ich hatte seit zwei Tagen nichts Richtiges gegessen.', { dur: 3.6 });
+    await Sub.inner('Ich schreibe ihr gleich. Ich muss nur noch …', { dur: 3.4 });
+    Phone.hide(); me.hold('phone', false); me.setPose('mirza', 4);
+    await sleep(1.0);
+    await Sub.inner('Morgen.', { dur: 2.2 });
+    await sleep(0.8);
+    // Kran: die Stadt bei Nacht, die Bahn, das Hotel
+    Cam.set({ pos: [-24.6, 3.0, 22.2], look: [-27.4, 1.8, 24.4], fov: 34 });
+    Cam.move({ pos: [-14, 15, 30], look: [8, 3, -4], fov: 46 }, 12, 'inOutSine');
+    Mus.mood('lift', 4);
+    await sleep(7.5);
+    Game.fade(1, 3.6, [0, 0, 0]);
+    await sleep(3.0);
+    Obj.set('');
+    await Ov.show('Die Stadt wartet auf niemanden.<small>Mama schon.</small>', { dur: 5.4 });
+  }, { stay: true, keepBars: true, hint: false });
+  Mus.stop(3); Snd.ambClear(3);
+  F.k1Done = true;
+}
+
+// ---------- Kapitel I: der Hauptablauf ----------
+async function k1Run() {
+  Story.resetState({ clock: '17:24' });
+  Goals.set({ mama: 'long', ten: 'cur', maybach: 'todo', school: 'todo', hurt: 'todo' });
+  Bal.shown = 23.17; Bal.render(23.17); Obj.set(''); Hint.hide();
+  Mus.stop(1.6); Snd.ambClear(0.5); Snd.heartStop();
+  UI.hud(false); FX.fade = 1; FX.fadeCol = [0, 0, 0]; FX.bars = 0; FX.dof = 0; FX.water = 0; FX.flash = 0; G.slow = 1;
+  G.mode = 'title'; Title.black(true);
+  await sleep(0.5);
+  await Game.loadWorld('city');
+  const W = G.world, me = Player.ch, F = G.state.flags;
+  Player.lock(); Focus.allowed = false;
+  me.place(-62, 0, 27.4, Math.PI / 2); me.setPose('mirza'); me.snapPose(); me.hold('phone', false);
+  Title.black(false);
+  Mus.play(CUES.city, { mood: 'silence', delay: 0.4 });
+  await Story.chapterCard('k1', { hold: 4.4 });
+  await Title.hide();
+  UI.hud(true);
+
+  // --- Einstieg: Mirza überquert die Brücke, Gegenlicht, lange Schatten ---
+  await Cine.run(async () => {
+    Cam.set({ pos: [-31.6, 1.45, 21.2], look: [-66, 2.1, 27.6], fov: 34 });
+    Cam.move({ pos: [-33.2, 1.4, 22.4], look: [-58, 1.9, 27.3], fov: 30 }, 15, 'inOutSine');
+    Game.fade(0, 3.4);
+    Mus.mood('calm', 4);
+    me.walkTo(-37, 27.2, { speed: 1.6 });
+    await sleep(3.6);
+    await Sub.inner('Auf dieser Seite der Brücke ist alles teurer. Sogar der Schatten.', { dur: 4.6 });
+    await sleep(1.2);
+    await Sub.inner('Ich habe dreiundzwanzig Euro und einen Termin.', { dur: 3.6 });
+    await sleep(1.8);
+    Cam.set({ pos: [-31.6, 0.5, 24.4], look: [-34.6, 0.95, 27.2], fov: 34 });
+    await sleep(0.4);
+    await Sub.inner('Das reicht. Muss reichen.', { dur: 2.8 });
+    me.walkTo(-25.5, 27.0, { speed: 1.5 });
+    Cam.set({ pos: [-31.5, 1.3, 30.0], look: [-27, 1.35, 27.0], fov: 38 }); Cam.move({ pos: [-31.9, 1.5, 29.2], look: [-26.4, 1.4, 27.0], fov: 40 }, 6, 'inOutSine');
+    await sleep(2.6);
+  }, { stay: false });
+  W.adaptive = true; W._want = 'calm';
+
+  // --- Erkunden: Café Aurora, 17:40 ---
+  F.dealCafe = 'open'; Focus.allowed = true;
+  Obj.set('Sei um 17:40 im Café Aurora.');
+  Hint.show('<b>WASD</b> Gehen &nbsp;·&nbsp; <b>Maus</b> Blick &nbsp;·&nbsp; <b>E</b> Interagieren &nbsp;·&nbsp; <b>Umschalt</b> halten: Fokus', 12);
+  const t0 = G.t;
+  const bg = (fn) => fn().catch((e) => { if (e !== ABORT) console.error(e); });
+  bg(async () => { while (F.dealCafe === 'open') { const m = Math.min(38, 24 + Math.floor((G.t - t0) / 24)); if (m !== W.clockM) Story.clock(17, m); await sleep(1); } });
+  bg(async () => { await sleep(28); if (F.dealCafe === 'open') await Story.kerimText(); });
+  bg(async () => { await sleep(75); if (F.dealCafe === 'open') { Obj.show(8); Hint.show('Café Aurora – im Norden, hinter dem Brunnen.', 8); } });
+  await until(() => F.dealCafe === 'done');
+
+  // --- Nach dem ersten Deal: der Abend fällt, Mama ruft an, das Belvedere wartet ---
+  Story.clock(18, 22);
+  W.adaptive = true; W._want = null;
+  Mus.play(CUES.city, { mood: 'calm', fadeOut: 4, delay: 0.4 });
+  Atmo.to(CITY_LATE, 26, 'inOutSine');
+  F.dealHotel = 'open';
+  Obj.set('Hotel Belvedere. Lobby. 18:30.');
+  bg(() => Story.mamaCall());
+  await until(() => F.dealHotel === 'done');
+  Player.lock(); W.adaptive = false;
+
+  // --- Montage & Ende ---
+  await Game.fade(1, 1.4, [0, 0, 0]);
+  Obj.set(''); Hint.hide(); Snd.ambClear(1);
+  await Game.loadWorld('city', { atmo: CITY_LATE });
+  Story.clock(19, 8);
+  Player.lock(); Game.fade(0, 0.5);
+  await k1Montage();
+  await k1Ending();
+  await Game.fade(1, 0.6, [0, 0, 0]);
+}
+Story.def('k1', k1Run);
+
+
 /* ==== 90_main.js ==== */
 // =====================================================================
 // Start: Boot, Hauptschleife, Test-Hooks
@@ -5424,7 +6909,7 @@ const updaters = [];
 function scene_update(dt) { for (const u of updaters) u(dt); }
 
 function tick(rawDt) {
-  const dt = Math.min(0.05, rawDt);
+  const dt = Math.min(0.05, rawDt); G.dt = dt;
   G.rt += dt; G.frame++;
   if (Input.pressed('pause')) {
     if (Panels.cur) { Panels.closeAll(); Snd.uiBack(); }
@@ -5445,6 +6930,7 @@ function tick(rawDt) {
   Cam.apply(GFX.camera, dt);
   if (G.world) Atmo.update(GFX.camera, Player.ch ? Player.ch.root.position : null);
   UI.syncBar();
+  Tell.update(GFX.camera);
   if (G.debug) devHud(dt);
   Input.endFrame();
 }
@@ -5493,6 +6979,7 @@ async function onStart() {
 }
 
 async function boot() {
+  window.addEventListener('unhandledrejection', (e) => { if (e.reason === ABORT) e.preventDefault(); });   // abgebrochene Skripte (Kapitelwechsel) sind kein Fehler
   Object.assign(G.settings, Store.get('settings', {}));
   UI.build(); Input.init();
   if (!GFX.init($('#gl'))) {

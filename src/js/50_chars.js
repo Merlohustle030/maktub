@@ -187,6 +187,7 @@ class Character {
     if (this.eyes) {
       const bl = this.blink > 0 ? 1 - Math.abs(this.blink * 2 - 1) : 0;
       for (const e of this.eyes) { e.scale.y = e.userData.sy * (1 - bl * 0.92); e.position.x = e.userData.x + this.gaze.x * 0.014; e.position.y = e.userData.y + this.gaze.y * 0.01; }
+      if (this.whites) for (const w of this.whites) w.scale.y = w.userData.sy * (1 - bl * 0.92);
     }
     if (this.onUpdate) this.onUpdate(dt);
   }
@@ -294,11 +295,13 @@ function humanoid(name, o) {
     mb.box(0.05 * S, 0.011 * S, 0.012 * S, hr * 0.38, cy + hr * 0.36, hr * 0.94, bc, { rz: o.brow != null ? o.brow : 0.18 }); mb.box(0.05 * S, 0.011 * S, 0.012 * S, -hr * 0.38, cy + hr * 0.36, hr * 0.94, bc, { rz: -(o.brow != null ? o.brow : 0.18) });
     ch.addMesh('head', mb, mat);
     // Augen: eigene Meshes, damit sie blinzeln / schauen können
-    const emat = new THREE.MeshBasicMaterial({ color: tcol(0x0a0806), fog: false });
-    ch.eyes = [];
+    const emat = new THREE.MeshBasicMaterial({ color: tcol(0x0a0806), fog: false }), wmat = new THREE.MeshBasicMaterial({ color: tcol(0xb9b0a0), fog: false });
+    ch.eyes = []; ch.whites = [];
     for (const sx of [1, -1]) {
-      const e = new THREE.Mesh(GEO.box, emat); e.scale.set(0.024 * S, 0.02 * S, 0.012 * S);
-      e.position.set(sx * hr * 0.36, cy + hr * 0.16, hr * 0.93); e.userData = { x: e.position.x, y: e.position.y, sy: e.scale.y };
+      const w = new THREE.Mesh(GEO.box, wmat); w.scale.set(0.027 * S, 0.016 * S, 0.01 * S); w.position.set(sx * hr * 0.36, cy + hr * 0.16, hr * 0.925); w.userData = { sy: w.scale.y };
+      headJ.add(w); ch.whites.push(w);
+      const e = new THREE.Mesh(GEO.box, emat); e.scale.set(0.017 * S, 0.017 * S, 0.008 * S);
+      e.position.set(sx * hr * 0.36, cy + hr * 0.16, hr * 0.935 + 0.006 * S); e.userData = { x: e.position.x, y: e.position.y, sy: e.scale.y };
       headJ.add(e); ch.eyes.push(e);
     }
     ch.headTop = cy + hr; }
