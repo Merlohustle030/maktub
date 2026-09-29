@@ -1,0 +1,10 @@
+{
+  "name": "maktub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MAKTUB – ein cineastisches Story-Game im Browser (eine einzige HTML-Datei).",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "lint": "node tools/build.mjs && eslint build/bundle.js"
+  }
+}
