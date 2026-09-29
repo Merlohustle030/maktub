@@ -31,10 +31,11 @@ Object.assign(Story, {
   },
   // Mamas Anruf: Der Spieler WILL annehmen – Mirzas Daumen drückt trotzdem weg.
   async mamaCall() {
+    await sleep(9);
     await untilKeep(() => !Interact.busy && G.mode === 'play' && !Player.locked);
     const me = Player.ch;
     Player.lock(); me.hold('phone', true); me.setPose('phone', 3.5); Focus.allowed = false;
-    await Phone.incoming({ name: 'Mama ❤️', initial: 'M', status: 'Anruf', decline: 'Nicht jetzt, Mama. Später.', wait: 9 });
+    await Phone.incoming({ name: 'Mama', initial: 'M', status: 'Anruf', decline: 'Nicht jetzt, Mama. Später.', wait: 9 });
     me.hold('phone', false); me.setPose('mirza', 3.5); Player.unlock(); Focus.allowed = true;
     G.state.counters.mamaMissed = (G.state.counters.mamaMissed || 0) + 1;
   },
@@ -110,7 +111,7 @@ async function k1Ending() {
   await Cine.run(async () => {
     Story.clock(20, 12);
     Cam.set({ pos: [-25.2, 1.5, 24.6], look: [-27.4, 1.5, 24.2], fov: 34, dof: 0.3 });
-    await Deal.payday(30000, { size: 3, mood: 'triumph', lines: ['Sechzigtausend. Heute Nacht waren es dreiundzwanzig Euro.'] });
+    await Deal.payday(30000, { size: 3, mood: 'peak', lines: ['Sechzigtausend. Heute Nacht waren es dreiundzwanzig Euro.'] });
     Mus.play(CUES.city, { mood: 'calm', fadeOut: 3, delay: 0.5 });
     Cam.set({ pos: [-23.8, 1.9, 20.6], look: [-27.4, 1.35, 24.4], fov: 32, dof: 0.4 });
     Cam.move({ pos: [-22.6, 2.2, 21.2], look: [-27.4, 1.35, 24.4], fov: 30 }, 16, 'inOutSine');
@@ -118,7 +119,7 @@ async function k1Ending() {
     if (G.state.counters.kerim > 0) { Phone.toast('Kerim', 'Bruder. Alle reden von dir. Ich bin stolz.', 5); await sleep(3.6); }
     else { Phone.toast('Kerim', 'Bruder, lebst du noch? Melde dich.', 5); await sleep(3.6); }
     me.hold('phone', true); me.setPose('phone', 3.5);
-    Phone.msgs('Mama ❤️', [{ t: 'Mirza, ich hab Börek gemacht.' }, { t: 'Er steht im Ofen. Komm, wenn du kannst. ❤️' }]);
+    Phone.msgs('Mama', [{ t: 'Mirza, ich hab Börek gemacht.' }, { t: 'Er steht im Ofen. Komm, wenn du kannst.' }]);
     Snd.notify();
     await sleep(4.2);
     await Sub.inner('Börek.', { dur: 2 });

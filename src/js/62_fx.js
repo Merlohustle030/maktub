@@ -102,7 +102,7 @@ function texVisionboard() {
     // Zettel: Ziele
     c.save(); c.translate(860, 560); c.rotate(-0.05); c.fillStyle = '#efe6cf'; c.shadowColor = 'rgba(0,0,0,.5)'; c.shadowBlur = 8; c.fillRect(-100, -130, 200, 260); c.shadowColor = 'transparent';
     c.fillStyle = '#1a1712'; c.font = '600 38px Caveat, cursive'; c.textAlign = 'left'; c.fillText('Mama', -80, -70); c.fillText('frei.', -80, -30);
-    c.strokeStyle = '#b32d24'; c.lineWidth = 3; c.beginPath(); c.arc(-58, 4, 18, 0, TAU); c.stroke(); c.font = '600 32px Caveat, cursive'; c.fillStyle = '#b32d24'; c.fillText('♥', -70, 12);
+    c.strokeStyle = '#b32d24'; c.lineWidth = 3; c.beginPath(); c.arc(-58, 4, 18, 0, TAU); c.stroke(); c.fillStyle = '#b32d24'; c.beginPath(); c.moveTo(-58, 12); c.bezierCurveTo(-74, 2, -70, -10, -62, -8); c.bezierCurveTo(-59, -7, -58, -4, -58, -3); c.bezierCurveTo(-58, -4, -57, -7, -54, -8); c.bezierCurveTo(-46, -10, -42, 2, -58, 12); c.fill();
     c.fillStyle = '#1a1712'; c.font = '600 44px Caveat, cursive'; c.fillText('ALLES.', -78, 78);
     c.restore();
     // rote Fäden

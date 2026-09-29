@@ -228,7 +228,7 @@ const Phone = {
     this.open(`<div class="ph-who">${who}</div><div class="ph-msgs">${list.map((m, i) => `<div class="ph-bub${m.me ? ' me' : ''}" style="animation-delay:${i * 0.35}s">${m.t}</div>`).join('')}</div>`, { mid });
   },
   // Anruf: der Spieler WILL annehmen (E) – Mirzas Daumen drückt trotzdem weg. Der Weg ist vorbestimmt.
-  async incoming({ name = 'Mama ❤️', initial = 'M', status = 'Anruf', decline = 'Nicht jetzt.', wait = 9, buzz = true } = {}) {
+  async incoming({ name = 'Mama', initial = 'M', status = 'Anruf', decline = 'Nicht jetzt.', wait = 9, buzz = true } = {}) {
     if (G.skipping) return 'declined';
     this.open(`<div class="ph-call" style="flex:1;display:flex;flex-direction:column"><div class="ph-av">${initial}</div><div class="nm">${name}</div><div class="st">${status}</div><div style="flex:1"></div><div class="ph-btns"><div class="ph-btn dec">${PHONE_ICON.dec}</div><div class="ph-btn acc">${PHONE_ICON.acc}</div></div><div class="ph-sm" style="margin-top:14px;text-align:center;opacity:.6">E — Annehmen</div></div>`);
     if (buzz) Snd.phoneBuzz(undefined, 3);

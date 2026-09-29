@@ -276,7 +276,7 @@ Story.cityBrandt = async () => {
     await sleep(1.2);
     Story.clock(18, 14);
     // ---- Zahltag ----
-    await Deal.payday(10000, { size: 2, strike: 1, mood: 'lift', lines: ['Zehntausend Euro. Für zwanzig Minuten Reden.', 'Mama braucht dafür ein ganzes Jahr Nachtschichten.'] });
+    await Deal.payday(10000, { size: 2, strike: 1, mood: 'win', lines: ['Zehntausend Euro. Für zwanzig Minuten Reden.', 'Mama braucht dafür ein ganzes Jahr Nachtschichten.'] });
     Goals.set({ ten: 'done', maybach: 'cur' });
     await Sub.inner('Und das war erst die erste Zahl.', { dur: 3 });
   }, { stay: false });

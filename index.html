@@ -2251,7 +2251,7 @@ void main(){
   float l = lum(col);
   col += vec3(g * 0.9, g, g * 1.1) * uGrain * (0.35 + 0.9 * (1.0 - l) * (0.4 + l * 1.4));
   col += (h12(vUv * uRes + 17.0) - 0.5) / 255.0;
-  float visH = mix(1.0, min(1.0, uAspect / 2.39), uBars);
+  float visH = mix(1.0, max(0.8, min(1.0, uAspect / 2.39)), uBars);   // schmale Bildschirme: Balken begrenzen
   float m = (1.0 - visH) * 0.5;
   float px = 1.0 / uRes.y;
   float bar = smoothstep(m + px, m - px, vUv.y) + smoothstep(1.0 - m - px, 1.0 - m + px, vUv.y);
@@ -2456,7 +2456,7 @@ const GFX = {
   // Höhe eines Letterbox-Balkens in CSS-Pixeln (für Untertitel-Position)
   barPx() {
     const aspect = window.innerWidth / window.innerHeight;
-    const visH = lerp(1, Math.min(1, aspect / 2.39), FX.bars);
+    const visH = lerp(1, Math.max(0.8, Math.min(1, aspect / 2.39)), FX.bars);
     return ((1 - visH) / 2) * window.innerHeight;
   },
   // Adaptive Auflösung: hält 60 fps, ohne dass man Einstellungen suchen muss.
@@ -2927,7 +2927,7 @@ const Phone = {
     this.open(`<div class="ph-who">${who}</div><div class="ph-msgs">${list.map((m, i) => `<div class="ph-bub${m.me ? ' me' : ''}" style="animation-delay:${i * 0.35}s">${m.t}</div>`).join('')}</div>`, { mid });
   },
   // Anruf: der Spieler WILL annehmen (E) – Mirzas Daumen drückt trotzdem weg. Der Weg ist vorbestimmt.
-  async incoming({ name = 'Mama ❤️', initial = 'M', status = 'Anruf', decline = 'Nicht jetzt.', wait = 9, buzz = true } = {}) {
+  async incoming({ name = 'Mama', initial = 'M', status = 'Anruf', decline = 'Nicht jetzt.', wait = 9, buzz = true } = {}) {
     if (G.skipping) return 'declined';
     this.open(`<div class="ph-call" style="flex:1;display:flex;flex-direction:column"><div class="ph-av">${initial}</div><div class="nm">${name}</div><div class="st">${status}</div><div style="flex:1"></div><div class="ph-btns"><div class="ph-btn dec">${PHONE_ICON.dec}</div><div class="ph-btn acc">${PHONE_ICON.acc}</div></div><div class="ph-sm" style="margin-top:14px;text-align:center;opacity:.6">E — Annehmen</div></div>`);
     if (buzz) Snd.phoneBuzz(undefined, 3);
@@ -4169,7 +4169,7 @@ function texVisionboard() {
     // Zettel: Ziele
     c.save(); c.translate(860, 560); c.rotate(-0.05); c.fillStyle = '#efe6cf'; c.shadowColor = 'rgba(0,0,0,.5)'; c.shadowBlur = 8; c.fillRect(-100, -130, 200, 260); c.shadowColor = 'transparent';
     c.fillStyle = '#1a1712'; c.font = '600 38px Caveat, cursive'; c.textAlign = 'left'; c.fillText('Mama', -80, -70); c.fillText('frei.', -80, -30);
-    c.strokeStyle = '#b32d24'; c.lineWidth = 3; c.beginPath(); c.arc(-58, 4, 18, 0, TAU); c.stroke(); c.font = '600 32px Caveat, cursive'; c.fillStyle = '#b32d24'; c.fillText('♥', -70, 12);
+    c.strokeStyle = '#b32d24'; c.lineWidth = 3; c.beginPath(); c.arc(-58, 4, 18, 0, TAU); c.stroke(); c.fillStyle = '#b32d24'; c.beginPath(); c.moveTo(-58, 12); c.bezierCurveTo(-74, 2, -70, -10, -62, -8); c.bezierCurveTo(-59, -7, -58, -4, -58, -3); c.bezierCurveTo(-58, -4, -57, -7, -54, -8); c.bezierCurveTo(-46, -10, -42, 2, -58, 12); c.fill();
     c.fillStyle = '#1a1712'; c.font = '600 44px Caveat, cursive'; c.fillText('ALLES.', -78, 78);
     c.restore();
     // rote Fäden
@@ -6380,7 +6380,7 @@ Story.cityBrandt = async () => {
     await sleep(1.2);
     Story.clock(18, 14);
     // ---- Zahltag ----
-    await Deal.payday(10000, { size: 2, strike: 1, mood: 'lift', lines: ['Zehntausend Euro. Für zwanzig Minuten Reden.', 'Mama braucht dafür ein ganzes Jahr Nachtschichten.'] });
+    await Deal.payday(10000, { size: 2, strike: 1, mood: 'win', lines: ['Zehntausend Euro. Für zwanzig Minuten Reden.', 'Mama braucht dafür ein ganzes Jahr Nachtschichten.'] });
     Goals.set({ ten: 'done', maybach: 'cur' });
     await Sub.inner('Und das war erst die erste Zahl.', { dur: 3 });
   }, { stay: false });
@@ -6809,7 +6809,7 @@ Story.lobbyWinter = async () => {
     Wn.walkTo(-6.6, 3.0, { speed: 0.9 }).then(() => Wn.walkTo(2.4, 3.6, { speed: 1.0 })).catch(() => {});
     await sleep(1.0);
     Story.clock(19, 4);
-    await Deal.payday(20000, { size: 3, mood: 'triumph', lines: ['Zwanzigtausend.', 'Vor einem Tag konnte ich mir keinen Kaffee leisten.'] });
+    await Deal.payday(20000, { size: 3, mood: 'win', lines: ['Zwanzigtausend.', 'Vor einem Tag konnte ich mir keinen Kaffee leisten.'] });
     await Sub.inner('Etwas Größeres.', { dur: 2.4 });
   }, { stay: false });
   Deal.end();
@@ -6851,10 +6851,11 @@ Object.assign(Story, {
   },
   // Mamas Anruf: Der Spieler WILL annehmen – Mirzas Daumen drückt trotzdem weg.
   async mamaCall() {
+    await sleep(9);
     await untilKeep(() => !Interact.busy && G.mode === 'play' && !Player.locked);
     const me = Player.ch;
     Player.lock(); me.hold('phone', true); me.setPose('phone', 3.5); Focus.allowed = false;
-    await Phone.incoming({ name: 'Mama ❤️', initial: 'M', status: 'Anruf', decline: 'Nicht jetzt, Mama. Später.', wait: 9 });
+    await Phone.incoming({ name: 'Mama', initial: 'M', status: 'Anruf', decline: 'Nicht jetzt, Mama. Später.', wait: 9 });
     me.hold('phone', false); me.setPose('mirza', 3.5); Player.unlock(); Focus.allowed = true;
     G.state.counters.mamaMissed = (G.state.counters.mamaMissed || 0) + 1;
   },
@@ -6930,7 +6931,7 @@ async function k1Ending() {
   await Cine.run(async () => {
     Story.clock(20, 12);
     Cam.set({ pos: [-25.2, 1.5, 24.6], look: [-27.4, 1.5, 24.2], fov: 34, dof: 0.3 });
-    await Deal.payday(30000, { size: 3, mood: 'triumph', lines: ['Sechzigtausend. Heute Nacht waren es dreiundzwanzig Euro.'] });
+    await Deal.payday(30000, { size: 3, mood: 'peak', lines: ['Sechzigtausend. Heute Nacht waren es dreiundzwanzig Euro.'] });
     Mus.play(CUES.city, { mood: 'calm', fadeOut: 3, delay: 0.5 });
     Cam.set({ pos: [-23.8, 1.9, 20.6], look: [-27.4, 1.35, 24.4], fov: 32, dof: 0.4 });
     Cam.move({ pos: [-22.6, 2.2, 21.2], look: [-27.4, 1.35, 24.4], fov: 30 }, 16, 'inOutSine');
@@ -6938,7 +6939,7 @@ async function k1Ending() {
     if (G.state.counters.kerim > 0) { Phone.toast('Kerim', 'Bruder. Alle reden von dir. Ich bin stolz.', 5); await sleep(3.6); }
     else { Phone.toast('Kerim', 'Bruder, lebst du noch? Melde dich.', 5); await sleep(3.6); }
     me.hold('phone', true); me.setPose('phone', 3.5);
-    Phone.msgs('Mama ❤️', [{ t: 'Mirza, ich hab Börek gemacht.' }, { t: 'Er steht im Ofen. Komm, wenn du kannst. ❤️' }]);
+    Phone.msgs('Mama', [{ t: 'Mirza, ich hab Börek gemacht.' }, { t: 'Er steht im Ofen. Komm, wenn du kannst.' }]);
     Snd.notify();
     await sleep(4.2);
     await Sub.inner('Börek.', { dur: 2 });

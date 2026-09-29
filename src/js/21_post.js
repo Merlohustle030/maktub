@@ -195,7 +195,7 @@ void main(){
   float l = lum(col);
   col += vec3(g * 0.9, g, g * 1.1) * uGrain * (0.35 + 0.9 * (1.0 - l) * (0.4 + l * 1.4));
   col += (h12(vUv * uRes + 17.0) - 0.5) / 255.0;
-  float visH = mix(1.0, min(1.0, uAspect / 2.39), uBars);
+  float visH = mix(1.0, max(0.8, min(1.0, uAspect / 2.39)), uBars);   // schmale Bildschirme: Balken begrenzen
   float m = (1.0 - visH) * 0.5;
   float px = 1.0 / uRes.y;
   float bar = smoothstep(m + px, m - px, vUv.y) + smoothstep(1.0 - m - px, 1.0 - m + px, vUv.y);
@@ -400,7 +400,7 @@ const GFX = {
   // Höhe eines Letterbox-Balkens in CSS-Pixeln (für Untertitel-Position)
   barPx() {
     const aspect = window.innerWidth / window.innerHeight;
-    const visH = lerp(1, Math.min(1, aspect / 2.39), FX.bars);
+    const visH = lerp(1, Math.max(0.8, Math.min(1, aspect / 2.39)), FX.bars);
     return ((1 - visH) / 2) * window.innerHeight;
   },
   // Adaptive Auflösung: hält 60 fps, ohne dass man Einstellungen suchen muss.

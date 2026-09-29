@@ -207,7 +207,7 @@ Story.lobbyWinter = async () => {
     Wn.walkTo(-6.6, 3.0, { speed: 0.9 }).then(() => Wn.walkTo(2.4, 3.6, { speed: 1.0 })).catch(() => {});
     await sleep(1.0);
     Story.clock(19, 4);
-    await Deal.payday(20000, { size: 3, mood: 'triumph', lines: ['Zwanzigtausend.', 'Vor einem Tag konnte ich mir keinen Kaffee leisten.'] });
+    await Deal.payday(20000, { size: 3, mood: 'win', lines: ['Zwanzigtausend.', 'Vor einem Tag konnte ich mir keinen Kaffee leisten.'] });
     await Sub.inner('Etwas Größeres.', { dur: 2.4 });
   }, { stay: false });
   Deal.end();
