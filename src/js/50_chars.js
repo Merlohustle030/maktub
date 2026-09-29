@@ -220,10 +220,10 @@ function humanoid(name, o) {
   const headJ = ch.joint('head', neckJ, 0, BODY.neckH * S, 0);
   const armL = ch.joint('armL', chestJ, sh * S, (BODY.chestH - 0.03) * S, 0), armR = ch.joint('armR', chestJ, -sh * S, (BODY.chestH - 0.03) * S, 0);
   const foreL = ch.joint('foreL', armL, 0, -armLen * S, 0), foreR = ch.joint('foreR', armR, 0, -armLen * S, 0);
-  const handL = ch.joint('handL', foreL, 0, -foreLen * S, 0), handR = ch.joint('handR', foreR, 0, -foreLen * S, 0);
+  ch.joint('handL', foreL, 0, -foreLen * S, 0); ch.joint('handR', foreR, 0, -foreLen * S, 0);
   const legL = ch.joint('legL', hipsJ, hip * S, -0.05 * S, 0), legR = ch.joint('legR', hipsJ, -hip * S, -0.05 * S, 0);
   const shinL = ch.joint('shinL', legL, 0, -BODY.thigh * S, 0), shinR = ch.joint('shinR', legR, 0, -BODY.thigh * S, 0);
-  const footL = ch.joint('footL', shinL, 0, -BODY.shin * S, 0), footR = ch.joint('footR', shinR, 0, -BODY.shin * S, 0);
+  ch.joint('footL', shinL, 0, -BODY.shin * S, 0); ch.joint('footR', shinR, 0, -BODY.shin * S, 0);
 
   const top = o.top || 0x15161b, bottom = o.bottom || 0x15161b, shoe = o.shoe || 0x0a0a0c, under = o.under || 0xe8e4da;
   const tw = o.torsoW || 1;
@@ -434,7 +434,7 @@ function makeCat() {
   const legs = [];
   const lm = new MB(43); lm.jit = 0.02; lm.cyl(0.026, 0.02, 0.15, 5, 0, -0.15, 0, fur);
   const pawGeo = new MB(44); pawGeo.box(0.04, 0.025, 0.06, 0, -0.025, 0.012, light);
-  for (const [x, z, k] of [[0.055, 0.15, 0], [-0.055, 0.15, 1], [0.055, -0.15, 2], [-0.055, -0.15, 3]]) {
+  for (const [x, z] of [[0.055, 0.15], [-0.055, 0.15], [0.055, -0.15], [-0.055, -0.15]]) {
     const lg = new THREE.Group(); lg.position.set(x, 0.14, z); body.add(lg);
     lg.add(lm.mesh(mat)); const paw = pawGeo.mesh(mat); paw.position.y = -0.15; lg.add(paw); legs.push(lg);
   }

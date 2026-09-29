@@ -52,7 +52,7 @@ Object.assign(Story, {
   },
   // Eine Zeichnerin am Fluss. Ein Blick. Mehr nicht – noch nicht.
   async cityNour() {
-    const W = G.world, me = Player.ch, N = W.nour, F = G.state.flags;
+    const W = G.world, me = Player.ch, N = W.nour;
     const n = ++G.state.counters.nourLooks;
     await Player.turnTo(-30.3, 0);
     await Cine.run(async () => {
@@ -60,7 +60,7 @@ Object.assign(Story, {
       const upd = () => { N.j.head.getWorldPosition(nh); me.j.head.getWorldPosition(mh); };
       upd(); W.onUpdate(upd);
       me.lookAt(nh, 0.9);
-      Mus.mood('silence', 1.5);
+      W.adaptive = false; Mus.play(CUES.nour, { mood: 'on', fadeOut: 2.5, delay: 0.3 });
       Cam.set({ pos: [-32.2, 1.3, 3.2], look: [-30.3, 1.0, 0.1], fov: 36, dof: 0.6 });
       Cam.move({ pos: [-32.0, 1.22, 2.6], look: [-30.3, 1.02, 0.05], fov: 28 }, 14, 'inOutSine');
       await sleep(2.4);
@@ -85,10 +85,11 @@ Object.assign(Story, {
       const i = W.updaters.indexOf(upd); if (i >= 0) W.updaters.splice(i, 1);
     }, { stay: false });
     me.lookAt(null); FX.dof = 0; N.lookAt(null);
+    Mus.play(CUES.city, { mood: 'calm', fadeOut: 3.5, delay: 0.2 }); W._want = 'calm'; W._mv = 0; W.adaptive = true;
   },
   // Der Straßenmusiker: eine Melodie, die Nena gesummt hat
   async cityMusician() {
-    const W = G.world, me = Player.ch, F = G.state.flags, mu = W.musician;
+    const W = G.world, me = Player.ch, F = G.state.flags;
     const first = !F.musician; F.musician = true;
     await Player.turnTo(-4, -1.55);
     await Cine.run(async () => {
@@ -115,7 +116,7 @@ Object.assign(Story, {
   },
   // Am Fluss sitzen: die stille Stelle des Kapitels
   async cityBench() {
-    const W = G.world, me = Player.ch, F = G.state.flags;
+    const me = Player.ch, F = G.state.flags;
     const first = !F.benchDone; F.benchDone = true;
     await Cine.run(async () => {
       Cam.set({ pos: [-27.6, 1.5, 15.0], look: [-31, 1.0, 12], fov: 38 });

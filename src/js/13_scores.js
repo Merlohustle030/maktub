@@ -161,3 +161,22 @@ CUES.montage = Object.assign({}, CUES.deal, {
     peak: { oud: 0.9, sub: 1, perc: 1, hats: 0.8, strings: 1, clap: 0.8, kanun: 0.8, ney: 0.9, choir: 0.8 },
   },
 });
+
+// ---------- Nours Thema: Nahawand, zart – Kanun vorne, Glas darüber, das Ney antwortet ----------
+const N_THEME = [
+  [0, 4, 4, 0.55], [4, 5, 2, 0.5], [6, 4, 2, 0.48], [8, 3, 8, 0.6, { vib: 12 }],
+  [16, 2, 4, 0.5], [20, 3, 2, 0.48], [22, 2, 2, 0.46], [24, 1, 8, 0.56],
+  [32, 4, 4, 0.56], [36, 5, 2, 0.5], [38, 6, 2, 0.56], [40, 7, 8, 0.7, { vib: 15 }],
+  [48, 6, 4, 0.5], [52, 4, 4, 0.48], [56, 3, 4, 0.5], [60, 0, 4, 0.52],
+];
+CUES.nour = {
+  bpm: 72, maqam: 'nahawand', len: 64,
+  moods: { silence: {}, on: { kanun: 0.95, glass: 0.6, strings: 0.55, ney: 0.5 }, full: { kanun: 1, glass: 0.7, strings: 0.8, ney: 0.9, choir: 0.5 } },
+  layers: {
+    kanun: { inst: 'kanun', len: 64, oct: 0, ev: N_THEME, opts: { hall: 0.55, room: 0.05 }, gain: 0.95 },
+    glass: { inst: 'kanun', len: 64, oct: 2, gain: 0.5, ev: [[3, 4, 4, 0.2, { pan: -0.5 }], [10, 2, 4, 0.18, { pan: 0.5 }], [19, 6, 4, 0.2, { pan: -0.3 }], [35, 4, 4, 0.2, { pan: 0.4 }], [50, 7, 4, 0.18, { pan: 0 }]], opts: { hall: 0.9 } },
+    strings: { inst: 'strings', len: 64, gain: 0.7, ev: [[0, [-7, -3, 0, 2], 15, 0.42, { attack: 2, release: 2.5 }], [16, [-6, -3, -1, 1], 15, 0.42, { attack: 2, release: 2.5 }], [32, [-7, -3, 0, 2], 15, 0.44, { attack: 2, release: 2.5 }], [48, [-4, -1, 1, 3], 15, 0.44, { attack: 2, release: 3 }]] },
+    ney: { inst: 'ney', bus: 'clean', len: 64, oct: 1, ev: [[40, 7, 10, 0.55, { vib: 15 }], [56, 4, 8, 0.5, { vib: 12 }]], opts: { hall: 0.7 } },
+    choir: { inst: 'choir', len: 64, gain: 0.6, ev: [[0, [-7, -3, 0], 30, 0.4, { vowel: 'oh' }], [32, [-7, -3, 2], 30, 0.4, { vowel: 'ah' }]] },
+  },
+};

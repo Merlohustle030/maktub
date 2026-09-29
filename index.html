@@ -1697,6 +1697,25 @@ CUES.montage = Object.assign({}, CUES.deal, {
   },
 });
 
+// ---------- Nours Thema: Nahawand, zart – Kanun vorne, Glas darüber, das Ney antwortet ----------
+const N_THEME = [
+  [0, 4, 4, 0.55], [4, 5, 2, 0.5], [6, 4, 2, 0.48], [8, 3, 8, 0.6, { vib: 12 }],
+  [16, 2, 4, 0.5], [20, 3, 2, 0.48], [22, 2, 2, 0.46], [24, 1, 8, 0.56],
+  [32, 4, 4, 0.56], [36, 5, 2, 0.5], [38, 6, 2, 0.56], [40, 7, 8, 0.7, { vib: 15 }],
+  [48, 6, 4, 0.5], [52, 4, 4, 0.48], [56, 3, 4, 0.5], [60, 0, 4, 0.52],
+];
+CUES.nour = {
+  bpm: 72, maqam: 'nahawand', len: 64,
+  moods: { silence: {}, on: { kanun: 0.95, glass: 0.6, strings: 0.55, ney: 0.5 }, full: { kanun: 1, glass: 0.7, strings: 0.8, ney: 0.9, choir: 0.5 } },
+  layers: {
+    kanun: { inst: 'kanun', len: 64, oct: 0, ev: N_THEME, opts: { hall: 0.55, room: 0.05 }, gain: 0.95 },
+    glass: { inst: 'kanun', len: 64, oct: 2, gain: 0.5, ev: [[3, 4, 4, 0.2, { pan: -0.5 }], [10, 2, 4, 0.18, { pan: 0.5 }], [19, 6, 4, 0.2, { pan: -0.3 }], [35, 4, 4, 0.2, { pan: 0.4 }], [50, 7, 4, 0.18, { pan: 0 }]], opts: { hall: 0.9 } },
+    strings: { inst: 'strings', len: 64, gain: 0.7, ev: [[0, [-7, -3, 0, 2], 15, 0.42, { attack: 2, release: 2.5 }], [16, [-6, -3, -1, 1], 15, 0.42, { attack: 2, release: 2.5 }], [32, [-7, -3, 0, 2], 15, 0.44, { attack: 2, release: 2.5 }], [48, [-4, -1, 1, 3], 15, 0.44, { attack: 2, release: 3 }]] },
+    ney: { inst: 'ney', bus: 'clean', len: 64, oct: 1, ev: [[40, 7, 10, 0.55, { vib: 15 }], [56, 4, 8, 0.5, { vib: 12 }]], opts: { hall: 0.7 } },
+    choir: { inst: 'choir', len: 64, gain: 0.6, ev: [[0, [-7, -3, 0], 30, 0.4, { vowel: 'oh' }], [32, [-7, -3, 2], 30, 0.4, { vowel: 'ah' }]] },
+  },
+};
+
 
 /* ==== 20_mat.js ==== */
 // =====================================================================
@@ -3396,10 +3415,10 @@ function humanoid(name, o) {
   const headJ = ch.joint('head', neckJ, 0, BODY.neckH * S, 0);
   const armL = ch.joint('armL', chestJ, sh * S, (BODY.chestH - 0.03) * S, 0), armR = ch.joint('armR', chestJ, -sh * S, (BODY.chestH - 0.03) * S, 0);
   const foreL = ch.joint('foreL', armL, 0, -armLen * S, 0), foreR = ch.joint('foreR', armR, 0, -armLen * S, 0);
-  const handL = ch.joint('handL', foreL, 0, -foreLen * S, 0), handR = ch.joint('handR', foreR, 0, -foreLen * S, 0);
+  ch.joint('handL', foreL, 0, -foreLen * S, 0); ch.joint('handR', foreR, 0, -foreLen * S, 0);
   const legL = ch.joint('legL', hipsJ, hip * S, -0.05 * S, 0), legR = ch.joint('legR', hipsJ, -hip * S, -0.05 * S, 0);
   const shinL = ch.joint('shinL', legL, 0, -BODY.thigh * S, 0), shinR = ch.joint('shinR', legR, 0, -BODY.thigh * S, 0);
-  const footL = ch.joint('footL', shinL, 0, -BODY.shin * S, 0), footR = ch.joint('footR', shinR, 0, -BODY.shin * S, 0);
+  ch.joint('footL', shinL, 0, -BODY.shin * S, 0); ch.joint('footR', shinR, 0, -BODY.shin * S, 0);
 
   const top = o.top || 0x15161b, bottom = o.bottom || 0x15161b, shoe = o.shoe || 0x0a0a0c, under = o.under || 0xe8e4da;
   const tw = o.torsoW || 1;
@@ -3610,7 +3629,7 @@ function makeCat() {
   const legs = [];
   const lm = new MB(43); lm.jit = 0.02; lm.cyl(0.026, 0.02, 0.15, 5, 0, -0.15, 0, fur);
   const pawGeo = new MB(44); pawGeo.box(0.04, 0.025, 0.06, 0, -0.025, 0.012, light);
-  for (const [x, z, k] of [[0.055, 0.15, 0], [-0.055, 0.15, 1], [0.055, -0.15, 2], [-0.055, -0.15, 3]]) {
+  for (const [x, z] of [[0.055, 0.15], [-0.055, 0.15], [0.055, -0.15], [-0.055, -0.15]]) {
     const lg = new THREE.Group(); lg.position.set(x, 0.14, z); body.add(lg);
     lg.add(lm.mesh(mat)); const paw = pawGeo.mesh(mat); paw.position.y = -0.15; lg.add(paw); legs.push(lg);
   }
@@ -4934,7 +4953,6 @@ function texSign(text, o = {}) {
     c.fillStyle = o.fg || '#e8d6a0'; c.font = `500 ${o.size || 64}px "Cormorant Garamond", Georgia, serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(text, w / 2, h / 2 + 4);
   });
 }
-function texClockFace(h = 17, m = 31) { return texClock(h, m); }
 
 const lighten = (hex, t) => mixHex(hex, 0xffffff, t);
 const darken = (hex, t) => mixHex(hex, 0x000000, t);
@@ -6002,7 +6020,7 @@ Object.assign(Story, {
 
   async afterFlashback(keep) {
     await Game.loadWorld('room', { spawn: keep });
-    const W = G.world, ch = Player.ch;
+    const ch = Player.ch;
     Mus.play(CUES.room, { mood: 'ney', fadeOut: 3, delay: 0.4 });
     ch.place(0.32, 0, -1.02, Math.PI); ch.setPose('mirza'); ch.snapPose();
     await Cine.run(async (c) => {
@@ -6156,7 +6174,7 @@ Object.assign(Story, {
   },
   // Eine Zeichnerin am Fluss. Ein Blick. Mehr nicht – noch nicht.
   async cityNour() {
-    const W = G.world, me = Player.ch, N = W.nour, F = G.state.flags;
+    const W = G.world, me = Player.ch, N = W.nour;
     const n = ++G.state.counters.nourLooks;
     await Player.turnTo(-30.3, 0);
     await Cine.run(async () => {
@@ -6164,7 +6182,7 @@ Object.assign(Story, {
       const upd = () => { N.j.head.getWorldPosition(nh); me.j.head.getWorldPosition(mh); };
       upd(); W.onUpdate(upd);
       me.lookAt(nh, 0.9);
-      Mus.mood('silence', 1.5);
+      W.adaptive = false; Mus.play(CUES.nour, { mood: 'on', fadeOut: 2.5, delay: 0.3 });
       Cam.set({ pos: [-32.2, 1.3, 3.2], look: [-30.3, 1.0, 0.1], fov: 36, dof: 0.6 });
       Cam.move({ pos: [-32.0, 1.22, 2.6], look: [-30.3, 1.02, 0.05], fov: 28 }, 14, 'inOutSine');
       await sleep(2.4);
@@ -6189,10 +6207,11 @@ Object.assign(Story, {
       const i = W.updaters.indexOf(upd); if (i >= 0) W.updaters.splice(i, 1);
     }, { stay: false });
     me.lookAt(null); FX.dof = 0; N.lookAt(null);
+    Mus.play(CUES.city, { mood: 'calm', fadeOut: 3.5, delay: 0.2 }); W._want = 'calm'; W._mv = 0; W.adaptive = true;
   },
   // Der Straßenmusiker: eine Melodie, die Nena gesummt hat
   async cityMusician() {
-    const W = G.world, me = Player.ch, F = G.state.flags, mu = W.musician;
+    const W = G.world, me = Player.ch, F = G.state.flags;
     const first = !F.musician; F.musician = true;
     await Player.turnTo(-4, -1.55);
     await Cine.run(async () => {
@@ -6219,7 +6238,7 @@ Object.assign(Story, {
   },
   // Am Fluss sitzen: die stille Stelle des Kapitels
   async cityBench() {
-    const W = G.world, me = Player.ch, F = G.state.flags;
+    const me = Player.ch, F = G.state.flags;
     const first = !F.benchDone; F.benchDone = true;
     await Cine.run(async () => {
       Cam.set({ pos: [-27.6, 1.5, 15.0], look: [-31, 1.0, 12], fov: 38 });
@@ -6605,7 +6624,7 @@ const Deal = {
 // =====================================================================
 Object.assign(Story, {
   async lobbyDesk() {
-    const W = G.world, F = G.state.flags;
+    const F = G.state.flags;
     await Player.turnTo(9.2, -3.4);
     await Story.inspect({ pos: [6.4, 1.6, -1.6], look: [9.6, 1.5, -3.4], fov: 36 }, async () => {
       if (F.dealHotel === 'open') await Sub.say('Empfang', 'Guten Abend. Frau Winter erwartet Sie in der Lounge.', { dur: 3.4 });
@@ -6715,7 +6734,7 @@ Story.cityHotelDoor = async () => {
   dm.lookAt(null); W.doorSpin = 0.35;
   await Game.loadWorld('lobby');
   Mus.play(CUES.city, { mood: 'silence', fadeOut: 2, delay: 0.1 });
-  const L = G.world, lm = Player.ch;
+  const lm = Player.ch;
   Story.clock(18, 31);
   lm.place(0, 0, 8.9, Math.PI); lm.setPose('mirza'); lm.snapPose();
   await Cine.run(async () => {
@@ -6927,7 +6946,7 @@ async function k1Montage() {
 
 // ---------- Ende: Sechzigtausend – und Mamas Börek ----------
 async function k1Ending() {
-  const W = G.world, me = Player.ch, F = G.state.flags;
+  const me = Player.ch, F = G.state.flags;
   await Cine.run(async () => {
     Story.clock(20, 12);
     Cam.set({ pos: [-25.2, 1.5, 24.6], look: [-27.4, 1.5, 24.2], fov: 34, dof: 0.3 });
@@ -7252,7 +7271,6 @@ if (G.debug) {
       const off = new OfflineAudioContext(2, Math.floor(sr * sec), sr);
       const A = new AudioEngine(off, { offline: true }); A.setVolumes(0.9, 0.9);
       const M = new Music(A);
-      // eslint-disable-next-line no-new-func
       new Function('A', 'M', 'CUES', 'MAQAM', 'TONIC', code)(A, M, CUES, MAQAM, TONIC);
       const buf = await off.startRendering();
       const ch = [buf.getChannelData(0), buf.getChannelData(1)];

@@ -107,7 +107,7 @@ async function k1Montage() {
 
 // ---------- Ende: Sechzigtausend – und Mamas Börek ----------
 async function k1Ending() {
-  const W = G.world, me = Player.ch, F = G.state.flags;
+  const me = Player.ch, F = G.state.flags;
   await Cine.run(async () => {
     Story.clock(20, 12);
     Cam.set({ pos: [-25.2, 1.5, 24.6], look: [-27.4, 1.5, 24.2], fov: 34, dof: 0.3 });

@@ -161,7 +161,7 @@ Object.assign(Story, {
 
   async afterFlashback(keep) {
     await Game.loadWorld('room', { spawn: keep });
-    const W = G.world, ch = Player.ch;
+    const ch = Player.ch;
     Mus.play(CUES.room, { mood: 'ney', fadeOut: 3, delay: 0.4 });
     ch.place(0.32, 0, -1.02, Math.PI); ch.setPose('mirza'); ch.snapPose();
     await Cine.run(async (c) => {

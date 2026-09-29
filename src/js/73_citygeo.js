@@ -29,7 +29,6 @@ function texSign(text, o = {}) {
     c.fillStyle = o.fg || '#e8d6a0'; c.font = `500 ${o.size || 64}px "Cormorant Garamond", Georgia, serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(text, w / 2, h / 2 + 4);
   });
 }
-function texClockFace(h = 17, m = 31) { return texClock(h, m); }
 
 const lighten = (hex, t) => mixHex(hex, 0xffffff, t);
 const darken = (hex, t) => mixHex(hex, 0x000000, t);

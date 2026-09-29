@@ -105,7 +105,6 @@ if (G.debug) {
       const off = new OfflineAudioContext(2, Math.floor(sr * sec), sr);
       const A = new AudioEngine(off, { offline: true }); A.setVolumes(0.9, 0.9);
       const M = new Music(A);
-      // eslint-disable-next-line no-new-func
       new Function('A', 'M', 'CUES', 'MAQAM', 'TONIC', code)(A, M, CUES, MAQAM, TONIC);
       const buf = await off.startRendering();
       const ch = [buf.getChannelData(0), buf.getChannelData(1)];

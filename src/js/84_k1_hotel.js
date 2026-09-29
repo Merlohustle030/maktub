@@ -3,7 +3,7 @@
 // =====================================================================
 Object.assign(Story, {
   async lobbyDesk() {
-    const W = G.world, F = G.state.flags;
+    const F = G.state.flags;
     await Player.turnTo(9.2, -3.4);
     await Story.inspect({ pos: [6.4, 1.6, -1.6], look: [9.6, 1.5, -3.4], fov: 36 }, async () => {
       if (F.dealHotel === 'open') await Sub.say('Empfang', 'Guten Abend. Frau Winter erwartet Sie in der Lounge.', { dur: 3.4 });
@@ -113,7 +113,7 @@ Story.cityHotelDoor = async () => {
   dm.lookAt(null); W.doorSpin = 0.35;
   await Game.loadWorld('lobby');
   Mus.play(CUES.city, { mood: 'silence', fadeOut: 2, delay: 0.1 });
-  const L = G.world, lm = Player.ch;
+  const lm = Player.ch;
   Story.clock(18, 31);
   lm.place(0, 0, 8.9, Math.PI); lm.setPose('mirza'); lm.snapPose();
   await Cine.run(async () => {
