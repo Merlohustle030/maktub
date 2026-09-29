@@ -236,14 +236,14 @@ async function prologRun() {
   // --- Sitzen bleiben, bis man aufsteht ---
   FX.dof = 0; Cam.gameplay(); G.mode = 'play'; Player.lock();
   Hint.show('<b>E</b> oder eine Richtung — Aufstehen', 60);
-  await until(() => Input.pressed('use') || Input.pressed('confirm') || Math.hypot(Input.axis().x, Input.axis().y) > 0.3);
+  await untilKeep(() => Input.pressed('use') || Input.pressed('confirm') || Math.hypot(Input.axis().x, Input.axis().y) > 0.3);
   Hint.hide();
   ch.hold('phone', false); ch.setPose('mirza', 3.6);
   Snd.whoosh(0.5, { gain: 0.25, from: 180, to: 700 });
   await sleep(1.8);
   Player.unlock(); Focus.allowed = true;
   Obj.set('Mach Licht.');
-  await until(() => G.state.flags.prologDone);
+  await untilKeep(() => G.state.flags.prologDone);
 
   // --- Titel ---
   await Game.fade(1, 1.6, [0, 0, 0]);

@@ -246,3 +246,21 @@ class Pigeons {
     for (const m of [this.body, this.wL, this.wR]) m.instanceMatrix.needsUpdate = true;
   }
 }
+
+// Oud (kurzhalsige Laute): lokal – Korpus um den Ursprung, Hals nach +Y, Decke zeigt nach +Z
+function mkOud() {
+  const mb = new MB(151); mb.jit = 0.02;
+  const back = 0x7a4a26, face = 0xc99a5a, dark = 0x2a1a10;
+  mb.sph(0.5, 0, -0.02, -0.02, back, { sx: 0.34, sy: 0.46, sz: 0.25, d: 1 });                 // Schalenkorpus
+  mb.sph(0.5, 0, 0.15, -0.015, back, { sx: 0.25, sy: 0.3, sz: 0.2, d: 1 });                   // Birnenform zum Hals
+  mb.sph(0.5, 0, -0.005, 0.1, face, { sx: 0.32, sy: 0.44, sz: 0.045, d: 1 });                 // Decke
+  mb.cyl(0.06, 0.06, 0.008, 10, 0, -0.004, 0, 0x1f150c, { rx: Math.PI / 2, org: [0, 0.03, 0.125] });   // Schallloch
+  mb.cyl(0.075, 0.075, 0.005, 10, 0, -0.0025, 0, 0x5a3a20, { rx: Math.PI / 2, org: [0, 0.03, 0.121] });
+  mb.box(0.15, 0.014, 0.016, 0, -0.17, 0.125, dark);                                           // Steg
+  mb.box(0.075, 0.34, 0.03, 0, 0.28, 0.055, dark);                                             // Hals
+  mb.box(0.085, 0.02, 0.035, 0, 0.6, 0.06, 0xe8e0d0);                                          // Sattel
+  mb.box(0.085, 0.24, 0.05, 0, 0.6, -0.02, dark, { rx: -0.85 });                                // zurückgebogener Wirbelkasten
+  for (const s of [-1, 1]) for (let i = 0; i < 3; i++) mb.box(0.04, 0.013, 0.013, s * 0.058, 0.66 + i * 0.05, -0.06 - i * 0.03, 0xc9a24a);
+  for (const dx of [-0.028, -0.014, 0, 0.014, 0.028]) mb.box(0.003, 0.76, 0.003, dx, -0.16, 0.135, 0xdcd6c6, { jit: 0 });   // Saiten
+  return mb;
+}

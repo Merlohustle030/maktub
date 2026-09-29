@@ -114,7 +114,7 @@ class CityWorld extends World {
     this.bounds = { x0: -32.4, x1: 30.8, z0: -34.6, z1: 33.4 };
     this.camBox = [-38, -40, 36, 46];
     this.spawn = { x: -27, z: 26, yaw: Math.PI / 2 };
-    this.surface = 'cobble'; this.speed = 1.05;
+    this.surface = 'cobble'; this.speed = 1.45;
     this.lampK = -1; this.glowMats = []; this.pl = [];
     this.tramState = 'wait'; this.tramT = 6; this.tramZ = -150; this.tramBell = false;
     this.clockH = 17; this.clockM = 24;
@@ -268,9 +268,18 @@ class CityWorld extends World {
     this.clock = mkClockPost(this.clockH, this.clockM); this.clock.position.set(-9.4, 0, -22); this.add(this.clock); this.ring(-9.4, -22, 0.3);
     // Bänke Richtung Fluss + am Brunnen
     const BE = new MB(45);
-    for (const [x, z, ry] of [[-30.4, -12, -Math.PI / 2], [-30.4, 0, -Math.PI / 2], [-30.4, 12, -Math.PI / 2], [-30.4, 22, -Math.PI / 2], [-8.4, -6, -Math.PI / 2], [0.4, -6, Math.PI / 2], [-4, -10.4, Math.PI], [-4, -1.6, 0]]) { BE.merge(mkBench(), x, 0, z, ry); this.collide(x - 0.4, z - 0.9, x + 0.4, z + 0.9); }
+    for (const [x, z, ry] of [[-30.4, -12, -Math.PI / 2], [-30.4, 0, -Math.PI / 2], [-30.4, 12, -Math.PI / 2], [-30.4, 22, -Math.PI / 2], [-8.4, -6, -Math.PI / 2], [0.4, -6, Math.PI / 2], [-4, -10.4, Math.PI], [-4, -1.6, 0]]) { BE.merge(mkBench(), x, 0, z, ry); if (Math.abs(Math.sin(ry)) > 0.5) this.collide(x - 0.4, z - 0.9, x + 0.4, z + 0.9); else this.collide(x - 0.9, z - 0.4, x + 0.9, z + 0.4); }
     this.add(BE.mesh(Mat.lit({ spec: 0x333333, shin: 10 })));
     this.benches = [[-30.4, 0], [-30.4, 12], [-30.4, 22]];
+    // Straßenmusiker auf der Bank südlich des Brunnens: er spielt, solange man in der Nähe ist
+    const mu = makeNPC('Musiker', { top: 0x6a4a3a, bottom: 0x3a3630, under: 0xd8d0be, shoe: 0x2a2018, hair: 0xd0ccc4, hairStyle: 'grey', skin: SKIN.olive, torso: 'cardigan', s: 0.98, headR: 0.118 });
+    mu.place(-4, 0, -1.55, 0); mu.setPose(sitP({ lean: 5, nod: 16, L: { arm: [64, 10, 0], fore: 66 }, R: { arm: [36, 4, 0], fore: 96, hand: 8 } })); mu.snapPose(); this.addChar(mu);
+    const oudM = mkOud().mesh(Mat.lit({ spec: 0x664422, shin: 30 }), { cast: true, receive: false }); oudM.scale.setScalar(0.95); oudM.position.set(0.02, 0.06, 0.3); oudM.rotation.set(-0.12, 0.05, -0.85); mu.j.hips.add(oudM);
+    mu.overlay = zeroPose(); mu.pluck = 0;
+    mu.onUpdate = (dt) => { mu.pluck = Math.max(0, mu.pluck - dt * 6); mu.overlay.foreR[0] = -mu.pluck * 9; mu.overlay.handR[0] = mu.pluck * 14; };
+    this.musician = mu; this.muT = 3; this.muDeg = 2; this.muSong = false; this.muI = 0; this.muDone = false;
+    const hat = new MB(82); hat.box(0.5, 0.07, 0.3, 0, 0, 0, 0x2a2018); hat.box(0.44, 0.02, 0.24, 0, 0.07, 0, 0x120c08); for (let i = 0; i < 7; i++) hat.box(0.035, 0.008, 0.035, -0.16 + i * 0.05, 0.085, -0.04 + (i % 3) * 0.04, [0xd9b56a, 0xb8b8c0, 0xd9b56a][i % 3], { jit: 0 });
+    const hm = hat.mesh(Mat.lit({ spec: 0x555555, shin: 20 }), { cast: false }); hm.position.set(-4.0, 0, -0.5); hm.rotation.y = 0.2; this.add(hm);
     // Laternen (Arm zeigt zum Platz)
     const lamps = [[-33, -30, 0], [-33, -16, 0], [-33, -2, 0], [-33, 12, 0], [-33, 26, 0], [-12, -34, -Math.PI / 2], [4, -34, -Math.PI / 2], [-12, 32, Math.PI / 2], [4, 32, Math.PI / 2], [24, -30, Math.PI], [24, -14, Math.PI], [24, 20, Math.PI], [24, 30, Math.PI], [-9, 4, 0]];
     for (const [x, z, ry] of lamps) { const l = mkLamp(true); B.merge(l.body, x, 0, z, ry); LG.merge(l.glow, x, 0, z, ry); this.ring(x, z, 0.22); }
@@ -327,6 +336,7 @@ class CityWorld extends World {
     I({ at: [-9.4, -20.4], r: 1.8, label: 'Ansehen', name: 'Uhr', pos: [-9.4, 4.0, -22], run: () => Story.cityClock() });
     I({ at: [-24.6, 8], r: 1.9, label: 'Ansehen', name: 'Zeitungen', pos: [-26.3, 1.4, 8], run: () => Story.cityNews() });
     I({ at: [-4, -2.7], r: 2.0, label: 'Ansehen', name: 'Brunnen', pos: [-4, 1.0, -3], run: () => Story.cityFountain() });
+    I({ at: [-4, 0.0], r: 1.7, label: 'Zuhören', name: 'Straßenmusiker', pos: [-4, 1.35, -1.55], run: () => Story.cityMusician() });
     I({ at: [22.4, -7.6], r: 2.2, label: 'Ansehen', name: 'Der Wagen', pos: [23.4, 1.2, -4.2], run: () => Story.cityCar() });
     I({ at: [-29.4, 12], r: 1.5, label: 'Setzen', name: 'Bank am Fluss', pos: [-30.4, 0.9, 12], run: () => Story.cityBench() });
     I({ at: [-29.6, 26.4], r: 2.4, label: 'Ansehen', name: 'Die Brücke', pos: [-36, 1.4, 27], run: () => Story.cityBridge() });
@@ -362,13 +372,38 @@ class CityWorld extends World {
       if (this.tramZ - 19.4 > 150) { this.tramState = 'wait'; this.tramT = 20 + Math.random() * 14; this.tram.visible = false; this.tramCol.z0 = this.tramCol.z1 = 1e4; }
     }
     this.crowd.update(dt, pp); this.pigeons.update(dt, pp); this.birds.update(dt);
-    // Musik reagiert aufs Gehen: ruhig im Stehen, Rhythmus im Schritt
+    this.playMusician(dt, pp);
+    // Musik reagiert aufs Gehen: ruhig im Stehen, Rhythmus im Schritt – und schweigt neben dem Straßenmusiker
     if (this.adaptive) {
-      const mv = Player.speed > 0.5 && G.mode === 'play';
+      const mv = Player.speed > 0.5 && G.mode === 'play', mr = this.musician.root.position;
       this._mv = clamp((this._mv || 0) + (mv ? dt : -dt), -3, 3);
-      const want = this._mv > 1.2 ? 'walk' : this._mv < -1.6 ? 'calm' : this._want;
-      if (want && want !== this._want) { this._want = want; Mus.mood(want, want === 'walk' ? 3 : 4); }
+      const nearMu = Math.hypot(pp.x - mr.x, pp.z - mr.z) < 6.5;
+      const want = nearMu ? 'silence' : this._mv > 1.2 ? 'walk' : this._mv < -1.6 ? 'calm' : (this._want === 'silence' ? 'calm' : this._want);
+      if (want && want !== this._want) { this._want = want; Mus.mood(want, want === 'walk' ? 3 : want === 'silence' ? 2 : 4); }
     }
+  }
+  // Der Musiker spielt eine hijaz-Phrase Ton für Ton – lauter, je näher man kommt; oder das feste Lied (muSong)
+  playMusician(dt, pp) {
+    const mu = this.musician, mr = mu.root.position;
+    this.muT -= dt;
+    if (this.muT > 0) return;
+    let deg, wait;
+    if (this.muSong) {
+      const n = MUSICIAN_SONG[this.muI++];
+      if (!n) { this.muSong = false; this.muDone = true; this.muT = 5; return; }
+      deg = n[0]; wait = n[1];
+    } else {
+      this.muDeg = clamp(this.muDeg + [-2, -1, -1, 1, 1, 2][Math.floor(Math.random() * 6)], -1, 6);
+      deg = this.muDeg; wait = [0.55, 0.7, 0.9, 1.3, 2.6][Math.floor(Math.random() * 5)];
+    }
+    this.muT = wait; mu.pluck = 1;
+    if (!AUD || !AUD.ready) return;
+    const d = Math.hypot(pp.x - mr.x, pp.z - mr.z), gain = clamp(1.8 - d / 11, 0.05, 1.3);
+    if (gain < 0.08) return;
+    const fx = Cam.look.x - Cam.pos.x, fz = Cam.look.z - Cam.pos.z, fl = Math.hypot(fx, fz) || 1, dx = mr.x - Cam.pos.x, dz = mr.z - Cam.pos.z, dl = Math.hypot(dx, dz) || 1;
+    const pan = clamp(((dx * -fz + dz * fx) / fl) / Math.max(4, dl), -0.85, 0.85);
+    const f = TONIC * 0.5 * Math.pow(2, semiOf(MAQAM.hijaz, deg) / 12);
+    Snd.pluck('oud', f, AUD.ctx.currentTime + 0.03, { vel: 0.5 + Math.random() * 0.25, hall: 0.42, room: 0.2, pan, gain: gain * 0.9, bus: 'sfx' });
   }
   setClockFace(h, m) {
     this.clockH = h; this.clockM = m;
@@ -381,6 +416,8 @@ class CityWorld extends World {
   onLeave() { for (const n of ['city', 'crowd', 'birds', 'wind']) Snd.ambSet(n, 0, 2); }
 }
 WORLDS.city = CityWorld;
+// [Tonstufe (hijaz, D3 = 0), Pause danach in Sekunden] – eine absteigende Klage, die zur Tonika heimkehrt
+const MUSICIAN_SONG = [[4, 0.7], [3, 0.55], [2, 0.6], [1, 0.9], [0, 1.6], [1, 0.55], [2, 0.55], [3, 0.6], [4, 0.6], [5, 0.9], [4, 0.6], [3, 0.6], [2, 0.7], [1, 1.0], [0, 2.4]];
 
 // Laterne direkt in Builder schreiben (Brücke)
 function mkLampInto(B, LG, x, z, ry, s = 1) { const l = mkLamp(true); B.merge(l.body, x, 0, z, ry, s); LG.merge(l.glow, x, 0, z, ry, s); }

@@ -111,6 +111,7 @@ const Deal = {
     mark();
     Tell.force = !!force; Cine.skippable = false; Focus.allowed = true; $('#hud').classList.add('subs-on', 'deal-on');
     const HOLD = 2.4;
+    try {
     await sleep(0.55);
     await until(() => {
       if (Input.pressed('up') && sel > 0) { sel--; mark(); Snd.uiHover(); }
@@ -125,8 +126,7 @@ const Deal = {
       if (held >= HOLD) result = sel;
       return result >= 0;
     });
-    window.removeEventListener('pointerup', up);
-    sil.classList.remove('on'); fill.style.width = '0%';
+    } finally { window.removeEventListener('pointerup', up); sil.classList.remove('on'); fill.style.width = '0%'; }
     Focus.allowed = false; Tell.clear();
     items.forEach((d, i) => { if (i !== result) d.style.opacity = 0; d.style.transition = 'opacity .5s'; });
     await sleep(0.4);

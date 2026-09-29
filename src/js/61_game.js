@@ -82,7 +82,8 @@ const Game = {
     G.sched.abort(); if (G.world) for (const c of G.world.chars) if (c.abortMove) c.abortMove();
     Cine.active = false; Cine.skipping = false; G.skipping = false; Notebook.close(true);
     Sub.clear(); $('#choices').innerHTML = ''; Phone.hide(); Title.black(false); Ov.show && $('#overlay-text .ov').classList.remove('on');
-    Focus.allowed = false; G.focus = 0; FX.focus = 0; FX.water = 0; FX.flash = 0; Snd.heartStop(); Snd.worldFilter(20000, 0.2); Snd.ambClear(1.5);
+    Focus.allowed = false; G.focus = 0; FX.focus = 0; FX.water = 0; FX.flash = 0; G.slow = 1; Snd.heartStop(); Snd.worldFilter(20000, 0.2); Snd.ambClear(1.5);
+    Tell.clear(); $('#silence').classList.remove('on'); $('#hud').classList.remove('subs-on', 'deal-on');
     Input.releaseLock(); UI.hud(false); $('#touch').classList.add('hidden');
     await this.fade(1, 0.7, [0, 0, 0]);
     G.mode = 'menu'; G.paused = false;
@@ -104,7 +105,7 @@ const Game = {
     Notebook.close(true);
     Sub.clear(); $('#choices').innerHTML = ''; Phone.hide();
     $('#menu').classList.add('hidden'); Panels.closeAll();
-    Focus.allowed = false; G.focus = 0; FX.water = 0; FX.flash = 0;
+    Focus.allowed = false; G.focus = 0; FX.water = 0; FX.flash = 0; G.slow = 1; Tell.clear();
     await Promise.resolve(); // Abbruch der alten Skripte durchlaufen lassen
     Store.set('progress', { chapter: i });
     for (let k = i; k < Story.chapters.length; k++) {

@@ -274,7 +274,9 @@ input[type=range]::-moz-range-thumb { width: 11px; height: 11px; border: 0; bord
 <div id="ui"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-(function () {
+if (!window.THREE) {
+  document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;inset:0;display:grid;place-items:center;background:#000;color:#e9dfc8;font:300 20px Georgia,serif;text-align:center;padding:24px">Three.js konnte nicht geladen werden.<br><small style="opacity:.6">Bitte die Internetverbindung prüfen und die Seite neu laden.</small></div>');
+} else (function () {
 'use strict';
 /* ==== 00_core.js ==== */
 // =====================================================================
@@ -398,10 +400,11 @@ class Sched {
     if (this.skipping() || sec <= 0) return Promise.resolve();
     return new Promise((res, rej) => this.items.push({ kind: 'wait', t: 0, dur: sec, res, rej }));
   }
-  until(fn, timeout = Infinity) {
+  // keep: Wartepunkt des Hauptskripts – wird weder vom Überspringen einer Cutscene noch von flush() berührt
+  until(fn, timeout = Infinity, keep = false) {
     if (fn()) return Promise.resolve(true);
-    if (this.skipping()) return Promise.resolve(false);
-    return new Promise((res, rej) => this.items.push({ kind: 'until', fn, t: 0, dur: timeout, res, rej }));
+    if (!keep && this.skipping()) return Promise.resolve(false);
+    return new Promise((res, rej) => this.items.push({ kind: 'until', fn, t: 0, dur: timeout, res, rej, keep }));
   }
   // to: {prop: value} für Zahlen / Arrays / Vector3 / Color-Komponenten. obj kann auch eine Funktion (t)=>{} sein.
   tween(obj, to, dur, easing = 'inOut', delay = 0) {
@@ -454,7 +457,8 @@ class Sched {
   }
   // Überspringen: alles sofort abschließen.
   flush() {
-    const items = this.items.splice(0);
+    const all = this.items.splice(0), items = [];
+    for (const it of all) { if (it.keep) this.items.push(it); else items.push(it); }
     for (const it of items) {
       if (it.kind === 'tween') it.apply(it, 1);
       it.res(it.kind === 'until' ? false : undefined);
@@ -481,6 +485,7 @@ const G = {
 };
 const sleep = (sec) => G.sched.wait(sec);
 const until = (fn, timeout) => G.sched.until(fn, timeout);
+const untilKeep = (fn, timeout) => G.sched.until(fn, timeout, true);
 const tween = (o, to, d, e, delay) => G.sched.tween(o, to, d, e, delay);
 G.sched.skipping = () => G.skipping;
 
@@ -2753,6 +2758,7 @@ const Sub = {
     this.cur = div; $('#hud').classList.add('subs-on');
     const plain = text.replace(/<[^>]+>/g, '');
     const dur = o.dur != null ? o.dur : clamp(1.0 + plain.length * 0.052, 1.8, 9);
+    if (o.who === 'say' && o.name && G.world) { const ch = G.world.chars.find((c) => c.name && c.name.startsWith(o.name)); if (ch) ch.talk = Math.max(0.4, dur - 0.5); }   // Lippen bewegen
     await sleep(dur);
     if (o.confirm) { await sleep(0.3); await until(() => Input.confirm()); }
     if (!o.keep) this.fade(div);
@@ -3359,6 +3365,12 @@ class Character {
       for (const e of this.eyes) { e.scale.y = e.userData.sy * (1 - bl * 0.92); e.position.x = e.userData.x + this.gaze.x * 0.014; e.position.y = e.userData.y + this.gaze.y * 0.01; }
       if (this.whites) for (const w of this.whites) w.scale.y = w.userData.sy * (1 - bl * 0.92);
     }
+    // Sprechen: der Mund öffnet sich im Silbentakt, solange eine Zeile läuft
+    if (this.mouth) {
+      this.talk = Math.max(0, (this.talk || 0) - dt);
+      const open = this.talk > 0 ? (0.3 + 0.7 * Math.abs(Math.sin(G.t * 9.2 + this.breath))) * (0.65 + 0.35 * Math.sin(G.t * 2.7 + this.breath * 2)) : 0;
+      this.mouth.scale.y = this.mouth.userData.sy * (1 + open * 5.5); this.mouth.scale.x = this.mouth.userData.sx * (1 - open * 0.18);
+    }
     if (this.onUpdate) this.onUpdate(dt);
   }
   // Farbwerte der Figur-Materialien (Maske: bleibt im Fokus in Farbe)
@@ -3466,6 +3478,9 @@ function humanoid(name, o) {
     ch.addMesh('head', mb, mat);
     // Augen: eigene Meshes, damit sie blinzeln / schauen können
     const emat = new THREE.MeshBasicMaterial({ color: tcol(0x0a0806), fog: false }), wmat = new THREE.MeshBasicMaterial({ color: tcol(0xb9b0a0), fog: false });
+    const mmat = new THREE.MeshBasicMaterial({ color: tcol(mixHex(skin, 0x3a0c0c, 0.62)), fog: false });
+    const mouth = new THREE.Mesh(GEO.box, mmat); mouth.scale.set(0.034 * S, 0.0045 * S, 0.008 * S); mouth.position.set(0, cy - hr * 0.5, hr * 0.875);
+    mouth.userData = { sx: mouth.scale.x, sy: mouth.scale.y }; headJ.add(mouth); ch.mouth = mouth;
     ch.eyes = []; ch.whites = [];
     for (const sx of [1, -1]) {
       const w = new THREE.Mesh(GEO.box, wmat); w.scale.set(0.027 * S, 0.016 * S, 0.01 * S); w.position.set(sx * hr * 0.36, cy + hr * 0.16, hr * 0.925); w.userData = { sy: w.scale.y };
@@ -4000,7 +4015,8 @@ const Game = {
     G.sched.abort(); if (G.world) for (const c of G.world.chars) if (c.abortMove) c.abortMove();
     Cine.active = false; Cine.skipping = false; G.skipping = false; Notebook.close(true);
     Sub.clear(); $('#choices').innerHTML = ''; Phone.hide(); Title.black(false); Ov.show && $('#overlay-text .ov').classList.remove('on');
-    Focus.allowed = false; G.focus = 0; FX.focus = 0; FX.water = 0; FX.flash = 0; Snd.heartStop(); Snd.worldFilter(20000, 0.2); Snd.ambClear(1.5);
+    Focus.allowed = false; G.focus = 0; FX.focus = 0; FX.water = 0; FX.flash = 0; G.slow = 1; Snd.heartStop(); Snd.worldFilter(20000, 0.2); Snd.ambClear(1.5);
+    Tell.clear(); $('#silence').classList.remove('on'); $('#hud').classList.remove('subs-on', 'deal-on');
     Input.releaseLock(); UI.hud(false); $('#touch').classList.add('hidden');
     await this.fade(1, 0.7, [0, 0, 0]);
     G.mode = 'menu'; G.paused = false;
@@ -4022,7 +4038,7 @@ const Game = {
     Notebook.close(true);
     Sub.clear(); $('#choices').innerHTML = ''; Phone.hide();
     $('#menu').classList.add('hidden'); Panels.closeAll();
-    Focus.allowed = false; G.focus = 0; FX.water = 0; FX.flash = 0;
+    Focus.allowed = false; G.focus = 0; FX.water = 0; FX.flash = 0; G.slow = 1; Tell.clear();
     await Promise.resolve(); // Abbruch der alten Skripte durchlaufen lassen
     Store.set('progress', { chapter: i });
     for (let k = i; k < Story.chapters.length; k++) {
@@ -4507,10 +4523,7 @@ class RoomWorld extends World {
     mb.box(0.2, 0.03, 0.9, -1.6, 1.62, -0.9, woodL);
     for (let i = 0; i < 7; i++) mb.box(0.12, 0.2 + (i % 3) * 0.02, 0.035, -1.6, 1.65, -1.2 + i * 0.075, [0x6a3a30, 0x2e3a4c, 0x6a5a30, 0x3a4a3a, 0x5a3a4a, 0x2a2a2a, 0x7a6a4a][i]);
     // Oud an der Wand
-    mb.sph(0.5, -1.665, 1.62, 0.55, 0x8a5b33, { sx: 0.03, sy: 0.32, sz: 0.25, d: 1 });
-    mb.box(0.03, 0.055, 0.5, -1.66, 1.9, 0.55, 0x5a3c22, { rz: 0 });
-    mb.box(0.045, 0.16, 0.07, -1.655, 2.13, 0.55, 0x3a2416);
-    mb.cyl(0.055, 0.055, 0.004, 10, -1.645, 1.62, 0.55, 0x1f150c, { rz: Math.PI / 2 });
+    mb.merge(mkOud(), -1.6, 1.36, 0.55, Math.PI / 2, 0.92);
     // Fensterbank (innen) + Vorhang-Stange
     mb.box(1.5, 0.045, 0.2, 0.35, 0.93, -2.0, 0xa89880);
     // Boden-Details: Socken, Kabel, Handyladekabel
@@ -5139,6 +5152,24 @@ class Pigeons {
   }
 }
 
+// Oud (kurzhalsige Laute): lokal – Korpus um den Ursprung, Hals nach +Y, Decke zeigt nach +Z
+function mkOud() {
+  const mb = new MB(151); mb.jit = 0.02;
+  const back = 0x7a4a26, face = 0xc99a5a, dark = 0x2a1a10;
+  mb.sph(0.5, 0, -0.02, -0.02, back, { sx: 0.34, sy: 0.46, sz: 0.25, d: 1 });                 // Schalenkorpus
+  mb.sph(0.5, 0, 0.15, -0.015, back, { sx: 0.25, sy: 0.3, sz: 0.2, d: 1 });                   // Birnenform zum Hals
+  mb.sph(0.5, 0, -0.005, 0.1, face, { sx: 0.32, sy: 0.44, sz: 0.045, d: 1 });                 // Decke
+  mb.cyl(0.06, 0.06, 0.008, 10, 0, -0.004, 0, 0x1f150c, { rx: Math.PI / 2, org: [0, 0.03, 0.125] });   // Schallloch
+  mb.cyl(0.075, 0.075, 0.005, 10, 0, -0.0025, 0, 0x5a3a20, { rx: Math.PI / 2, org: [0, 0.03, 0.121] });
+  mb.box(0.15, 0.014, 0.016, 0, -0.17, 0.125, dark);                                           // Steg
+  mb.box(0.075, 0.34, 0.03, 0, 0.28, 0.055, dark);                                             // Hals
+  mb.box(0.085, 0.02, 0.035, 0, 0.6, 0.06, 0xe8e0d0);                                          // Sattel
+  mb.box(0.085, 0.24, 0.05, 0, 0.6, -0.02, dark, { rx: -0.85 });                                // zurückgebogener Wirbelkasten
+  for (const s of [-1, 1]) for (let i = 0; i < 3; i++) mb.box(0.04, 0.013, 0.013, s * 0.058, 0.66 + i * 0.05, -0.06 - i * 0.03, 0xc9a24a);
+  for (const dx of [-0.028, -0.014, 0, 0.014, 0.028]) mb.box(0.003, 0.76, 0.003, dx, -0.16, 0.135, 0xdcd6c6, { jit: 0 });   // Saiten
+  return mb;
+}
+
 
 /* ==== 74_city.js ==== */
 // =====================================================================
@@ -5257,7 +5288,7 @@ class CityWorld extends World {
     this.bounds = { x0: -32.4, x1: 30.8, z0: -34.6, z1: 33.4 };
     this.camBox = [-38, -40, 36, 46];
     this.spawn = { x: -27, z: 26, yaw: Math.PI / 2 };
-    this.surface = 'cobble'; this.speed = 1.05;
+    this.surface = 'cobble'; this.speed = 1.45;
     this.lampK = -1; this.glowMats = []; this.pl = [];
     this.tramState = 'wait'; this.tramT = 6; this.tramZ = -150; this.tramBell = false;
     this.clockH = 17; this.clockM = 24;
@@ -5411,9 +5442,18 @@ class CityWorld extends World {
     this.clock = mkClockPost(this.clockH, this.clockM); this.clock.position.set(-9.4, 0, -22); this.add(this.clock); this.ring(-9.4, -22, 0.3);
     // Bänke Richtung Fluss + am Brunnen
     const BE = new MB(45);
-    for (const [x, z, ry] of [[-30.4, -12, -Math.PI / 2], [-30.4, 0, -Math.PI / 2], [-30.4, 12, -Math.PI / 2], [-30.4, 22, -Math.PI / 2], [-8.4, -6, -Math.PI / 2], [0.4, -6, Math.PI / 2], [-4, -10.4, Math.PI], [-4, -1.6, 0]]) { BE.merge(mkBench(), x, 0, z, ry); this.collide(x - 0.4, z - 0.9, x + 0.4, z + 0.9); }
+    for (const [x, z, ry] of [[-30.4, -12, -Math.PI / 2], [-30.4, 0, -Math.PI / 2], [-30.4, 12, -Math.PI / 2], [-30.4, 22, -Math.PI / 2], [-8.4, -6, -Math.PI / 2], [0.4, -6, Math.PI / 2], [-4, -10.4, Math.PI], [-4, -1.6, 0]]) { BE.merge(mkBench(), x, 0, z, ry); if (Math.abs(Math.sin(ry)) > 0.5) this.collide(x - 0.4, z - 0.9, x + 0.4, z + 0.9); else this.collide(x - 0.9, z - 0.4, x + 0.9, z + 0.4); }
     this.add(BE.mesh(Mat.lit({ spec: 0x333333, shin: 10 })));
     this.benches = [[-30.4, 0], [-30.4, 12], [-30.4, 22]];
+    // Straßenmusiker auf der Bank südlich des Brunnens: er spielt, solange man in der Nähe ist
+    const mu = makeNPC('Musiker', { top: 0x6a4a3a, bottom: 0x3a3630, under: 0xd8d0be, shoe: 0x2a2018, hair: 0xd0ccc4, hairStyle: 'grey', skin: SKIN.olive, torso: 'cardigan', s: 0.98, headR: 0.118 });
+    mu.place(-4, 0, -1.55, 0); mu.setPose(sitP({ lean: 5, nod: 16, L: { arm: [64, 10, 0], fore: 66 }, R: { arm: [36, 4, 0], fore: 96, hand: 8 } })); mu.snapPose(); this.addChar(mu);
+    const oudM = mkOud().mesh(Mat.lit({ spec: 0x664422, shin: 30 }), { cast: true, receive: false }); oudM.scale.setScalar(0.95); oudM.position.set(0.02, 0.06, 0.3); oudM.rotation.set(-0.12, 0.05, -0.85); mu.j.hips.add(oudM);
+    mu.overlay = zeroPose(); mu.pluck = 0;
+    mu.onUpdate = (dt) => { mu.pluck = Math.max(0, mu.pluck - dt * 6); mu.overlay.foreR[0] = -mu.pluck * 9; mu.overlay.handR[0] = mu.pluck * 14; };
+    this.musician = mu; this.muT = 3; this.muDeg = 2; this.muSong = false; this.muI = 0; this.muDone = false;
+    const hat = new MB(82); hat.box(0.5, 0.07, 0.3, 0, 0, 0, 0x2a2018); hat.box(0.44, 0.02, 0.24, 0, 0.07, 0, 0x120c08); for (let i = 0; i < 7; i++) hat.box(0.035, 0.008, 0.035, -0.16 + i * 0.05, 0.085, -0.04 + (i % 3) * 0.04, [0xd9b56a, 0xb8b8c0, 0xd9b56a][i % 3], { jit: 0 });
+    const hm = hat.mesh(Mat.lit({ spec: 0x555555, shin: 20 }), { cast: false }); hm.position.set(-4.0, 0, -0.5); hm.rotation.y = 0.2; this.add(hm);
     // Laternen (Arm zeigt zum Platz)
     const lamps = [[-33, -30, 0], [-33, -16, 0], [-33, -2, 0], [-33, 12, 0], [-33, 26, 0], [-12, -34, -Math.PI / 2], [4, -34, -Math.PI / 2], [-12, 32, Math.PI / 2], [4, 32, Math.PI / 2], [24, -30, Math.PI], [24, -14, Math.PI], [24, 20, Math.PI], [24, 30, Math.PI], [-9, 4, 0]];
     for (const [x, z, ry] of lamps) { const l = mkLamp(true); B.merge(l.body, x, 0, z, ry); LG.merge(l.glow, x, 0, z, ry); this.ring(x, z, 0.22); }
@@ -5470,6 +5510,7 @@ class CityWorld extends World {
     I({ at: [-9.4, -20.4], r: 1.8, label: 'Ansehen', name: 'Uhr', pos: [-9.4, 4.0, -22], run: () => Story.cityClock() });
     I({ at: [-24.6, 8], r: 1.9, label: 'Ansehen', name: 'Zeitungen', pos: [-26.3, 1.4, 8], run: () => Story.cityNews() });
     I({ at: [-4, -2.7], r: 2.0, label: 'Ansehen', name: 'Brunnen', pos: [-4, 1.0, -3], run: () => Story.cityFountain() });
+    I({ at: [-4, 0.0], r: 1.7, label: 'Zuhören', name: 'Straßenmusiker', pos: [-4, 1.35, -1.55], run: () => Story.cityMusician() });
     I({ at: [22.4, -7.6], r: 2.2, label: 'Ansehen', name: 'Der Wagen', pos: [23.4, 1.2, -4.2], run: () => Story.cityCar() });
     I({ at: [-29.4, 12], r: 1.5, label: 'Setzen', name: 'Bank am Fluss', pos: [-30.4, 0.9, 12], run: () => Story.cityBench() });
     I({ at: [-29.6, 26.4], r: 2.4, label: 'Ansehen', name: 'Die Brücke', pos: [-36, 1.4, 27], run: () => Story.cityBridge() });
@@ -5505,13 +5546,38 @@ class CityWorld extends World {
       if (this.tramZ - 19.4 > 150) { this.tramState = 'wait'; this.tramT = 20 + Math.random() * 14; this.tram.visible = false; this.tramCol.z0 = this.tramCol.z1 = 1e4; }
     }
     this.crowd.update(dt, pp); this.pigeons.update(dt, pp); this.birds.update(dt);
-    // Musik reagiert aufs Gehen: ruhig im Stehen, Rhythmus im Schritt
+    this.playMusician(dt, pp);
+    // Musik reagiert aufs Gehen: ruhig im Stehen, Rhythmus im Schritt – und schweigt neben dem Straßenmusiker
     if (this.adaptive) {
-      const mv = Player.speed > 0.5 && G.mode === 'play';
+      const mv = Player.speed > 0.5 && G.mode === 'play', mr = this.musician.root.position;
       this._mv = clamp((this._mv || 0) + (mv ? dt : -dt), -3, 3);
-      const want = this._mv > 1.2 ? 'walk' : this._mv < -1.6 ? 'calm' : this._want;
-      if (want && want !== this._want) { this._want = want; Mus.mood(want, want === 'walk' ? 3 : 4); }
+      const nearMu = Math.hypot(pp.x - mr.x, pp.z - mr.z) < 6.5;
+      const want = nearMu ? 'silence' : this._mv > 1.2 ? 'walk' : this._mv < -1.6 ? 'calm' : (this._want === 'silence' ? 'calm' : this._want);
+      if (want && want !== this._want) { this._want = want; Mus.mood(want, want === 'walk' ? 3 : want === 'silence' ? 2 : 4); }
     }
+  }
+  // Der Musiker spielt eine hijaz-Phrase Ton für Ton – lauter, je näher man kommt; oder das feste Lied (muSong)
+  playMusician(dt, pp) {
+    const mu = this.musician, mr = mu.root.position;
+    this.muT -= dt;
+    if (this.muT > 0) return;
+    let deg, wait;
+    if (this.muSong) {
+      const n = MUSICIAN_SONG[this.muI++];
+      if (!n) { this.muSong = false; this.muDone = true; this.muT = 5; return; }
+      deg = n[0]; wait = n[1];
+    } else {
+      this.muDeg = clamp(this.muDeg + [-2, -1, -1, 1, 1, 2][Math.floor(Math.random() * 6)], -1, 6);
+      deg = this.muDeg; wait = [0.55, 0.7, 0.9, 1.3, 2.6][Math.floor(Math.random() * 5)];
+    }
+    this.muT = wait; mu.pluck = 1;
+    if (!AUD || !AUD.ready) return;
+    const d = Math.hypot(pp.x - mr.x, pp.z - mr.z), gain = clamp(1.8 - d / 11, 0.05, 1.3);
+    if (gain < 0.08) return;
+    const fx = Cam.look.x - Cam.pos.x, fz = Cam.look.z - Cam.pos.z, fl = Math.hypot(fx, fz) || 1, dx = mr.x - Cam.pos.x, dz = mr.z - Cam.pos.z, dl = Math.hypot(dx, dz) || 1;
+    const pan = clamp(((dx * -fz + dz * fx) / fl) / Math.max(4, dl), -0.85, 0.85);
+    const f = TONIC * 0.5 * Math.pow(2, semiOf(MAQAM.hijaz, deg) / 12);
+    Snd.pluck('oud', f, AUD.ctx.currentTime + 0.03, { vel: 0.5 + Math.random() * 0.25, hall: 0.42, room: 0.2, pan, gain: gain * 0.9, bus: 'sfx' });
   }
   setClockFace(h, m) {
     this.clockH = h; this.clockM = m;
@@ -5524,6 +5590,8 @@ class CityWorld extends World {
   onLeave() { for (const n of ['city', 'crowd', 'birds', 'wind']) Snd.ambSet(n, 0, 2); }
 }
 WORLDS.city = CityWorld;
+// [Tonstufe (hijaz, D3 = 0), Pause danach in Sekunden] – eine absteigende Klage, die zur Tonika heimkehrt
+const MUSICIAN_SONG = [[4, 0.7], [3, 0.55], [2, 0.6], [1, 0.9], [0, 1.6], [1, 0.55], [2, 0.55], [3, 0.6], [4, 0.6], [5, 0.9], [4, 0.6], [3, 0.6], [2, 0.7], [1, 1.0], [0, 2.4]];
 
 // Laterne direkt in Builder schreiben (Brücke)
 function mkLampInto(B, LG, x, z, ry, s = 1) { const l = mkLamp(true); B.merge(l.body, x, 0, z, ry, s); LG.merge(l.glow, x, 0, z, ry, s); }
@@ -6003,14 +6071,14 @@ async function prologRun() {
   // --- Sitzen bleiben, bis man aufsteht ---
   FX.dof = 0; Cam.gameplay(); G.mode = 'play'; Player.lock();
   Hint.show('<b>E</b> oder eine Richtung — Aufstehen', 60);
-  await until(() => Input.pressed('use') || Input.pressed('confirm') || Math.hypot(Input.axis().x, Input.axis().y) > 0.3);
+  await untilKeep(() => Input.pressed('use') || Input.pressed('confirm') || Math.hypot(Input.axis().x, Input.axis().y) > 0.3);
   Hint.hide();
   ch.hold('phone', false); ch.setPose('mirza', 3.6);
   Snd.whoosh(0.5, { gain: 0.25, from: 180, to: 700 });
   await sleep(1.8);
   Player.unlock(); Focus.allowed = true;
   Obj.set('Mach Licht.');
-  await until(() => G.state.flags.prologDone);
+  await untilKeep(() => G.state.flags.prologDone);
 
   // --- Titel ---
   await Game.fade(1, 1.6, [0, 0, 0]);
@@ -6078,6 +6146,33 @@ Object.assign(Story, {
       await Sub.inner('Auf der anderen Seite: Plattenbau, Mama, Linie fünf.');
       await Sub.inner('Zweiunddreißig Minuten zu Fuß. Und ein ganzes Leben.');
     });
+  },
+  // Der Straßenmusiker: eine Melodie, die Nena gesummt hat
+  async cityMusician() {
+    const W = G.world, me = Player.ch, F = G.state.flags, mu = W.musician;
+    const first = !F.musician; F.musician = true;
+    await Player.turnTo(-4, -1.55);
+    await Cine.run(async () => {
+      W.muSong = true; W.muI = 0; W.muT = 0.6; W.muDone = false;
+      Mus.mood('silence', 1.2);
+      const p = me.root.position;
+      me.lookAt(new THREE.Vector3(-4, 1.1, -1.6), 0.8);
+      Cam.set({ pos: [p.x + 1.8, 1.4, p.z + 1.1], look: [-4, 1.0, -1.7], fov: 34, dof: 0.5 });
+      Cam.move({ pos: [p.x + 1.3, 1.22, p.z + 0.55], look: [-4.05, 0.95, -1.7], fov: 27 }, 18, 'inOutSine');
+      await sleep(6.0);
+      if (first) {
+        await Sub.inner('Nena hat dieses Lied gesummt.', { dur: 3 });
+        await sleep(1.6);
+        await Sub.inner('Ich kenne den Namen nicht. Nur die Melodie.', { dur: 3.6 });
+        await sleep(1.4);
+        await Sub.inner('Ich habe sie nie gefragt.', { dur: 3 });
+      }
+      await until(() => W.muDone, 30);
+      await sleep(1.6);
+      me.lookAt(null);
+      await Sub.inner('Er nickt. Ich nicke zurück. Mehr braucht es nicht.', { dur: 4 });
+    }, { stay: false });
+    me.lookAt(null); FX.dof = 0;
   },
   // Am Fluss sitzen: die stille Stelle des Kapitels
   async cityBench() {
@@ -6366,6 +6461,7 @@ const Deal = {
     mark();
     Tell.force = !!force; Cine.skippable = false; Focus.allowed = true; $('#hud').classList.add('subs-on', 'deal-on');
     const HOLD = 2.4;
+    try {
     await sleep(0.55);
     await until(() => {
       if (Input.pressed('up') && sel > 0) { sel--; mark(); Snd.uiHover(); }
@@ -6380,8 +6476,7 @@ const Deal = {
       if (held >= HOLD) result = sel;
       return result >= 0;
     });
-    window.removeEventListener('pointerup', up);
-    sil.classList.remove('on'); fill.style.width = '0%';
+    } finally { window.removeEventListener('pointerup', up); sil.classList.remove('on'); fill.style.width = '0%'; }
     Focus.allowed = false; Tell.clear();
     items.forEach((d, i) => { if (i !== result) d.style.opacity = 0; d.style.transition = 'opacity .5s'; });
     await sleep(0.4);
@@ -6713,7 +6808,7 @@ Object.assign(Story, {
   },
   // Mamas Anruf: Der Spieler WILL annehmen – Mirzas Daumen drückt trotzdem weg.
   async mamaCall() {
-    await until(() => !Interact.busy && G.mode === 'play' && !Player.locked);
+    await untilKeep(() => !Interact.busy && G.mode === 'play' && !Player.locked);
     const me = Player.ch;
     Player.lock(); me.hold('phone', true); me.setPose('phone', 3.5); Focus.allowed = false;
     await Phone.incoming({ name: 'Mama ❤️', initial: 'M', status: 'Anruf', decline: 'Nicht jetzt, Mama. Später.', wait: 9 });
@@ -6859,9 +6954,10 @@ async function k1Run() {
     Cam.set({ pos: [-31.6, 0.5, 24.4], look: [-34.6, 0.95, 27.2], fov: 34 });
     await sleep(0.4);
     await Sub.inner('Das reicht. Muss reichen.', { dur: 2.8 });
-    me.walkTo(-25.5, 27.0, { speed: 1.5 });
-    Cam.set({ pos: [-31.5, 1.3, 30.0], look: [-27, 1.35, 27.0], fov: 38 }); Cam.move({ pos: [-31.9, 1.5, 29.2], look: [-26.4, 1.4, 27.0], fov: 40 }, 6, 'inOutSine');
-    await sleep(2.6);
+    const arrive = me.walkTo(-25.5, 27.0, { speed: 1.5 });
+    Cam.set({ pos: [-31.5, 1.3, 30.0], look: [-27, 1.35, 27.0], fov: 38 }); Cam.move({ pos: [-32.4, 1.5, 28.6], look: [-25.4, 1.4, 27.0], fov: 40 }, 8, 'inOutSine');
+    await arrive;
+    await sleep(0.4);
   }, { stay: false });
   W.adaptive = true; W._want = 'calm';
 
@@ -6874,7 +6970,7 @@ async function k1Run() {
   bg(async () => { while (F.dealCafe === 'open') { const m = Math.min(38, 24 + Math.floor((G.t - t0) / 24)); if (m !== W.clockM) Story.clock(17, m); await sleep(1); } });
   bg(async () => { await sleep(28); if (F.dealCafe === 'open') await Story.kerimText(); });
   bg(async () => { await sleep(75); if (F.dealCafe === 'open') { Obj.show(8); Hint.show('Café Aurora – im Norden, hinter dem Brunnen.', 8); } });
-  await until(() => F.dealCafe === 'done');
+  await untilKeep(() => F.dealCafe === 'done');
 
   // --- Nach dem ersten Deal: der Abend fällt, Mama ruft an, das Belvedere wartet ---
   Story.clock(18, 22);
@@ -6884,7 +6980,7 @@ async function k1Run() {
   F.dealHotel = 'open';
   Obj.set('Hotel Belvedere. Lobby. 18:30.');
   bg(() => Story.mamaCall());
-  await until(() => F.dealHotel === 'done');
+  await untilKeep(() => F.dealHotel === 'done');
   Player.lock(); W.adaptive = false;
 
   // --- Montage & Ende ---

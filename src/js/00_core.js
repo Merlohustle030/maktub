@@ -119,10 +119,11 @@ class Sched {
     if (this.skipping() || sec <= 0) return Promise.resolve();
     return new Promise((res, rej) => this.items.push({ kind: 'wait', t: 0, dur: sec, res, rej }));
   }
-  until(fn, timeout = Infinity) {
+  // keep: Wartepunkt des Hauptskripts – wird weder vom Überspringen einer Cutscene noch von flush() berührt
+  until(fn, timeout = Infinity, keep = false) {
     if (fn()) return Promise.resolve(true);
-    if (this.skipping()) return Promise.resolve(false);
-    return new Promise((res, rej) => this.items.push({ kind: 'until', fn, t: 0, dur: timeout, res, rej }));
+    if (!keep && this.skipping()) return Promise.resolve(false);
+    return new Promise((res, rej) => this.items.push({ kind: 'until', fn, t: 0, dur: timeout, res, rej, keep }));
   }
   // to: {prop: value} für Zahlen / Arrays / Vector3 / Color-Komponenten. obj kann auch eine Funktion (t)=>{} sein.
   tween(obj, to, dur, easing = 'inOut', delay = 0) {
@@ -175,7 +176,8 @@ class Sched {
   }
   // Überspringen: alles sofort abschließen.
   flush() {
-    const items = this.items.splice(0);
+    const all = this.items.splice(0), items = [];
+    for (const it of all) { if (it.keep) this.items.push(it); else items.push(it); }
     for (const it of items) {
       if (it.kind === 'tween') it.apply(it, 1);
       it.res(it.kind === 'until' ? false : undefined);
@@ -202,5 +204,6 @@ const G = {
 };
 const sleep = (sec) => G.sched.wait(sec);
 const until = (fn, timeout) => G.sched.until(fn, timeout);
+const untilKeep = (fn, timeout) => G.sched.until(fn, timeout, true);
 const tween = (o, to, d, e, delay) => G.sched.tween(o, to, d, e, delay);
 G.sched.skipping = () => G.skipping;

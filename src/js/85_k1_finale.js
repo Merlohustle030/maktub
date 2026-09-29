@@ -31,7 +31,7 @@ Object.assign(Story, {
   },
   // Mamas Anruf: Der Spieler WILL annehmen – Mirzas Daumen drückt trotzdem weg.
   async mamaCall() {
-    await until(() => !Interact.busy && G.mode === 'play' && !Player.locked);
+    await untilKeep(() => !Interact.busy && G.mode === 'play' && !Player.locked);
     const me = Player.ch;
     Player.lock(); me.hold('phone', true); me.setPose('phone', 3.5); Focus.allowed = false;
     await Phone.incoming({ name: 'Mama ❤️', initial: 'M', status: 'Anruf', decline: 'Nicht jetzt, Mama. Später.', wait: 9 });
@@ -177,9 +177,10 @@ async function k1Run() {
     Cam.set({ pos: [-31.6, 0.5, 24.4], look: [-34.6, 0.95, 27.2], fov: 34 });
     await sleep(0.4);
     await Sub.inner('Das reicht. Muss reichen.', { dur: 2.8 });
-    me.walkTo(-25.5, 27.0, { speed: 1.5 });
-    Cam.set({ pos: [-31.5, 1.3, 30.0], look: [-27, 1.35, 27.0], fov: 38 }); Cam.move({ pos: [-31.9, 1.5, 29.2], look: [-26.4, 1.4, 27.0], fov: 40 }, 6, 'inOutSine');
-    await sleep(2.6);
+    const arrive = me.walkTo(-25.5, 27.0, { speed: 1.5 });
+    Cam.set({ pos: [-31.5, 1.3, 30.0], look: [-27, 1.35, 27.0], fov: 38 }); Cam.move({ pos: [-32.4, 1.5, 28.6], look: [-25.4, 1.4, 27.0], fov: 40 }, 8, 'inOutSine');
+    await arrive;
+    await sleep(0.4);
   }, { stay: false });
   W.adaptive = true; W._want = 'calm';
 
@@ -192,7 +193,7 @@ async function k1Run() {
   bg(async () => { while (F.dealCafe === 'open') { const m = Math.min(38, 24 + Math.floor((G.t - t0) / 24)); if (m !== W.clockM) Story.clock(17, m); await sleep(1); } });
   bg(async () => { await sleep(28); if (F.dealCafe === 'open') await Story.kerimText(); });
   bg(async () => { await sleep(75); if (F.dealCafe === 'open') { Obj.show(8); Hint.show('Café Aurora – im Norden, hinter dem Brunnen.', 8); } });
-  await until(() => F.dealCafe === 'done');
+  await untilKeep(() => F.dealCafe === 'done');
 
   // --- Nach dem ersten Deal: der Abend fällt, Mama ruft an, das Belvedere wartet ---
   Story.clock(18, 22);
@@ -202,7 +203,7 @@ async function k1Run() {
   F.dealHotel = 'open';
   Obj.set('Hotel Belvedere. Lobby. 18:30.');
   bg(() => Story.mamaCall());
-  await until(() => F.dealHotel === 'done');
+  await untilKeep(() => F.dealHotel === 'done');
   Player.lock(); W.adaptive = false;
 
   // --- Montage & Ende ---

@@ -50,6 +50,33 @@ Object.assign(Story, {
       await Sub.inner('Zweiunddreißig Minuten zu Fuß. Und ein ganzes Leben.');
     });
   },
+  // Der Straßenmusiker: eine Melodie, die Nena gesummt hat
+  async cityMusician() {
+    const W = G.world, me = Player.ch, F = G.state.flags, mu = W.musician;
+    const first = !F.musician; F.musician = true;
+    await Player.turnTo(-4, -1.55);
+    await Cine.run(async () => {
+      W.muSong = true; W.muI = 0; W.muT = 0.6; W.muDone = false;
+      Mus.mood('silence', 1.2);
+      const p = me.root.position;
+      me.lookAt(new THREE.Vector3(-4, 1.1, -1.6), 0.8);
+      Cam.set({ pos: [p.x + 1.8, 1.4, p.z + 1.1], look: [-4, 1.0, -1.7], fov: 34, dof: 0.5 });
+      Cam.move({ pos: [p.x + 1.3, 1.22, p.z + 0.55], look: [-4.05, 0.95, -1.7], fov: 27 }, 18, 'inOutSine');
+      await sleep(6.0);
+      if (first) {
+        await Sub.inner('Nena hat dieses Lied gesummt.', { dur: 3 });
+        await sleep(1.6);
+        await Sub.inner('Ich kenne den Namen nicht. Nur die Melodie.', { dur: 3.6 });
+        await sleep(1.4);
+        await Sub.inner('Ich habe sie nie gefragt.', { dur: 3 });
+      }
+      await until(() => W.muDone, 30);
+      await sleep(1.6);
+      me.lookAt(null);
+      await Sub.inner('Er nickt. Ich nicke zurück. Mehr braucht es nicht.', { dur: 4 });
+    }, { stay: false });
+    me.lookAt(null); FX.dof = 0;
+  },
   // Am Fluss sitzen: die stille Stelle des Kapitels
   async cityBench() {
     const W = G.world, me = Player.ch, F = G.state.flags;

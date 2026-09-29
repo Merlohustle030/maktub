@@ -189,6 +189,12 @@ class Character {
       for (const e of this.eyes) { e.scale.y = e.userData.sy * (1 - bl * 0.92); e.position.x = e.userData.x + this.gaze.x * 0.014; e.position.y = e.userData.y + this.gaze.y * 0.01; }
       if (this.whites) for (const w of this.whites) w.scale.y = w.userData.sy * (1 - bl * 0.92);
     }
+    // Sprechen: der Mund öffnet sich im Silbentakt, solange eine Zeile läuft
+    if (this.mouth) {
+      this.talk = Math.max(0, (this.talk || 0) - dt);
+      const open = this.talk > 0 ? (0.3 + 0.7 * Math.abs(Math.sin(G.t * 9.2 + this.breath))) * (0.65 + 0.35 * Math.sin(G.t * 2.7 + this.breath * 2)) : 0;
+      this.mouth.scale.y = this.mouth.userData.sy * (1 + open * 5.5); this.mouth.scale.x = this.mouth.userData.sx * (1 - open * 0.18);
+    }
     if (this.onUpdate) this.onUpdate(dt);
   }
   // Farbwerte der Figur-Materialien (Maske: bleibt im Fokus in Farbe)
@@ -296,6 +302,9 @@ function humanoid(name, o) {
     ch.addMesh('head', mb, mat);
     // Augen: eigene Meshes, damit sie blinzeln / schauen können
     const emat = new THREE.MeshBasicMaterial({ color: tcol(0x0a0806), fog: false }), wmat = new THREE.MeshBasicMaterial({ color: tcol(0xb9b0a0), fog: false });
+    const mmat = new THREE.MeshBasicMaterial({ color: tcol(mixHex(skin, 0x3a0c0c, 0.62)), fog: false });
+    const mouth = new THREE.Mesh(GEO.box, mmat); mouth.scale.set(0.034 * S, 0.0045 * S, 0.008 * S); mouth.position.set(0, cy - hr * 0.5, hr * 0.875);
+    mouth.userData = { sx: mouth.scale.x, sy: mouth.scale.y }; headJ.add(mouth); ch.mouth = mouth;
     ch.eyes = []; ch.whites = [];
     for (const sx of [1, -1]) {
       const w = new THREE.Mesh(GEO.box, wmat); w.scale.set(0.027 * S, 0.016 * S, 0.01 * S); w.position.set(sx * hr * 0.36, cy + hr * 0.16, hr * 0.925); w.userData = { sy: w.scale.y };

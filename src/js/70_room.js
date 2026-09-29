@@ -120,10 +120,7 @@ class RoomWorld extends World {
     mb.box(0.2, 0.03, 0.9, -1.6, 1.62, -0.9, woodL);
     for (let i = 0; i < 7; i++) mb.box(0.12, 0.2 + (i % 3) * 0.02, 0.035, -1.6, 1.65, -1.2 + i * 0.075, [0x6a3a30, 0x2e3a4c, 0x6a5a30, 0x3a4a3a, 0x5a3a4a, 0x2a2a2a, 0x7a6a4a][i]);
     // Oud an der Wand
-    mb.sph(0.5, -1.665, 1.62, 0.55, 0x8a5b33, { sx: 0.03, sy: 0.32, sz: 0.25, d: 1 });
-    mb.box(0.03, 0.055, 0.5, -1.66, 1.9, 0.55, 0x5a3c22, { rz: 0 });
-    mb.box(0.045, 0.16, 0.07, -1.655, 2.13, 0.55, 0x3a2416);
-    mb.cyl(0.055, 0.055, 0.004, 10, -1.645, 1.62, 0.55, 0x1f150c, { rz: Math.PI / 2 });
+    mb.merge(mkOud(), -1.6, 1.36, 0.55, Math.PI / 2, 0.92);
     // Fensterbank (innen) + Vorhang-Stange
     mb.box(1.5, 0.045, 0.2, 0.35, 0.93, -2.0, 0xa89880);
     // Boden-Details: Socken, Kabel, Handyladekabel

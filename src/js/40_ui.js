@@ -59,6 +59,7 @@ const Sub = {
     this.cur = div; $('#hud').classList.add('subs-on');
     const plain = text.replace(/<[^>]+>/g, '');
     const dur = o.dur != null ? o.dur : clamp(1.0 + plain.length * 0.052, 1.8, 9);
+    if (o.who === 'say' && o.name && G.world) { const ch = G.world.chars.find((c) => c.name && c.name.startsWith(o.name)); if (ch) ch.talk = Math.max(0.4, dur - 0.5); }   // Lippen bewegen
     await sleep(dur);
     if (o.confirm) { await sleep(0.3); await until(() => Input.confirm()); }
     if (!o.keep) this.fade(div);
