@@ -5,6 +5,7 @@
   "description": "MAKTUB – ein cineastisches Story-Game im Browser (eine einzige HTML-Datei).",
   "scripts": {
     "build": "node tools/build.mjs",
-    "lint": "node tools/build.mjs && eslint build/bundle.js"
+    "lint": "node tools/build.mjs && eslint build/bundle.js",
+    "start": "python3 -m http.server 8080"
   }
 }
