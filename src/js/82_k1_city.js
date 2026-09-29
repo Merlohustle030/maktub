@@ -50,6 +50,42 @@ Object.assign(Story, {
       await Sub.inner('Zweiunddreißig Minuten zu Fuß. Und ein ganzes Leben.');
     });
   },
+  // Eine Zeichnerin am Fluss. Ein Blick. Mehr nicht – noch nicht.
+  async cityNour() {
+    const W = G.world, me = Player.ch, N = W.nour, F = G.state.flags;
+    const n = ++G.state.counters.nourLooks;
+    await Player.turnTo(-30.3, 0);
+    await Cine.run(async () => {
+      const nh = new THREE.Vector3(), mh = new THREE.Vector3();
+      const upd = () => { N.j.head.getWorldPosition(nh); me.j.head.getWorldPosition(mh); };
+      upd(); W.onUpdate(upd);
+      me.lookAt(nh, 0.9);
+      Mus.mood('silence', 1.5);
+      Cam.set({ pos: [-32.2, 1.3, 3.2], look: [-30.3, 1.0, 0.1], fov: 36, dof: 0.6 });
+      Cam.move({ pos: [-32.0, 1.22, 2.6], look: [-30.3, 1.02, 0.05], fov: 28 }, 14, 'inOutSine');
+      await sleep(2.4);
+      if (n === 1) {
+        await Sub.inner('Sie zeichnet. Nicht die Leute. Die Brücke.', { dur: 3.4 });
+        await sleep(1.4);
+        N.lookAt(mh, 1);
+        await sleep(1.3);
+        N.lookAt(null);
+        await sleep(0.7);
+        await Sub.inner('Ich sollte weitergehen.', { dur: 2.6 });
+        await sleep(0.5);
+        await Sub.inner('Ich gehe nicht weiter.', { dur: 2.6 });
+      } else {
+        await Sub.inner('Sie hat mich bemerkt. Ich sie auch.', { dur: 3.2 });
+        await sleep(1.0);
+        N.lookAt(mh, 1); await sleep(1.0); N.lookAt(null);
+        await sleep(1.0);
+        await Sub.inner('Später.', { dur: 2 });
+      }
+      me.lookAt(null);
+      const i = W.updaters.indexOf(upd); if (i >= 0) W.updaters.splice(i, 1);
+    }, { stay: false });
+    me.lookAt(null); FX.dof = 0; N.lookAt(null);
+  },
   // Der Straßenmusiker: eine Melodie, die Nena gesummt hat
   async cityMusician() {
     const W = G.world, me = Player.ch, F = G.state.flags, mu = W.musician;

@@ -280,6 +280,11 @@ class CityWorld extends World {
     this.musician = mu; this.muT = 3; this.muDeg = 2; this.muSong = false; this.muI = 0; this.muDone = false;
     const hat = new MB(82); hat.box(0.5, 0.07, 0.3, 0, 0, 0, 0x2a2018); hat.box(0.44, 0.02, 0.24, 0, 0.07, 0, 0x120c08); for (let i = 0; i < 7; i++) hat.box(0.035, 0.008, 0.035, -0.16 + i * 0.05, 0.085, -0.04 + (i % 3) * 0.04, [0xd9b56a, 0xb8b8c0, 0xd9b56a][i % 3], { jit: 0 });
     const hm = hat.mesh(Mat.lit({ spec: 0x555555, shin: 20 }), { cast: false }); hm.position.set(-4.0, 0, -0.5); hm.rotation.y = 0.2; this.add(hm);
+    // Eine Zeichnerin auf der Bank am Fluss – sie bleibt im Fokus als Einzige in Farbe
+    const nr = makeNour();
+    nr.place(-30.3, 0, 0.0, -Math.PI / 2); nr.setPose(sitP({ lean: 5, nod: 20, L: { arm: [30, 8, 0], fore: 66 }, R: { arm: [30, 6, 0], fore: 72, hand: 12 } })); nr.snapPose();
+    nr.hold('sketch', true); nr.hold('pencil', true); nr.overlay = zeroPose(); this.addChar(nr); this.nour = nr;
+    nr.onUpdate = () => { const t = G.t; nr.overlay.foreR[0] = Math.sin(t * 2.3) * 3; nr.overlay.handR[2] = Math.sin(t * 5.1) * 7; nr.overlay.handR[0] = Math.sin(t * 3.7) * 4; };
     // Laternen (Arm zeigt zum Platz)
     const lamps = [[-33, -30, 0], [-33, -16, 0], [-33, -2, 0], [-33, 12, 0], [-33, 26, 0], [-12, -34, -Math.PI / 2], [4, -34, -Math.PI / 2], [-12, 32, Math.PI / 2], [4, 32, Math.PI / 2], [24, -30, Math.PI], [24, -14, Math.PI], [24, 20, Math.PI], [24, 30, Math.PI], [-9, 4, 0]];
     for (const [x, z, ry] of lamps) { const l = mkLamp(true); B.merge(l.body, x, 0, z, ry); LG.merge(l.glow, x, 0, z, ry); this.ring(x, z, 0.22); }
@@ -336,6 +341,7 @@ class CityWorld extends World {
     I({ at: [-9.4, -20.4], r: 1.8, label: 'Ansehen', name: 'Uhr', pos: [-9.4, 4.0, -22], run: () => Story.cityClock() });
     I({ at: [-24.6, 8], r: 1.9, label: 'Ansehen', name: 'Zeitungen', pos: [-26.3, 1.4, 8], run: () => Story.cityNews() });
     I({ at: [-4, -2.7], r: 2.0, label: 'Ansehen', name: 'Brunnen', pos: [-4, 1.0, -3], run: () => Story.cityFountain() });
+    I({ at: [-29.0, 0.0], r: 1.7, label: 'Ansehen', name: 'Eine Zeichnerin', pos: [-30.3, 1.3, 0], run: () => Story.cityNour() });
     I({ at: [-4, 0.0], r: 1.7, label: 'Zuhören', name: 'Straßenmusiker', pos: [-4, 1.35, -1.55], run: () => Story.cityMusician() });
     I({ at: [22.4, -7.6], r: 2.2, label: 'Ansehen', name: 'Der Wagen', pos: [23.4, 1.2, -4.2], run: () => Story.cityCar() });
     I({ at: [-29.4, 12], r: 1.5, label: 'Setzen', name: 'Bank am Fluss', pos: [-30.4, 0.9, 12], run: () => Story.cityBench() });

@@ -147,7 +147,8 @@ Object.assign(Story, {
       await Sub.say('Nena', 'Er verliert dich nicht.', { dur: 3 });
       Mus.mood('maktub', 2.5);
       await sleep(1.6);
-      Cam.set({ pos: [0.58, 0.99, 0.48], look: [0.58, 0.99, -0.2], fov: 22, dof: 0.95 });
+      Cam.set({ pos: [0.58, 1.01, 0.64], look: [0.58, 1.0, -0.16], fov: 38, dof: 0.9 });
+      Cam.move({ pos: [0.58, 1.0, 0.58], look: [0.58, 1.0, -0.16], fov: 33 }, 5, 'inOutSine');
       tween(FX, { flash: 0.22 }, 1.2, 'inOut');
       await sleep(0.4);
       await Sub.say('Nena', 'Maktub.', { dur: 3.6 });
